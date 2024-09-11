@@ -5,35 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            height: 100%;
+        body {
             font-family: Arial, sans-serif;
+            background-color: #000a1a;
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: #f2f2f2;
-            position: relative;
-            overflow: hidden;
-        }
-        /* Video background styling */
-        .background-video {
-            position: fixed;
-            top: 0;
-            left: 0;
-            min-width: 100%;
-            min-height: 100%;
-            z-index: -1;
-            object-fit: cover;
+            height: 100vh;
+            margin: 0;
+            background-image: url("img4.jpg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: #fff;
+
         }
         .container {
-            background-color: #a2b8dd; /* Semi-transparent background */
+            background-color: #000;
             padding: 40px;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(243, 242, 242, 0.815);
             width: 400px;
-            z-index: 1;
+            background-color: rgba(0, 0, 0, 0);
+            backdrop-filter: blur(10px);
         }
         h2 {
             text-align: center;
@@ -56,8 +51,14 @@
             border: 1px solid #ccc;
             border-radius: 5px;
         }
+        input[type="password"] + .toggle-password {
+            cursor: pointer;
+            position: absolute;
+            right: 20px;
+            top: 8px;
+        }
         .form-group {
-            position: relative;
+            position: relative ;
         }
         .link, .link a {
             display: block;
@@ -83,44 +84,37 @@
         }
     </style>
 </head>
-<body>
-      <!-- Video background -->
-      <video autoplay muted loop class="background-video">
-        <source src="mp4.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
-
-    <div class="container">
-        <h2>Registration Form</h2>
-        <div class="profile-pic"></div>
-        <form>
-            <div class="form-group">
-                <input type="text" placeholder="First Name" required>
-            </div>
-            <div class="form-group">
-                <input type="text" placeholder="Last Name" required>
-            </div>
-            <div class="form-group">
-                <input type="date" placeholder="Date of Birth" required>
-            </div>
-            <div class="form-group">
-                <input type="email" placeholder="Email" required>
-            </div>
-            <div class="form-group">
-                <input type="password" placeholder="Password" required>
-            </div>
-            <div class="form-group">
-                <input type="password" placeholder="Confirm Password" required>
-            </div>
-            <div class="form-group">
-                <input type="tel" placeholder="Contact Number" required>
-            </div>
-            <div class="link">
-                <span>Already Have an account? <a href="#">Login</a></span>
-            </div>
-            <button type="submit" class="btn">SIGN IN</button>
-        </form>
-    </div>
+<div class="container">
+    <h2>Registration Form</h2>
+    <div class="profile-pic"></div>
+    <form>
+        <div class="form-group">
+            <input type="text" placeholder="First Name" required>
+        </div>
+        <div class="form-group">
+            <input type="text" placeholder="Last Name" required>
+        </div>
+        <div class="form-group">
+            <input type="date" placeholder="Date of Birth" required>
+        </div>
+        <div class="form-group">
+            <input type="email" placeholder="Email" required>
+        </div>
+        <div class="form-group">
+            <input type="password" placeholder="Password" required>
+        </div>
+        <div class="form-group">
+            <input type="password" placeholder="Confirm Password" required>
+        </div>
+        <div class="form-group">
+            <input type="tel" placeholder="Contact Number" required>
+        </div>
+        <div class="link">
+            <span>Already Have an account? <a href="#">Login</a></span>
+        </div>
+        <button type="submit" class="btn">SIGN IN</button>
+    </form>
+</div>
 
 </body>
 </html>
