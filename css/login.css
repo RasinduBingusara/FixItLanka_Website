@@ -7,6 +7,11 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
+    background-image: url('../pics/building.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
 .login-container {
@@ -17,6 +22,9 @@ body {
     max-width: 400px;
     width: 100%;
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.5); /* Enhanced shadow */
+    background-color: rgba(0, 0, 0, 0);
+    backdrop-filter: blur(10px);
+
 }
 
 .login-header h2 {
@@ -32,11 +40,11 @@ body {
     color: #fff;
 }
 
-.divider span {
+/* .divider span {
     background-color: #1d9bf0;
     padding: 0 10px;
     z-index: 1;
-}
+} */
 
 .divider::before {
     content: "";
@@ -90,7 +98,7 @@ input[type="password"]::placeholder {
 }
 
 .forgot-password a {
-    color: #003050;
+    color: #1d9bf0;
     text-decoration: none;
     font-size: 14px;
 }
@@ -101,7 +109,7 @@ input[type="password"]::placeholder {
 }
 
 .sign-up a {
-    color: #003050;
+    color: #1d9bf0;
     text-decoration: none;
 }
 
