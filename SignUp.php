@@ -7,6 +7,6 @@
   <title>Document</title>
 </head>
 <body>
-  
+  <h1> Sign Up</h1>
 </body>
 </html>
