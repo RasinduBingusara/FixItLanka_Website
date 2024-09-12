@@ -5,105 +5,106 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
- * {
+* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: Arial, sans-serif;
-    
-    
 }
 
-
+/* Fixed Navbar Styling */
 .navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color:#34A853;
+    background-color: #34A853;
     padding: 10px 20px;
     color: #fff;
-    position: relative;
+    z-index: 1000;
 }
 
 .logo {
     font-size: 20px;
     font-weight: bold;
+    color: #fff;
 }
 
 .hamburger {
     display: none;
     font-size: 24px;
     cursor: pointer;
+    color: #fff;
+}
+
+/* Page Container */
+.home-page-container {
+    display: flex;
+    height: 100vh;
+    padding: 70px 20px 20px 20px; /* Adjust padding to account for fixed navbar */
+    background-color: #f4f7f9;
 }
 
 /* Sidebar Styling */
 .sidebar {
-    width: 200px;
-    background-color: #4285F4;
-    padding: 20px;
+    width: 250px;
+    background-color: #1e73ff;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    border-right: 1px solid #ddd;
-    transition: transform 0.3s ease;
+    justify-content: flex-start;
+    padding: 20px;
     position: fixed;
     left: 0;
     top: 50px;
     height: calc(100vh - 50px);
+    transition: transform 0.3s ease;
     overflow-y: auto;
-    
-}
-
-.profile-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    margin-bottom: 20px;
+    color: #fff;
 }
 
 .nav-menu {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
 }
 
 .nav-button {
-    background-color: #ddd;
+    background: none;
     border: none;
-    padding: 10px;
+    color: #fff;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
     cursor: pointer;
-    text-align: left;
-    width: 100%;
-    border-radius: 10px;
-    font: 1em sans-serif;
-    background-blend-mode: hard-light;
-    font-style: inherit;
-    text-shadow: #ddd;
-    font-weight: lighter;
-    color: #000;
-    font-display: unset;
+    border-radius: 8px;
+    transition: background-color 0.3s;
+}
 
+.nav-button:hover {
+    background-color: #155bb5;
+}
+
+.nav-button .icon {
+    font-size: 18px;
 }
 
 /* Main Content Styling */
 .main-content {
-    margin-left: 220px; /* Adjust for sidebar width */
+    flex: 1;
     padding: 20px;
-    margin-right: 400px;
+    margin-left: 270px; /* Adjust for sidebar width */
 }
 
-.header {
+.main-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-    
 }
-
-h1{
-    color:  #FBBC05;
-}
-
 
 .search-bar {
     padding: 10px;
@@ -116,10 +117,7 @@ h1{
     display: flex;
     gap: 10px;
     margin-bottom: 20px;
-    border-radius: 20px;
-    
 }
-
 
 .view-button {
     padding: 10px 20px;
@@ -133,16 +131,14 @@ h1{
     display: flex;
     gap: 20px;
     height: calc(100vh - 150px);
+    overflow-y: auto;
 }
 
 .posts-container {
     flex: 1;
-    overflow-y: scroll;
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    padding-right: 10px;
-    
+    gap: 10px;
 }
 
 .post {
@@ -152,26 +148,19 @@ h1{
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 150px;
-    
+    height: 100px;
 }
 
-/* Fixed Map Styling */
 .map {
-    position: fixed;
-    right: 20px;
-    top: 70px; 
     width: 300px;
-    height: calc(100vh - 90px); 
+    height: 100%;
     background-color: #fff;
     border: 1px solid #ddd;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 20px;
-    z-index: 10;
 }
-
 
 /* Responsive Styles */
 @media (max-width: 768px) {
@@ -179,8 +168,20 @@ h1{
         display: block;
     }
 
+    .home-page-container {
+        flex-direction: column;
+        padding: 70px 10px 10px 10px; /* Adjust padding for mobile */
+    }
+
     .sidebar {
         transform: translateX(-100%);
+        width: 250px;
+        position: fixed;
+        z-index: 10;
+        left: 0;
+        top: 50px;
+        height: calc(100vh - 50px);
+        transition: transform 0.3s ease;
     }
 
     .sidebar.active {
@@ -188,7 +189,20 @@ h1{
     }
 
     .main-content {
+        padding: 10px;
         margin-left: 0;
+    }
+
+    .posts-container {
+        overflow-x: auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+    }
+
+    .map {
+        width: 100%;
+        height: 300px;
     }
 }
     </style>
@@ -197,55 +211,63 @@ h1{
 <body>
     
 
-<nav class="navbar">
-    <div class="logo">FIXITLANKA</div>
+    <nav class="navbar">
+        <div class="logo">FIXITLANKA</div>
+        <!-- <input type="checkbox" id="menu-toggle"> -->
+        <label for="menu-toggle" class="hamburger">&#9776;</label>
+    </nav>
     
-    <label for="menu-toggle" class="hamburger">&#9776;</label>
-</nav>
-
-<div class="container">
-    <aside class="sidebar" id="sidebar">
-        <div class="profile">
-            <img src="profile-icon.png" alt="Profile" class="profile-icon">
-        </div>
-        <nav class="nav-menu">
-            <button class="nav-button">Terms and Policies</button>
-            <button class="nav-button">Settings</button>
-            <button class="nav-button">Sign Out</button>
-        </nav>
-    </aside>
+    <div class="home-page-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <nav class="nav-menu">
+                <button class="nav-button">
+                    <span class="icon">📜</span> Terms and Policies
+                </button>
+                <button class="nav-button">
+                    <span class="icon">⚙️</span> Settings
+                </button>
+                <button class="nav-button">
+                    <span class="icon">🚪</span> Sign Out
+                </button>
+            </nav>
+        </aside>
     
-    <main class="main-content">
-        <header class="header">
-            <h1>HOME </h1>
-            <input type="text" placeholder="Search" class="search-bar">
-        </header>
-
-        <div class="buttons">
-            <button class="view-button">Post</button>
-            <button class="view-button">Map</button>
-            <button class="view-button">Post view</button>
-        </div>
-
-        <div class="content">
-            <div class="posts-container">
-                <div class="post">Post 1</div>
-                <div class="post">Post 2</div>
-                <div class="post">Post 3</div>
-                <div class="post">Post 4</div>
-                <div class="post">Post 5</div>
-                <!-- Add more posts as needed -->
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="main-header">
+                <h1>HOME PAGE</h1>
+                <input type="text" placeholder="Search" class="search-bar">
+            </header>
+    
+            <div class="buttons">
+                <button class="view-button">Post</button>
+                <button class="view-button">Map</button>
+                <button class="view-button">Post view</button>
             </div>
-        </div>
-        <div class="map">Map</div>
-    </main>
-</div>
-
-<script>
     
-    document.querySelector('.hamburger').addEventListener('click', function () {
-        document.getElementById('sidebar').classList.toggle('active');
-    });
-</script>
+            <div class="content">
+                <div class="posts-container">
+                    <div class="post">Post 1</div>
+                    <div class="post">Post 2</div>
+                    <div class="post">Post 3</div>
+                    <div class="post">Post 4</div>
+                    <div class="post">Post 5</div>
+                    <div class="post">Post 6</div>
+                    <div class="post">Post 7</div>
+                    <div class="post">Post 8</div>
+                </div>
+                <div class="map">Map</div>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        // JavaScript to toggle sidebar visibility on mobile
+        document.querySelector('.hamburger').addEventListener('click', function () {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
+    </script>
+    
 </body>
 </html>
