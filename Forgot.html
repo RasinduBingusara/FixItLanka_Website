@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f2f2f2;
+            background-image: url("img5.jpg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: #fff;
+
+        }
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 50px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 400px;
+            background-color: rgba(0, 0, 0, 0);
+            backdrop-filter: blur(10px);
+        }
+        h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            outline: none;
+        }
+        .submit-btn {
+            background-color: #333;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        .submit-btn:hover {
+            background-color: #555;
+        }
+        .icon-arrow {
+            display: inline-block;
+            margin-left: 10px;
+            font-size: 18px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <body>
+        <div class="container">
+            <h2>Forgot Password Page</h2>
+            <p>When you fill in the registered email address, you will receive instructions on how to reset your password.</p>
+            <form>
+                <div class="form-group">
+                    <input type="email" placeholder="Email" required>
+                </div>
+                <button type="submit" class="submit-btn">
+                    Submit
+                    <span class="icon-arrow">➔</span>
+                </button>
+            </form>
+        </div>
+    </body>
+</body>
+</html>
