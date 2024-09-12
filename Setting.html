@@ -6,56 +6,112 @@
     <title>Document</title>
     <style>
  
-body{
-    background-image: url("img8.jpg");
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            color: #fff;
-            padding: 50px;
+ * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
 }
 
+/* Fixed Navbar Styling */
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #34A853;
+    padding: 10px 20px;
+    color: #fff;
+    z-index: 1000;
+}
 
-.settings-container {
-    margin-top: auto;
+.logo {
+    font-size: 20px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.hamburger {
+    display: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #fff;
+}
+
+/* Page Container */
+.settings-page-container {
+    display: flex;
+    height: 100vh;
+    padding: 70px 20px 20px 20px; /* Adjust padding to account for fixed navbar */
+    background-color: #f4f7f9;
+}
+
+/* Sidebar Styling */
+.sidebar {
+    width: 250px;
+    background-color: #1e73ff;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 20px;
+    position: fixed;
+    left: 0;
+    top: 50px;
+    height: calc(100vh - 50px);
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+    color: #fff;
+}
+
+.nav-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.nav-button {
+    background: none;
+    border: none;
+    color: #fff;
+    padding: 12px;
     display: flex;
     align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background-color 0.3s;
     justify-content: space-between;
-    height: 100vh;
-    padding: 20px;
-    background-color: #f4f7f9;
-    background-color: rgba(0, 0, 0, 0);
-            backdrop-filter: blur(10px);
-            margin-top: 20px;
-            border-radius: 20px;
 }
 
-
-.profile-section {
-    flex: 1;
-    display: flex;
-    justify-content: center;
+.nav-button:hover {
+    background-color: #155bb5;
 }
 
-.profile-icon {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    border: 2px solid #ddd;
+.nav-button .icon {
+    font-size: 18px;
 }
 
+.dropdown-arrow {
+    font-size: 14px;
+    margin-left: auto;
+}
 
+/* Main Content Styling */
 .settings-content {
-    flex: 3;
+    flex: 1;
+    padding: 20px;
+    margin-left: 270px; /* Adjust for sidebar width */
     text-align: center;
-    background-color: rgba(0, 0, 0, 0);
-            backdrop-filter: blur(10px);
-            
 }
 
-.settings-content h1 {
+.settings-header {
     margin-bottom: 30px;
+}
+
+.settings-header h1 {
     font-size: 24px;
     color: #333;
 }
@@ -64,13 +120,15 @@ body{
     display: flex;
     flex-direction: column;
     gap: 20px;
+    align-items: center;
 }
 
 .option {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 20px;
+    width: 300px;
+    padding: 10px;
     background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 5px;
@@ -82,44 +140,99 @@ body{
     cursor: pointer;
 }
 
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .hamburger {
+        display: block;
+    }
 
-.home-section {
-    flex: 1;
-    display: flex;
-    justify-content: center;
+    .settings-page-container {
+        flex-direction: column;
+        align-items: center;
+        padding: 70px 10px 10px 10px; /* Adjust padding for mobile */
+    }
+
+    .sidebar {
+        transform: translateX(-100%);
+        width: 250px;
+        position: fixed;
+        z-index: 10;
+        left: 0;
+        top: 50px;
+        height: calc(100vh - 50px);
+        transition: transform 0.3s ease;
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        padding: 10px;
+        margin-left: 0;
+        text-align: center;
+    }
+
+    .settings-options {
+        width: 100%;
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .option {
+        width: 90%;
+    }
 }
 
-.home-icon {
-    width: 50px;
-    height: 50px;
-    cursor: pointer;
-}
     </style>
 </head>
 <body>
-    <div class="settings-container">
-        <aside class="profile-section">
-            <img src="profile-icon.png" alt="Profile" class="profile-icon">
+    <nav class="navbar">
+        <div class="logo">LOGO</div>
+        <!-- <input type="checkbox" id="menu-toggle"> -->
+        <label for="menu-toggle" class="hamburger">&#9776;</label>
+    </nav>
+    
+    <div class="settings-page-container">
+        <!-- Sidebar Navigation with Relevant Buttons -->
+        <aside class="sidebar" id="sidebar">
+            <nav class="nav-menu">
+                <button class="nav-button">
+                    <span class="icon">📜</span> Terms and Policies
+                </button>
+                <button class="nav-button">
+                    <span class="icon">⚙️</span> Settings <span class="dropdown-arrow">▼</span>
+                </button>
+                <button class="nav-button">
+                    <span class="icon">🚪</span> Sign Out
+                </button>
+            </nav>
         </aside>
     
+        <!-- Main Content Area -->
         <main class="settings-content">
-            <h1>Setting Page</h1>
+            <header class="settings-header">
+                <h1>Settings Page</h1>
+            </header>
+    
             <div class="settings-options">
                 <div class="option">
-                    <span>Dark mode</span>
+                    <span>Dark Mode</span>
                     <input type="checkbox" class="toggle-switch">
                 </div>
                 <div class="option">
-                    <span>Always anonymous</span>
+                    <span>Always Anonymous</span>
                     <input type="checkbox" class="toggle-switch">
                 </div>
             </div>
         </main>
-    
-        <aside class="home-section">
-            <img src="home-icon.png" alt="Home" class="home-icon">
-        </aside>
     </div>
-    
+    <script>
+        // JavaScript to toggle sidebar visibility on mobile
+        document.querySelector('.hamburger').addEventListener('click', function () {
+            document.getElementById('sidebar').classList.toggle('active');
+        });
+    </script>
 </body>
+    
 </html>
