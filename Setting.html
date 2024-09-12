@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+ 
+body{
+    background-image: url("img8.jpg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: #fff;
+            padding: 50px;
+}
+
+
+.settings-container {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100vh;
+    padding: 20px;
+    background-color: #f4f7f9;
+    background-color: rgba(0, 0, 0, 0);
+            backdrop-filter: blur(10px);
+            margin-top: 20px;
+            border-radius: 20px;
+}
+
+
+.profile-section {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.profile-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+}
+
+
+.settings-content {
+    flex: 3;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0);
+            backdrop-filter: blur(10px);
+            
+}
+
+.settings-content h1 {
+    margin-bottom: 30px;
+    font-size: 24px;
+    color: #333;
+}
+
+.settings-options {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.toggle-switch {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+
+.home-section {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.home-icon {
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+}
+    </style>
+</head>
+<body>
+    <div class="settings-container">
+        <aside class="profile-section">
+            <img src="profile-icon.png" alt="Profile" class="profile-icon">
+        </aside>
+    
+        <main class="settings-content">
+            <h1>Setting Page</h1>
+            <div class="settings-options">
+                <div class="option">
+                    <span>Dark mode</span>
+                    <input type="checkbox" class="toggle-switch">
+                </div>
+                <div class="option">
+                    <span>Always anonymous</span>
+                    <input type="checkbox" class="toggle-switch">
+                </div>
+            </div>
+        </main>
+    
+        <aside class="home-section">
+            <img src="home-icon.png" alt="Home" class="home-icon">
+        </aside>
+    </div>
+    
+</body>
+</html>
