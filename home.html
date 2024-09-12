@@ -5,46 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-* {
+ * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-}
-
-body {
     font-family: Arial, sans-serif;
-    background-color: #f4f7f9;
-    overflow-x: hidden;
-    background-image: url("img6.jpg");
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            color: #fff;
+    
+    
 }
 
-.container {
+
+.navbar {
     display: flex;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0);
-            backdrop-filter: blur(10px);
+    justify-content: space-between;
+    align-items: center;
+    background-color:#34A853;
+    padding: 10px 20px;
+    color: #fff;
+    position: relative;
 }
 
+.logo {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.hamburger {
+    display: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* Sidebar Styling */
 .sidebar {
     width: 200px;
-    background-color: #181818;
+    background-color: #4285F4;
     padding: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
     border-right: 1px solid #ddd;
-    border-style: hidden;
-    background-image: url("img7.jpg");
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            color: #fff;
+    transition: transform 0.3s ease;
+    position: fixed;
+    left: 0;
+    top: 50px;
+    height: calc(100vh - 50px);
+    overflow-y: auto;
+    
 }
 
 .profile-icon {
@@ -61,20 +68,28 @@ body {
 }
 
 .nav-button {
-    background-color: #f4f4f4;
+    background-color: #ddd;
     border: none;
     padding: 10px;
     cursor: pointer;
     text-align: left;
     width: 100%;
-    border-radius: 15ex;
+    border-radius: 10px;
+    font: 1em sans-serif;
+    background-blend-mode: hard-light;
+    font-style: inherit;
+    text-shadow: #ddd;
+    font-weight: lighter;
+    color: #000;
+    font-display: unset;
+
 }
 
+/* Main Content Styling */
 .main-content {
-    flex: 1;
+    margin-left: 220px; /* Adjust for sidebar width */
     padding: 20px;
-    display: flex;
-    flex-direction: column;
+    margin-right: 400px;
 }
 
 .header {
@@ -82,7 +97,13 @@ body {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    
 }
+
+h1{
+    color:  #FBBC05;
+}
+
 
 .search-bar {
     padding: 10px;
@@ -95,7 +116,10 @@ body {
     display: flex;
     gap: 10px;
     margin-bottom: 20px;
+    border-radius: 20px;
+    
 }
+
 
 .view-button {
     padding: 10px 20px;
@@ -108,7 +132,7 @@ body {
 .content {
     display: flex;
     gap: 20px;
-    height: calc(100vh - 150px); /* Adjust height based on header and buttons */
+    height: calc(100vh - 150px);
 }
 
 .posts-container {
@@ -117,7 +141,8 @@ body {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    padding-right: 10px; /* To provide space for scrollbar */
+    padding-right: 10px;
+    
 }
 
 .post {
@@ -128,59 +153,99 @@ body {
     align-items: center;
     justify-content: center;
     height: 150px;
+    
 }
 
+/* Fixed Map Styling */
 .map {
+    position: fixed;
+    right: 20px;
+    top: 70px; 
     width: 300px;
+    height: calc(100vh - 90px); 
     background-color: #fff;
     border: 1px solid #ddd;
-    padding: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100%; /* Full height of the content area */
+    padding: 20px;
+    z-index: 10;
+}
+
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .hamburger {
+        display: block;
+    }
+
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
 }
     </style>
     
 </head>
 <body>
     
-    <div class="container">
-        <aside class="sidebar">
-            <div class="profile">
-                <img src="profile-icon.png" alt="Profile" class="profile-icon">
-            </div>
-            <nav class="nav-menu">
-                <button class="nav-button">Terms and Policies</button>
-                <button class="nav-button">Settings</button>
-                <button class="nav-button">Sign Out</button>
-            </nav>
-        </aside>
-        
-        <main class="main-content">
-            <header class="header">
-                <h1>HOME PAGE</h1>
-                <input type="text" placeholder="Search" class="search-bar">
-            </header>
 
-            <div class="buttons">
-                <button class="view-button">Post</button>
-                <button class="view-button">Map</button>
-                <button class="view-button">Post view</button>
-            </div>
+<nav class="navbar">
+    <div class="logo">FIXITLANKA</div>
+    
+    <label for="menu-toggle" class="hamburger">&#9776;</label>
+</nav>
 
-            <div class="content">
-                <div class="posts-container">
-                    <div class="post">Post 1</div>
-                    <div class="post">Post 2</div>
-                    <div class="post">Post 3</div>
-                    <div class="post">Post 4</div>
-                    <div class="post">Post 5</div>
-                    <!-- Add more posts as needed -->
-                </div>
-                <div class="map">Map</div>
+<div class="container">
+    <aside class="sidebar" id="sidebar">
+        <div class="profile">
+            <img src="profile-icon.png" alt="Profile" class="profile-icon">
+        </div>
+        <nav class="nav-menu">
+            <button class="nav-button">Terms and Policies</button>
+            <button class="nav-button">Settings</button>
+            <button class="nav-button">Sign Out</button>
+        </nav>
+    </aside>
+    
+    <main class="main-content">
+        <header class="header">
+            <h1>HOME </h1>
+            <input type="text" placeholder="Search" class="search-bar">
+        </header>
+
+        <div class="buttons">
+            <button class="view-button">Post</button>
+            <button class="view-button">Map</button>
+            <button class="view-button">Post view</button>
+        </div>
+
+        <div class="content">
+            <div class="posts-container">
+                <div class="post">Post 1</div>
+                <div class="post">Post 2</div>
+                <div class="post">Post 3</div>
+                <div class="post">Post 4</div>
+                <div class="post">Post 5</div>
+                <!-- Add more posts as needed -->
             </div>
-        </main>
-    </div>
+        </div>
+        <div class="map">Map</div>
+    </main>
+</div>
+
+<script>
+    // JavaScript to toggle sidebar visibility on mobile
+    document.querySelector('.hamburger').addEventListener('click', function () {
+        document.getElementById('sidebar').classList.toggle('active');
+    });
+</script>
 </body>
 </html>
