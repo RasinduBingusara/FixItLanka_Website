@@ -1,0 +1,93 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ffffff; /* Light background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-image: url('../pics/BackgroundImg.jpg'); /* Specify your preferred path */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: #fff;
+}
+
+.container {
+    background-color: rgba(0, 0, 0, 0); /* Transparent background with blur effect */
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    max-width: 400px;
+    max-height: 560px;
+    width: 100%;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.5); /* Enhanced shadow */
+    backdrop-filter: blur(10px);
+}
+
+h2 {
+    font-size: 22px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.profile-pic {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+    display: block;
+    margin: 0 auto 20px;
+}
+
+input[type="text"], input[type="email"], input[type="password"], input[type="date"], input[type="tel"] {
+    width: 95%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #fff;
+    border-radius: 30px;
+    background-color: rgba(255, 255, 255, 0.1); /* Slightly transparent input background */
+    color: #fff;
+    font-size: 14px;
+}
+
+input::placeholder {
+    color: #8899a6; /* Lighter placeholder color */
+}
+
+.form-group {
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.link, .link a {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.link a:hover {
+    text-decoration: underline;
+}
+
+.btn {
+    background-color: #ffffff; /* Light button */
+    color: #000000;
+    border: none;
+    padding: 12px;
+    width: 100%;
+    border-radius: 30px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #e0e0e0; /* Slightly darker on hover */
+}
