@@ -4,48 +4,69 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css\home.css">
     <title>Home Page</title>
+    <link rel="stylesheet" href="css\home.css">
 </head>
 <body>
-    <div class="container">
-        <aside class="sidebar">
-            <div class="profile">
-                <img src="profile-icon.png" alt="Profile" class="profile-img">
+
+<!-- Fixed Navbar with Hamburger Icon -->
+<nav class="navbar">
+    <div class="logo">FIXITLANKA</div>
+    <input type="checkbox" id="menu-toggle">
+    <label for="menu-toggle" class="hamburger">&#9776;</label>
+</nav>
+
+<div class="home-page-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <nav class="nav-menu">
+            <button class="nav-button">
+                <span class="icon">📜</span> Terms and Policies
+            </button>
+            <button class="nav-button">
+                <span class="icon">⚙️</span> Settings
+            </button>
+            <button class="nav-button">
+                <span class="icon">🚪</span> Sign Out
+            </button>
+        </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <header class="main-header">
+            <h1>HOME PAGE</h1>
+            <input type="text" placeholder="Search" class="search-bar">
+        </header>
+
+        <div class="buttons">
+            <button class="view-button">Post</button>
+            <button class="view-button">Map</button>
+            <button class="view-button">Post view</button>
+        </div>
+
+        <div class="content">
+            <div class="posts-container">
+                <div class="post">Post 1</div>
+                <div class="post">Post 2</div>
+                <div class="post">Post 3</div>
+                <div class="post">Post 4</div>
+                <div class="post">Post 5</div>
+                <div class="post">Post 6</div>
+                <div class="post">Post 7</div>
+                <div class="post">Post 8</div>
             </div>
-            <nav class="menu">
-                <ul>
-                    <li><a href="#" class="active">Dashboard</a></li>
-                    <li><a href="#">Events</a></li>
-                    <li><a href="#">Users</a></li>
-                    <li><a href="#">Statistics</a></li>
-                </ul>
-            </nav>
-            <div class="settings">
-                <ul>
-                    <li><a href="#">Settings</a></li>
-                    <li><a href="#">Sign Out</a></li>
-                </ul>
-            </div>
-        </aside>
-        <main class="main-content">
-            <header class="header">
-                <h1>HOME PAGE</h1>
-                <div class="search-bar">
-                    <input type="text" placeholder="Search">
-                    <button>🔍</button>
-                </div>
-            </header>
-            <section class="content">
-                <div class="posts">
-                    <div class="post">Post</div>
-                    <div class="post">Post</div>
-                </div>
-                <div class="map">
-                    Map
-                </div>
-            </section>
-        </main>
-    </div>
+            <div class="map">Map</div>
+        </div>
+    </main>
+</div>
+
+<script>
+    // JavaScript to toggle sidebar visibility on mobile
+    document.querySelector('.hamburger').addEventListener('click', function () {
+        document.getElementById('sidebar').classList.toggle('active');
+    });
+</script>
+
 </body>
 </html>
