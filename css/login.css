@@ -1,28 +1,19 @@
 body {
     font-family: Arial, sans-serif;
-<<<<<<< HEAD
-=======
     background-color: #ffffff; /* Dark background */
->>>>>>> 287da915df864f7a80b641c1190103b773430381
     color: white;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     margin: 0;
-<<<<<<< HEAD
     background-image: url('building.jpg');
-=======
     background-image: url('../pics/building.jpg');
->>>>>>> 287da915df864f7a80b641c1190103b773430381
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
-<<<<<<< HEAD
     color: #fff;
-=======
->>>>>>> 287da915df864f7a80b641c1190103b773430381
 }
 
 .login-container {
@@ -35,10 +26,6 @@ body {
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.5); /* Enhanced shadow */
     background-color: rgba(0, 0, 0, 0);
     backdrop-filter: blur(10px);
-<<<<<<< HEAD
-=======
-
->>>>>>> 287da915df864f7a80b641c1190103b773430381
 }
 
 .login-header h2 {
@@ -55,11 +42,7 @@ body {
 }
 
 .divider span {
-<<<<<<< HEAD
-    background-color: #00000000;
-=======
     background-color: rgba(0, 0, 0, 0);
->>>>>>> 287da915df864f7a80b641c1190103b773430381
     padding: 0 10px;
     z-index: 1;
 }
