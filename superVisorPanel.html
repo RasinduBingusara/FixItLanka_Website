@@ -4,9 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Supervisor Panel Page</title>
-    <link rel="stylesheet" href="css\superVisorPanel.css">
+    <link rel="stylesheet" href="css/superVisorPanel.css">
 </head>
 <body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-brand">Supervisor Panel</div>
+        <div class="nav-links" id="navLinks">
+            <a href="#">Dashboard</a>
+            <a href="#">Posts</a>
+            <a href="#">Users</a>
+            <a href="#">Settings</a>
+        </div>
+        <div class="hamburger" id="hamburger">
+            ☰
+        </div>
+    </nav>
 
     <div class="header">Supervisor Panel Page</div>
 
@@ -93,6 +107,14 @@
             <div class="map-label">Map</div>
         </div>
     </div>
+
+    <script>
+        // Toggle navbar links on hamburger click
+        document.getElementById('hamburger').addEventListener('click', function() {
+            var navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        });
+    </script>
 
 </body>
 </html>

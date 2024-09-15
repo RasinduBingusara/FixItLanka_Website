@@ -4,10 +4,25 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css\createpost.css">
+    <link rel="stylesheet" href="css/createpost.css">
     <title>Create Post Page</title>
 </head>
 <body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-brand">Create Post</div>
+        <div class="nav-links" id="navLinks">
+            <a href="#">Home</a>
+            <a href="#">Create Post</a>
+            <a href="#">Posts</a>
+            <a href="#">Settings</a>
+        </div>
+        <div class="hamburger" id="hamburger">
+            ☰
+        </div>
+    </nav>
+
     <div class="create-post-container">
         <h1>Create Post Page</h1>
         <div class="create-post-content">
@@ -45,18 +60,21 @@
                 <div class="editor-container">
                     <textarea id="description" placeholder="Rich text editor."></textarea>
                     <div class="editor-toolbar">
-                        <button>B</button>
-                        <button>I</button>
-                        <button>U</button>
-                        <button>•</button>
-                        <button>1.</button>
-                        <button>“”</button>
-                        <button>⟨⟩</button>
+                        <button>ADD Image </button>
                         <button>ADD ➔</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        // Toggle navbar links on hamburger click
+        document.getElementById('hamburger').addEventListener('click', function() {
+            var navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        });
+    </script>
+
 </body>
 </html>
