@@ -4,24 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Terms and Policies</title>
-    <link rel="stylesheet" href="css\t&c.css">
+    <link rel="stylesheet" href="css/t&c.css">
 </head>
 <body>
 
-    <nav class="navbar">
-        <div class="logo">My Website</div>
-        <ul class="nav-links">
-            <li><a href="#">Home</a></li>
-            <li><a href="#">About</a></li>
-            <li><a href="#">Services</a></li>
-            <li><a href="#">Contact</a></li>
-        </ul>
-        <div class="hamburger">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-    </nav>
+<!-- Fixed Navbar with Hamburger Icon -->
+<nav class="navbar">
+    <div class="logo">FIXITLANKA</div>
+    <input type="checkbox" id="menu-toggle">
+    <label for="menu-toggle" class="hamburger">&#9776;</label>
+</nav>
+
+<div class="home-page-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <nav class="nav-menu">
+            <button class="nav-button">
+                <span class="icon">📜</span> Terms and Policies
+            </button>
+            <button class="nav-button">
+                <span class="icon">⚙️</span> Settings
+            </button>
+            <button class="nav-button">
+                <span class="icon">🚪</span> Sign Out
+            </button>
+        </nav>
+    </aside>
 
     <div class="main-content">
         <div class="header">TERMS AND POLICIES</div>
@@ -37,17 +45,14 @@
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        const hamburger = document.querySelector('.hamburger');
-        const navLinks = document.querySelector('.nav-links');
-
-        // Toggle the visibility of the menu on click
-        hamburger.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-            hamburger.classList.toggle('toggle');
-        });
-    </script>
+<script>
+    // JavaScript to toggle sidebar visibility on mobile
+    document.querySelector('.hamburger').addEventListener('click', function () {
+        document.getElementById('sidebar').classList.toggle('active');
+    });
+</script>
 
 </body>
 </html>
