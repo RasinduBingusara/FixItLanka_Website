@@ -1,0 +1,147 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-image: url('../pics/BackgroundImg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: #fff;
+}
+
+.container {
+    background-color: rgba(0, 0, 0, 0);
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+}
+
+h2 {
+    font-size: 22px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    color: #707070;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"] {
+    width: 95%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #fff;
+    border-radius: 30px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #363636;
+    font-size: 14px;
+    transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease; /* Smooth transitions */
+    position: relative;
+    z-index: 1; /* Set input above label initially */
+}
+
+input::placeholder {
+    color: #8899a6;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    position: relative;
+}
+
+.label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #3f3f3f;
+    position: absolute;
+    top: 2px;
+    left: 15px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+    z-index: 2; /* Set label above input when visible */
+}
+
+.label.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+input:focus + .label,
+input:not(:placeholder-shown) + .label {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+input:focus,
+input:not(:placeholder-shown) {
+    border-color: transparent; /* Remove border */
+    background-color: rgba(255, 255, 255, 0.2); /* Slightly lighter background to maintain visibility */
+    color: #4b4b4b; /* Maintain text color */
+    font-weight: 700;
+}
+
+input:focus-visible {
+    outline: none; /* Optional: remove focus outline */
+}
+
+.link,
+.link a {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.link a:hover {
+    text-decoration: underline;
+}
+
+.btn {
+    background-color: #ffffff;
+    color: #000000;
+    border: none;
+    padding: 12px;
+    width: 100%;
+    border-radius: 30px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #e0e0e0;
+}
+
+.error-message {
+    color: #ff4d4d;
+    background-color: rgba(255, 77, 77, 0.1);
+    border: 1px solid #ff4d4d;
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 10px;
+    text-align: left;
+    display: none; /* Initially hidden */
+    align-items: center;
+    gap: 8px;
+}
+
+.error-message::before {
+    content: "⚠️";
+    font-size: 16px;
+}
