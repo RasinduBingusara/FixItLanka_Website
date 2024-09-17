@@ -199,11 +199,9 @@
 .post {
     background-color: #ffffff;
     border: 1px solid #ddd;
-    padding: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100px;
     border-radius: 12px;
     transition: box-shadow 0.3s;
 }

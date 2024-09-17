@@ -3,7 +3,7 @@ include("Database.php");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["email"]) && isset($_POST["password"]) && isset($_POST["firstName"]) && isset($_POST["lastName"]) && isset($_POST["contactNumber"])) {
 
-  $sqlVal = "SELECT UID FROM useraccounts WHERE Email = '" . $_POST["email"] . "'";
+  $sqlVal = "SELECT UID FROM useraccount WHERE Email = '" . $_POST["email"] . "'";
   $result = $conn->query($sqlVal);
 
   if ($result->num_rows > 0) {
@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["email"]) && isset($_PO
     $currentDateTime = date('Y-m-d H:i:s', $currentTimestamp);
     $username = $_POST["firstName"] . $_POST["lastName"];
 
-    $sql = "INSERT INTO useraccounts(CID, Username, Password, Email, ContactNumber, DOB, Area, ProfilePicture, UserType, Acc_Status, Created_At) VALUES ('2','" . $username . "','" . $password . "','" . $_POST["email"] . "','" . $_POST["contactNumber"] . "','2024-09-11','Colombo','','User','Active','" . $currentDateTime . "')";
+    $sql = "INSERT INTO useraccount(Category_ID, Area_ID, Username, Password, Email, ContactNumber, DOB, ProfilePicture, UserType, Acc_Status, Created_At) VALUES (1,1,'" . $username . "','" . $password . "','" . $_POST["email"] . "','" . $_POST["contactNumber"] . "','2024-09-11','','User','Active','" . $currentDateTime . "')";
 
     if (mysqli_query($conn, $sql)) {
 
