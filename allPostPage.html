@@ -2,15 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css\allPostPage.css">
-    <title>Posts Page</title>
+    <link rel="stylesheet" href="css/allPostPage.css">
+    <title>All Posts</title>
 </head>
 <body>
-
     <nav class="navbar">
-        <div class="nav-brand">Create Post</div>
+        <div class="nav-brand">All Posts</div>
         <div class="nav-links" id="navLinks">
             <a href="#">Home</a>
             <a href="#">Create Post</a>
@@ -39,19 +37,26 @@
 
         <div class="content">
             <div class="post">
-                <h3>Name of the Post</h3>
+                <h3>Post Title</h3>
                 <div class="post-image">
-                    <!-- Image placeholder -->
+                    <!-- Image Placeholder -->
                 </div>
             </div>
 
             <div class="map">
                 <h3>Map</h3>
                 <div class="map-placeholder">
-                    <!-- Map placeholder -->
+                    <!-- Map Placeholder -->
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Hamburger Menu Script -->
+    <script>
+        document.getElementById('hamburger').addEventListener('click', function () {
+            document.getElementById('navLinks').classList.toggle('active');
+        });
+    </script>
 </body>
 </html>

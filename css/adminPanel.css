@@ -8,6 +8,7 @@ body {
     display: flex;
 }
 
+/* Sidebar Styles */
 .sidebar {
     width: 250px;
     background-color: #f7f8fa;
@@ -16,6 +17,7 @@ body {
     flex-direction: column;
     justify-content: space-between;
     border-right: 1px solid #e0e0e0;
+    transition: transform 0.3s ease; /* Smooth transition for showing/hiding */
 }
 
 .sidebar h2 {
@@ -54,9 +56,17 @@ body {
     margin-top: auto;
 }
 
+/* Main Content */
 .content {
     flex: 1;
     padding: 20px;
+    transition: padding-left 0.3s ease; /* Smooth padding adjustment */
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .header h1 {
@@ -65,6 +75,7 @@ body {
     color: #333;
 }
 
+/* Chart Grid Layout */
 .charts {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -86,9 +97,48 @@ body {
     justify-content: center;
 }
 
-.donut-chart, .bar-chart {
+.donut-chart,
+.bar-chart {
     height: 200px;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* Hamburger Icon Styles (Hidden by default for larger screens) */
+.hamburger {
+    display: none;
+    padding: 10px;
+    font-size: 30px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    z-index: 1000;
+}
+
+/* Responsive Styles */
+@media screen and (max-width:  768px) {
+    /* Sidebar is hidden off-screen by default on mobile */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        transform: translateX(-100%); /* Hide the sidebar initially */
+        height: 100%;
+       
+    }
+
+    /* Sidebar visible when open */
+    .sidebar.open {
+        transform: translateX(0); /* Sidebar slides in when 'open' class is added */
+    }
+
+    /* Show the hamburger menu icon on small screens */
+    .hamburger {
+        display: block;
+    }
+
+    /* Main content adjusts when the sidebar is hidden */
+    .content {
+        padding-left: 0; /* No padding on mobile when the sidebar is hidden */
+    }
 }

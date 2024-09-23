@@ -16,6 +16,7 @@ body {
     flex-direction: column;
     justify-content: space-between;
     border-right: 1px solid #e0e0e0;
+    transition: transform 0.3s ease;
 }
 
 .sidebar h2 {
@@ -59,6 +60,12 @@ body {
     padding: 20px;
 }
 
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .header h1 {
     font-size: 28px;
     margin-bottom: 20px;
@@ -86,9 +93,45 @@ body {
     justify-content: center;
 }
 
-.donut-chart, .bar-chart {
+.donut-chart,
+.bar-chart {
     height: 200px;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* Hide hamburger by default (visible on small screens only) */
+.hamburger {
+    display: none;
+    padding: 10px;
+    font-size: 30px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    z-index: 1000;
+}
+
+/* Responsive styles */
+@media screen and (max-width: 768px) {
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        transform: translateX(-100%);
+        height: 100%;
+       
+        transition: transform 0.3s ease;
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .hamburger {
+        display: block;
+    }
+
+    .content {
+        padding-left: 0;
+    }
 }

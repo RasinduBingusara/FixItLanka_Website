@@ -9,7 +9,8 @@
 </head>
 <body>
     <div class="dashboard">
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
+            <br> <br> <br>
             <h2>Moderator Dashboard</h2>
             <ul class="menu">
                 <li class="menu-item active">
@@ -27,6 +28,7 @@
 
         <main class="content">
             <div class="header">
+                <div class="hamburger" id="hamburger">&#9776;</div>
                 <h1>Moderator Dashboard</h1>
             </div>
 
@@ -43,5 +45,12 @@
             </div>
         </main>
     </div>
+
+    <script>
+        document.getElementById('hamburger').addEventListener('click', function() {
+            var sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        });
+    </script>
 </body>
 </html>

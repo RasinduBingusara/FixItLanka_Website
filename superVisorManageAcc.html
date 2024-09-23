@@ -4,12 +4,17 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css\suprVisorManageAcc.css">
+    <link rel="stylesheet" href="css/suprVisorManageAcc.css">
     <title>Supervisor Account Management</title>
 </head>
 <body>
+    <!-- Hamburger icon for mobile view -->
+    <div id="hamburger" class="hamburger">&#9776;</div>
+
     <div class="dashboard">
-        <aside class="sidebar">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <br>  <br>  <br>
             <h2>Supervisor Account Management</h2>
             <ul class="menu">
                 <li class="menu-item active">
@@ -54,5 +59,13 @@
             </form>
         </main>
     </div>
+
+    <script>
+        // Toggle sidebar visibility on hamburger click
+        document.getElementById('hamburger').addEventListener('click', function() {
+            var sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        });
+    </script>
 </body>
 </html>

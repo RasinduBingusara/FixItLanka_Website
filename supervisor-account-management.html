@@ -8,114 +8,106 @@
 </head>
 <body>
 
-    <!-- Navigation Bar -->
-    <nav class="navbar">
-        <div class="nav-brand">Supervisor Panel</div>
-        <div class="nav-links" id="navLinks">
-            <a href="#">Home</a>
-            <a href="#">Account Management</a>
-            <a href="#">Settings</a>
-            <a href="#">Logout</a>
-        </div>
-        <div class="hamburger" id="hamburger">
-            ☰
-        </div>
-    </nav>
+    <!-- Sidebar Toggle Button for Mobile (Hamburger Icon) -->
+    <div id="hamburger" class="hamburger">☰</div>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <ul class="nav-menu">
+            <br> <br>   <br> <br>
+            <li class="nav-item">
+                <span class="icon">🔒</span>
+                <a href="#">Add Account</a>
+            </li>
+            <li class="nav-item active">
+                <span class="icon">✏️</span>
+                <a href="#">Edit Account</a>
+            </li>
+            <hr>
+            <li class="nav-item">
+                <span class="icon">⚙️</span>
+                <a href="#">Settings</a>
+            </li>
+            <li class="nav-item">
+                <span class="icon">🚪</span>
+                <a href="#">Sign Out</a>
+            </li>
+        </ul>
+    </aside>
 
     <div class="container">
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar">
-            <ul class="nav-menu">
-                <li class="nav-item">
-                    <span class="icon">🔒</span>
-                    <a href="#">Add Account</a>
-                </li>
-                <li class="nav-item active">
-                    <span class="icon">✏️</span>
-                    <a href="#">Edit Account</a>
-                </li>
-                <hr>
-                <li class="nav-item">
-                    <span class="icon">⚙️</span>
-                    <a href="#">Settings</a>
-                </li>
-                <li class="nav-item">
-                    <span class="icon">🚪</span>
-                    <a href="#">Sign Out</a>
-                </li>
-            </ul>
-        </aside>
-
         <!-- Main Content -->
         <main class="main-content">
             <h1>Supervisor Account Management</h1>
             <h2>Users</h2>
-            <table class="user-table">
-                <thead>
-                    <tr>
-                        <th>UID</th>
-                        <th>UserName</th>
-                        <th>Password</th>
-                        <th>Email</th>
-                        <th>Contact no.</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Name1</td>
-                        <td>*******</td>
-                        <td>1@gmail.com</td>
-                        <td>071 09876</td>
-                        <td>
-                            <button class="edit-button">Edit</button>
-                            <button class="delete-button">Delete</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Name2</td>
-                        <td>*******</td>
-                        <td>2@gmail.com</td>
-                        <td>071 09876</td>
-                        <td>
-                            <button class="edit-button">Edit</button>
-                            <button class="delete-button">Delete</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>Name3</td>
-                        <td>*******</td>
-                        <td>3@gmail.com</td>
-                        <td>071 09876</td>
-                        <td>
-                            <button class="edit-button">Edit</button>
-                            <button class="delete-button">Delete</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>4</td>
-                        <td>Name4</td>
-                        <td>*******</td>
-                        <td>4@gmail.com</td>
-                        <td>071 09876</td>
-                        <td>
-                            <button class="edit-button">Edit</button>
-                            <button class="delete-button">Delete</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-container">
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>UID</th>
+                            <th>UserName</th>
+                            <th>Password</th>
+                            <th>Email</th>
+                            <th>Contact no.</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Name1</td>
+                            <td>*******</td>
+                            <td>1@gmail.com</td>
+                            <td>071 09876</td>
+                            <td>
+                                <button class="edit-button">Edit</button>
+                                <button class="delete-button">Delete</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Name2</td>
+                            <td>*******</td>
+                            <td>2@gmail.com</td>
+                            <td>071 09876</td>
+                            <td>
+                                <button class="edit-button">Edit</button>
+                                <button class="delete-button">Delete</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Name3</td>
+                            <td>*******</td>
+                            <td>3@gmail.com</td>
+                            <td>071 09876</td>
+                            <td>
+                                <button class="edit-button">Edit</button>
+                                <button class="delete-button">Delete</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Name4</td>
+                            <td>*******</td>
+                            <td>4@gmail.com</td>
+                            <td>071 09876</td>
+                            <td>
+                                <button class="edit-button">Edit</button>
+                                <button class="delete-button">Delete</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </main>
     </div>
 
     <script>
-        // Toggle navbar links on hamburger click
+        // Toggle sidebar visibility on hamburger click
         document.getElementById('hamburger').addEventListener('click', function() {
-            var navLinks = document.getElementById('navLinks');
-            navLinks.classList.toggle('active');
+            var sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
         });
     </script>
 

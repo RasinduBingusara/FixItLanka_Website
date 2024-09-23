@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css\adminPanel.css">
+    <link rel="stylesheet" href="css/adminPanel.css">
     <title>Admin Panel</title>
 </head>
 <body>
     <div class="admin-panel">
-        <aside class="sidebar">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <br> <br> <br>
             <h2>Admin Panel</h2>
             <ul class="menu">
                 <li class="menu-item active">
@@ -26,8 +28,10 @@
             </ul>
         </aside>
 
+        <!-- Main Content Area -->
         <main class="content">
             <div class="header">
+                <div class="hamburger" id="hamburger">&#9776;</div>
                 <h1>Admin Panel</h1>
             </div>
 
@@ -44,5 +48,13 @@
             </div>
         </main>
     </div>
+
+    <script>
+        // Toggle sidebar visibility when hamburger is clicked
+        document.getElementById('hamburger').addEventListener('click', function() {
+            var sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
+        });
+    </script>
 </body>
 </html>
