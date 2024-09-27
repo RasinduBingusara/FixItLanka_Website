@@ -1,88 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/createpost.css">
+    <link rel="stylesheet" href="css/adminPanel.css">
     <title>Create Post Page</title>
 </head>
+
 <body>
+    <div class="admin-panel">
+        <aside class="sidebar" id="sidebar">
+            <br>   <br>  <br>
+            <h2>Create Post </h2>
+            <ul class="menu">
+                <li class="menu-item active">
+                    <i class="icon">&#x1F512;</i> Dashboard
+                </li>
+                <li class="menu-item"><i class="icon">&#x1F4C5;</i> Admin Review</li>
+                <li class="menu-item"><i class="icon">&#x1F465;</i> Banned Users</li>
+                <li class="menu-item"><i class="icon">&#x1F4C8;</i> Analytics Dashboard</li>
+                <li class="menu-item"><i class="icon">&#x1F4DD;</i> Report issue page</li>
+            </ul>
+            <ul class="menu bottom">
+                <li class="menu-item"><i class="icon">&#x2699;</i> Settings</li>
+                <li class="menu-item"><i class="icon">&#x1F511;</i> Sign Out</li>
+            </ul>
+        </aside>
+        <main class="content">
 
-    <!-- Navigation Bar -->
-    <nav class="navbar">
-        <div class="nav-brand">Create Post</div>
-        <div class="nav-links" id="navLinks">
-            <a href="#">Home</a>
-            <a href="#">Create Post</a>
-            <a href="#">Posts</a>
-            <a href="#">Settings</a>
-        </div>
-        <div class="hamburger" id="hamburger">
-            ☰
-        </div>
-    </nav>
+            <div class="header">
+                <div class="hamburger" id="hamburger">&#9776;</div>
+                <h1>Create Post Page</h1>
+            </div>
+            <div class="create-post-content">
+                <div class="left-panel">
 
-    <div class="create-post-container">
-        <h1>Create Post Page</h1>
-        <div class="create-post-content">
-            <div class="left-panel">
-                <div class="dropdown">
-                    <label for="area">Area</label>
-                    <select id="area">
-                        <option>Dropdown text</option>
-                    </select>
                 </div>
-                <div class="dropdown">
-                    <label for="category">Category</label>
-                    <select id="category">
-                        <option>Dropdown text</option>
-                    </select>
+                <div class="image-section">
+                    <div class="image-container">
+                        Image
+                    </div>
                 </div>
-                <div class="dropdown">
-                    <label for="visibility">Visibility</label>
-                    <select id="visibility">
-                        <option>Dropdown text</option>
-                    </select>
-                </div>
-                <div class="toggle">
-                    <label for="anonymous">Anonymous</label>
-                    <input type="checkbox" id="anonymous">
-                </div>
-                <label for="description">Description</label>
-                <div class="editor-container">
-                    <textarea id="description" placeholder="Rich text editor."></textarea>
-                    <div class="editor-toolbar">
-                        <button>ADD Image </button>
-                        <button>ADD ➔</button>
+                <div class="right-panel">
+                    <div class="dropdown">
+                        <label for="area">Area</label>
+                        <select id="area">
+                            <option>Dropdown text</option>
+                        </select>
+                    </div>
+                    <div class="dropdown">
+                        <label for="category">Category</label>
+                        <select id="category">
+                            <option>Dropdown text</option>
+                        </select>
+                    </div>
+                    <div class="dropdown">
+                        <label for="visibility">Visibility</label>
+                        <select id="visibility">
+                            <option>Dropdown text</option>
+                        </select>
+                    </div>
+                    <div class="toggle">
+                        <label for="anonymous">Anonymous</label>
+                        <input type="checkbox" id="anonymous">
+                    </div>
+                    <label for="description">Description</label>
+                    <div class="editor-container">
+                        <textarea id="description" placeholder="Rich text editor."></textarea>
+                        <div class="editor-toolbar">
+                            <button>ADD Image </button>
+                            <button>ADD ➔</button>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="image-section">
-                <div class="image-container">
-                    Image
-                </div>
-            </div>
-            <div class="right-panel">
-                <!-- <label for="description">Description</label>
-                <div class="editor-container">
-                    <textarea id="description" placeholder="Rich text editor."></textarea>
-                    <div class="editor-toolbar">
-                        <button>ADD Image </button>
-                        <button>ADD ➔</button>
-                    </div>
-                </div> -->
-            </div>
-        </div>
     </div>
+    </main>
+
+    </div>
+
 
     <script>
         // Toggle navbar links on hamburger click
         document.getElementById('hamburger').addEventListener('click', function() {
-            var navLinks = document.getElementById('navLinks');
-            navLinks.classList.toggle('active');
+            var sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('open');
         });
     </script>
 
 </body>
+
 </html>

@@ -14,7 +14,7 @@ body {
     color: #333;
 }
 
-/* Navigation Bar Styles */
+/* Navigation Bar Styles
 .navbar {
     width: 100%;
     background-color: #1d3557;
@@ -23,7 +23,7 @@ body {
     align-items: center;
     padding: 10px 20px;
     color: #fff;
-}
+} */
 
 .nav-brand {
     font-size: 20px;
@@ -42,9 +42,14 @@ body {
 
 .hamburger {
     display: none;
-    font-size: 24px;
+    padding-left: 10;
+    font-size: 30px;
     cursor: pointer;
+    margin-bottom: 20px;
+    z-index: 1000;
 }
+
+
 
 /* Create Post Container */
 .create-post-container {
@@ -235,3 +240,4 @@ textarea {
         height: 200px;
     }
 }
+
