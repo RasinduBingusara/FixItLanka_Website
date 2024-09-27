@@ -46,29 +46,7 @@ body {
     cursor: pointer;
 }
 
-/* Responsive Styles */
-@media (max-width: 768px) {
-    .nav-links {
-        display: none;
-        flex-direction: column;
-        background-color: #444;
-        position: absolute;
-        top: 50px;
-        right: 0;
-        width: 200px;
-        gap: 10px;
-        padding: 10px;
-    }
-
-    .nav-links.active {
-        display: flex;
-    }
-
-    .hamburger {
-        display: block;
-    }
-}
-
+/* Create Post Container */
 .create-post-container {
     width: 90%;
     max-width: 1200px;
@@ -93,6 +71,7 @@ h1 {
     align-items: start;
 }
 
+/* Left Panel */
 .left-panel {
     display: flex;
     flex-direction: column;
@@ -117,6 +96,7 @@ h1 {
     outline: none;
 }
 
+/* Toggle for Anonymous */
 .toggle {
     display: flex;
     justify-content: space-between;
@@ -127,6 +107,7 @@ h1 {
     transform: scale(1.5);
 }
 
+/* Image Section */
 .image-section {
     display: flex;
     justify-content: center;
@@ -135,7 +116,7 @@ h1 {
 
 .image-container {
     width: 100%;
-    max-width: 400px;
+    max-width: 800px;
     height: 500px;
     background-color: #e0e0e0;
     border: 1px solid #dcdcdc;
@@ -147,6 +128,7 @@ h1 {
     color: #666;
 }
 
+/* Right Panel */
 .right-panel {
     display: flex;
     flex-direction: column;
@@ -189,4 +171,67 @@ textarea {
 
 .editor-toolbar button:hover {
     background-color: #ddd;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .create-post-content {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .image-section {
+        order: 1;
+    }
+
+    .left-panel, .right-panel {
+        grid-column: span 1;
+    }
+
+    .navbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        background-color: #444;
+        position: absolute;
+        top: 50px;
+        right: 0;
+        width: 100%;
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .nav-links.active {
+        display: flex;
+    }
+
+    .hamburger {
+        display: block;
+    }
+
+    .image-container {
+        height: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 24px;
+    }
+
+    .create-post-container {
+        padding: 10px;
+    }
+
+    textarea {
+        height: 120px;
+    }
+
+    .image-container {
+        height: 200px;
+    }
 }
