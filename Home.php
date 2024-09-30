@@ -1,4 +1,5 @@
 <?php
+session_start();
 include("Database.php");
 
 // Initialize an array to hold posts and their images
@@ -10,44 +11,41 @@ $resultPosts = $conn->query($sqlPosts);
 
 // Check if there are any posts
 if ($resultPosts->num_rows > 0) {
-    while ($rowPost = $resultPosts->fetch_assoc()) {
-        $PID = $rowPost['PID'];
+  while ($rowPost = $resultPosts->fetch_assoc()) {
+    $PID = $rowPost['PID'];
 
-        // Fetch images associated with this post
-        $stmtImages = $conn->prepare("SELECT `Image` FROM `post_image` WHERE `PID` = ?");
-        $stmtImages->bind_param("i", $PID);
-        $stmtImages->execute();
-        $resultImages = $stmtImages->get_result();
+    // Fetch images associated with this post
+    $stmtImages = $conn->prepare("SELECT `Image` FROM `post_image` WHERE `PID` = ?");
+    $stmtImages->bind_param("i", $PID);
+    $stmtImages->execute();
+    $resultImages = $stmtImages->get_result();
 
-        $images = array();
-        while ($rowImage = $resultImages->fetch_assoc()) {
-            // Assuming images are stored as file paths or URLs
-            $images[] = $rowImage['Image'];
-        }
-        $stmtImages->close();
-
-        // Add the post data and images to the posts array
-        $posts[] = array(
-            'PID' => $PID,
-            'UID' => $rowPost['UID'],
-            'Description' => $rowPost['Description'],
-            'Category' => $rowPost['Category'],
-            'Longitude' => $rowPost['Longitude'],
-            'Latitude' => $rowPost['Latitude'],
-            'Status' => $rowPost['Status'],
-            'Status_Message' => $rowPost['Status_Message'],
-            'Is_Anonymouse' => $rowPost['Is_Anonymouse'],
-            'Visibility' => $rowPost['Visibility'],
-            'Created_at' => $rowPost['Created_at'],
-            'Images' => $images
-        );
+    $images = array();
+    while ($rowImage = $resultImages->fetch_assoc()) {
+      // Assuming images are stored as file paths or URLs
+      $images[] = $rowImage['Image'];
     }
-} else {
-    echo "No posts found.";
-}
+    $stmtImages->close();
 
-// Close the database connection
-$conn->close();
+    // Add the post data and images to the posts array
+    $posts[] = array(
+      'PID' => $PID,
+      'UID' => $rowPost['UID'],
+      'Description' => $rowPost['Description'],
+      'Category' => $rowPost['Category'],
+      'Longitude' => $rowPost['Longitude'],
+      'Latitude' => $rowPost['Latitude'],
+      'Status' => $rowPost['Status'],
+      'Status_Message' => $rowPost['Status_Message'],
+      'Is_Anonymouse' => $rowPost['Is_Anonymouse'],
+      'Visibility' => $rowPost['Visibility'],
+      'Created_at' => $rowPost['Created_at'],
+      'Images' => $images
+    );
+  }
+} else {
+  echo "No posts found.";
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -61,7 +59,7 @@ $conn->close();
 </head>
 <script src="script/MapAPI.js"></script>
 <script>
-    async function initMap() {
+  async function initMap() {
     // The location of Uluru
     const position = {
       lat: 6.885497678560704,
@@ -91,7 +89,7 @@ $conn->close();
   }
 
   initMap();
-  </script>
+</script>
 
 <body>
 
@@ -108,7 +106,7 @@ $conn->close();
     </div>
     <div class="profile">
       <img src="pics/defaultProfile.png" alt="Profile Icon" class="profile-icon">
-      <span class="profile-name">Username</span>
+      <span class="profile-name"><?php echo $_SESSION["UserData"][2] ?></span>
     </div>
   </nav>
 
@@ -145,81 +143,112 @@ $conn->close();
     <main class="main-content">
       <div class="content">
         <!-- Map Section -->
-        <div class="map" id="map"></div>
+        <div class="map">
+          <div class="map" id="map"></div>
+        </div>
+
         <!-- Posts Container -->
         <div class="posts-container">
-          
-        <?php
-                    // Loop through the posts and display them
-                    foreach ($posts as $post) {
-                        // Determine the user's name
-                        // For anonymous posts, display 'Anonymous'
-                        $userName = 'Anonymous';
-                        if (!$post['Is_Anonymouse']) {
-                            // Fetch the user's name from the 'user' table
-                            // Assuming you have a 'user' table with 'UID' and 'User_Name' columns
-                            include("Database.php"); // Reopen the connection
-                            $stmtUser = $conn->prepare("SELECT `Username` FROM `useraccount` WHERE `UID` = ?");
-                            $stmtUser->bind_param("i", $post['UID']);
-                            $stmtUser->execute();
-                            $resultUser = $stmtUser->get_result();
-                            if ($resultUser->num_rows > 0) {
-                                $rowUser = $resultUser->fetch_assoc();
-                                $userName = htmlspecialchars($rowUser['Username']);
-                            }
-                            $stmtUser->close();
-                            $conn->close(); // Close the connection
-                        }
 
-                        // Display the post card
-                        echo '<div class="post-card">';
-                        echo '    <div class="post-header">';
-                        echo '        <img src="pics/defaultProfile.png" alt="Profile" class="profile-img">';
-                        echo '        <div class="user-info">';
-                        echo '            <span class="user-name">' . $userName . '</span>';
-                        echo '            <span class="post-options">•••</span>';
-                        echo '        </div>';
-                        echo '    </div>';
-                        echo '    <div class="post-content">';
-                        echo '        <p class="post-text">';
-                        echo '            ' . htmlspecialchars($post['Description']);
-                        echo '        </p>';
+          <?php
+          foreach ($posts as $post) {
 
-                        // Display images if any
-                        if (!empty($post['Images'])) {
-                            echo '<div class="image-carousel">';
-                            echo '    <button class="carousel-btn left-btn">◀</button>';
-                            echo '    <div class="image-container">';
-                            // For simplicity, display the first image
-                            echo '        <img src="data:image/jpeg;base64,' . base64_encode ($post['Images'][0]) . '" alt="Post Image">';
-                            echo '    </div>';
-                            echo '    <button class="carousel-btn right-btn">▶</button>';
-                            echo '</div>';
-                        }
+            $userName = 'Anonymous';
+            $totalUpVotes = '0';
+            $totalDownVotes = '0';
+            $totalComments = '0';
+            if (!$post['Is_Anonymouse']) {
 
-                        echo '    </div>';
-                        echo '    <div class="post-footer">';
-                        echo '        <button class="footer-btn">';
-                        echo '            <img src="pics/like.jpg" alt="Like" class="btn-icon">';
-                        echo '            <span class="btn-text">1.5k</span>';
-                        echo '        </button>';
-                        echo '        <button class="footer-btn">';
-                        echo '            <img src="pics/dislike.jpg" alt="Dislike" class="btn-icon">';
-                        echo '            <span class="btn-text">520</span>';
-                        echo '        </button>';
-                        echo '        <button class="footer-btn">';
-                        echo '            <img src="pics/comment.jpg" alt="Comment" class="btn-icon">';
-                        echo '            <span class="btn-text">126</span>';
-                        echo '        </button>';
-                        echo '        <button class="footer-btn">';
-                        echo '            <img src="pics/share.jpg" alt="Share" class="btn-icon">';
-                        echo '            <span class="btn-text">86</span>';
-                        echo '        </button>';
-                        echo '    </div>';
-                        echo '</div>';
-                    }
-                    ?>
-                    
+              $stmtUser = $conn->prepare("SELECT `Username` FROM `useraccount` WHERE `UID` = ?");
+              $stmtUser->bind_param("i", $post['UID']);
+              $stmtUser->execute();
+              $resultUser = $stmtUser->get_result();
+              if ($resultUser->num_rows > 0) {
+                $rowUser = $resultUser->fetch_assoc();
+                $userName = htmlspecialchars($rowUser['Username']);
+              }
+              $stmtUser->close();
+
+              $stmtUpVotes = $conn->prepare("SELECT COUNT(*) AS totalVotes FROM vote WHERE PID = ? AND Vote_direction = 1;");
+              $stmtUpVotes->bind_param("i", $post['PID']);
+              $stmtUpVotes->execute();
+              $resultUpVotes = $stmtUpVotes->get_result();
+              if ($resultUpVotes->num_rows > 0) {
+                $rowvote = $resultUpVotes->fetch_assoc();
+                $totalUpVotes = htmlspecialchars($rowUser['totalVotes']);
+              }
+              $stmtUpVotes->close();
+
+              $stmtDownVotes = $conn->prepare("SELECT COUNT(*) AS totalVotes FROM vote WHERE PID = ? AND Vote_direction = 0;");
+              $stmtDownVotes->bind_param("i", $post['PID']);
+              $stmtDownVotes->execute();
+              $resultDownVotes = $stmtDownVotes->get_result();
+              if ($resultDownVotes->num_rows > 0) {
+                $rowvote = $resultDownVotes->fetch_assoc();
+                $totalDownVotes = htmlspecialchars($rowUser['totalVotes']);
+              }
+              $stmtDownVotes->close();
+
+              $stmtComments = $conn->prepare("SELECT COUNT(*) AS totalComments FROM comment WHERE PID = ?;");
+              $stmtComments->bind_param("i", $post['PID']);
+              $stmtComments->execute();
+              $resultComments = $stmtComments->get_result();
+              if ($resultComments->num_rows > 0) {
+                $rowcom = $resultComments->fetch_assoc();
+                $totalDownVotes = htmlspecialchars($rowUser['totalComments']);
+              }
+              $stmtComments->close();
+            }
+
+            // Display the post card
+            echo '<div class="post-card">';
+            echo '    <div class="post-header">';
+            echo '        <img src="pics/defaultProfile.png" alt="Profile" class="profile-img">';
+            echo '        <div class="user-info">';
+            echo '            <span class="user-name">' . $userName . '</span>';
+            echo '            <span class="post-options">•••</span>';
+            echo '        </div>';
+            echo '    </div>';
+            echo '    <div class="post-content">';
+            echo '        <p class="post-text">';
+            echo '            ' . htmlspecialchars($post['Description']);
+            echo '        </p>';
+
+            // Display images if any
+            if (!empty($post['Images'])) {
+              echo '<div class="image-carousel">';
+              echo '    <button class="carousel-btn left-btn">◀</button>';
+              echo '    <div class="image-container">';
+              // For simplicity, display the first image
+              echo '        <img src="data:image/jpeg;base64,' . base64_encode($post['Images'][0]) . '" alt="Post Image">';
+              echo '    </div>';
+              echo '    <button class="carousel-btn right-btn">▶</button>';
+              echo '</div>';
+            }
+
+            echo '    </div>';
+            echo '    <div class="post-footer">';
+            echo '        <button class="footer-btn">';
+            echo '            <img src="pics/like.jpg" alt="Like" class="btn-icon">';
+            echo '            <span class="btn-text">'.$totalUpVotes.'</span>';
+            echo '        </button>';
+            echo '        <button class="footer-btn">';
+            echo '            <img src="pics/dislike.jpg" alt="Dislike" class="btn-icon">';
+            echo '            <span class="btn-text">'.$totalDownVotes.'</span>';
+            echo '        </button>';
+            echo '        <button class="footer-btn">';
+            echo '            <img src="pics/comment.jpg" alt="Comment" class="btn-icon">';
+            echo '            <span class="btn-text">126</span>';
+            echo '        </button>';
+            echo '        <button class="footer-btn">';
+            echo '            <img src="pics/share.jpg" alt="Share" class="btn-icon">';
+            echo '            <span class="btn-text">86</span>';
+            echo '        </button>';
+            echo '    </div>';
+            echo '</div>';
+          }
+          ?>
+
         </div>
       </div>
     </main>
@@ -227,12 +256,12 @@ $conn->close();
 
   <script>
     // Toggle sidebar visibility on mobile
-    document.querySelector('.hamburger').addEventListener('click', function () {
+    document.querySelector('.hamburger').addEventListener('click', function() {
       document.getElementById('sidebar').classList.toggle('active');
     });
 
     // Toggle map visibility on mobile
-    document.getElementById('mapToggle').addEventListener('click', function () {
+    document.getElementById('mapToggle').addEventListener('click', function() {
       document.getElementById('map').classList.toggle('visible');
     });
   </script>
