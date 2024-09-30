@@ -1,5 +1,5 @@
-/* General Styles */
-* {
+ /* General Styles */
+ * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -22,7 +22,7 @@ body {
   padding: 20px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   transition: box-shadow 0.3s ease;
-  overflow: hidden; /* Ensures content stays within the card boundaries */
+  overflow: hidden;
 }
 
 .post-card:hover {
@@ -34,8 +34,8 @@ body {
   display: flex;
   align-items: center;
   margin-bottom: 15px;
-  padding-bottom: 10px; /* Adds space below header */
-  border-bottom: 1px solid #e0e0e0; /* Adds a subtle divider line for separation */
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e0e0e0;
 }
 
 .profile-img {
@@ -164,10 +164,19 @@ body {
 .btn-icon {
   width: 16px;
   height: 16px;
-  fill: currentColor; /* Uses the color of the button text */
+  fill: currentColor;
 }
 
 .btn-text {
   font-size: 14px;
   color: #777;
+}
+
+/* Liked/Unliked States */
+.liked {
+  color: #1a73e8;
+}
+
+.unliked {
+  color: #e63946;
 }
