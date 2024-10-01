@@ -12,18 +12,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $visibility = $_POST['visibility'];
     $isAnonymous = isset($_POST['anonymous']) ? 1 : 0;
     $description = $_POST['description'];
+    $latitude = $_POST['latitude'];  // Added to capture latitude
+    $longitude = $_POST['longitude']; // Added to capture longitude
     $uid = $_SESSION["UserData"][0]; // Assuming the user ID is stored in session
 
     // Check if required fields are filled
-    if (empty($area) || empty($category) || empty($visibility) || empty($description)) {
+    if (empty($area) || empty($category) || empty($visibility) || empty($description) || empty($latitude) || empty($longitude)) {
         $error = "All fields are required!";
     } elseif (empty($_FILES['post_images']['tmp_name'][0])) {
         // Check if at least one image is uploaded
         $error = "You must attach at least one photo to create a post!";
     } else {
-        // Insert the post into the database
-        $stmt = $conn->prepare("INSERT INTO post (UID, AreaID, CategoryID, Description, Visibility, Is_Anonymouse) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("iisssi", $uid, $area, $category, $description, $visibility, $isAnonymous);
+        // Insert the post with GPS data into the database
+        $stmt = $conn->prepare("INSERT INTO post (UID, AreaID, CategoryID, Description, Visibility, Is_Anonymouse, Latitude, Longitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("iisssidd", $uid, $area, $category, $description, $visibility, $isAnonymous, $latitude, $longitude);
         if ($stmt->execute()) {
             $postId = $stmt->insert_id; // Get the last inserted post ID
             $stmt->close();
@@ -145,6 +147,10 @@ $resultCategory = $conn->query($sqlCategory);
                                 <textarea name="description" id="description" placeholder="Enter your post description" required></textarea>
                             </div>
 
+                            <!-- Hidden fields to store latitude and longitude -->
+                            <input type="hidden" id="latitude" name="latitude">
+                            <input type="hidden" id="longitude" name="longitude">
+
                             <!-- Submit Button -->
                             <button type="submit" class="submit-button">Create Post</button>
                         </div>
@@ -195,6 +201,27 @@ $resultCategory = $conn->query($sqlCategory);
                 e.preventDefault();
                 alert("You must attach at least one photo to create a post.");
             }
+        });
+
+        // Get the GPS location and store it in hidden inputs before form submission
+        function getLocationAndSubmit() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    document.getElementById('latitude').value = position.coords.latitude;
+                    document.getElementById('longitude').value = position.coords.longitude;
+                    document.getElementById('createPostForm').submit();
+                }, function(error) {
+                    alert('Error fetching GPS location: ' + error.message);
+                });
+            } else {
+                alert('Geolocation is not supported by your browser.');
+            }
+        }
+
+        // Attach the function to form submission
+        document.getElementById('createPostForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent the default form submission
+            getLocationAndSubmit(); // Get location and submit the form
         });
     </script>
 
