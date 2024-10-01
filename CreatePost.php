@@ -24,7 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $error = "You must attach at least one photo to create a post!";
     } else {
         // Insert the post with GPS data into the database
-        $stmt = $conn->prepare("INSERT INTO post (UID, AreaID, CategoryID, Description, Visibility, Is_Anonymouse, Latitude, Longitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO post (UID, AreaID, CategoryID, Description, Visibility, Is_Anonymouse, latitude, Longitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->bind_param("iisssidd", $uid, $area, $category, $description, $visibility, $isAnonymous, $latitude, $longitude);
         if ($stmt->execute()) {
             $postId = $stmt->insert_id; // Get the last inserted post ID
