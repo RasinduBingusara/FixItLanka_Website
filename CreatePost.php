@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $imageFileType = strtolower(pathinfo($_FILES['post_images']['name'][$index], PATHINFO_EXTENSION));
 
                 // Allow certain file formats
-                $allowedTypes = array('jpg', 'png', 'jpeg', 'gif');
+                $allowedTypes = array('jpg', 'png', 'jpeg', 'gif', 'heif');
                 if (in_array($imageFileType, $allowedTypes)) {
                     // Insert binary data into the database
                     $stmtImage = $conn->prepare("INSERT INTO post_image (PID, Image) VALUES (?, ?)");
