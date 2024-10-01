@@ -1,3 +1,70 @@
+<?php
+include('NavigationBar.php');
+include("Database.php");
+
+// Initialize variables
+$error = '';
+$success = '';
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $area = $_POST['area'];
+    $category = $_POST['category'];
+    $visibility = $_POST['visibility'];
+    $isAnonymous = isset($_POST['anonymous']) ? 1 : 0;
+    $description = $_POST['description'];
+    $uid = $_SESSION["UserData"][0]; // Assuming the user ID is stored in session
+
+    // Check if required fields are filled
+    if (empty($area) || empty($category) || empty($visibility) || empty($description)) {
+        $error = "All fields are required!";
+    } elseif (empty($_FILES['post_images']['tmp_name'][0])) {
+        // Check if at least one image is uploaded
+        $error = "You must attach at least one photo to create a post!";
+    } else {
+        // Insert the post into the database
+        $stmt = $conn->prepare("INSERT INTO post (UID, AreaID, CategoryID, Description, Visibility, Is_Anonymouse) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("iisssi", $uid, $area, $category, $description, $visibility, $isAnonymous);
+        if ($stmt->execute()) {
+            $postId = $stmt->insert_id; // Get the last inserted post ID
+            $stmt->close();
+
+            // Handle multiple image uploads
+            foreach ($_FILES['post_images']['tmp_name'] as $index => $tmpName) {
+                $imageData = file_get_contents($tmpName); // Read the image file as binary data
+                $imageFileType = strtolower(pathinfo($_FILES['post_images']['name'][$index], PATHINFO_EXTENSION));
+
+                // Allow certain file formats
+                $allowedTypes = array('jpg', 'png', 'jpeg', 'gif');
+                if (in_array($imageFileType, $allowedTypes)) {
+                    // Insert binary data into the database
+                    $stmtImage = $conn->prepare("INSERT INTO post_image (PID, Image) VALUES (?, ?)");
+                    $stmtImage->bind_param("ib", $postId, $null); // Bind NULL first as we are sending data separately
+                    
+                    $stmtImage->send_long_data(1, $imageData); // Send the BLOB data
+                    $stmtImage->execute();
+                    $stmtImage->close();
+                } else {
+                    $error = "Only JPG, JPEG, PNG & GIF files are allowed.";
+                    break;
+                }
+            }
+            if (empty($error)) {
+                $success = "Post created successfully with images!";
+            }
+        } else {
+            $error = "Error creating post.";
+        }
+    }
+}
+
+// Fetch areas and categories from the database for the dropdowns
+$sqlArea = "SELECT Area_ID, City FROM area ORDER BY City ASC";
+$resultArea = $conn->query($sqlArea);
+
+$sqlCategory = "SELECT Category_ID, Category_Name FROM category";
+$resultCategory = $conn->query($sqlCategory);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,56 +77,126 @@
 
 <body>
 
-    <!-- Include the navigation bar -->
-    <?php include 'NavigationBar.php'; ?>
-
     <div class="home-page-container">
         <!-- Main Content -->
         <div class="main-content">
             <div class="create-post-container">
                 <h1>Create Post Page</h1>
-                <div class="create-post-content">
-                    <div class="image-section">
-                        <div class="image-container">
-                            Image
+
+                <!-- Error / Success Messages -->
+                <?php if (!empty($error)) { echo '<p class="error">'.$error.'</p>'; } ?>
+                <?php if (!empty($success)) { echo '<p class="success">'.$success.'</p>'; } ?>
+
+                <!-- Post Form -->
+                <form action="CreatePost.php" method="post" enctype="multipart/form-data" id="createPostForm">
+                    <div class="create-post-content">
+                        <div class="image-section">
+                            <label for="post_images">Post Images</label>
+                            <input type="file" name="post_images[]" id="post_images" accept="image/*" multiple capture="camera" style="display:none;">
+                            <button type="button" id="cameraButton" class="submit-button" onclick="captureImage()">Open Camera</button>
+                            <div id="imagePreviews"></div> <!-- Where the captured images will be displayed -->
                         </div>
-                    </div>
-                    <div class="right-panel">
-                        <div class="dropdown">
-                            <label for="area">Area</label>
-                            <select id="area">
-                                <option>Select Area</option>
-                            </select>
-                        </div>
-                        <div class="dropdown">
-                            <label for="category">Category</label>
-                            <select id="category">
-                                <option>Select Category</option>
-                            </select>
-                        </div>
-                        <div class="dropdown">
-                            <label for="visibility">Visibility</label>
-                            <select id="visibility">
-                                <option>Select Visibility</option>
-                            </select>
-                        </div>
-                        <div class="toggle">
-                            <label for="anonymous">Anonymous</label>
-                            <input type="checkbox" id="anonymous">
-                        </div>
-                        <label for="description">Description</label>
-                        <div class="editor-container">
-                            <textarea id="description" placeholder="Rich text editor."></textarea>
-                            <div class="editor-toolbar">
-                                <button>ADD Image</button>
-                                <button>ADD ➔</button>
+                        <div class="right-panel">
+                            <!-- Area Dropdown -->
+                            <div class="dropdown">
+                                <label for="area">Area</label>
+                                <select name="area" id="area" required>
+                                    <option value="">Select Area</option>
+                                    <?php
+                                    while ($rowArea = $resultArea->fetch_assoc()) {
+                                        echo '<option value="'.$rowArea['Area_ID'].'">'.$rowArea['City'].'</option>';
+                                    }
+                                    ?>
+                                </select>
                             </div>
+
+                            <!-- Category Dropdown -->
+                            <div class="dropdown">
+                                <label for="category">Category</label>
+                                <select name="category" id="category" required>
+                                    <option value="">Select Category</option>
+                                    <?php
+                                    while ($rowCategory = $resultCategory->fetch_assoc()) {
+                                        echo '<option value="'.$rowCategory['Category_ID'].'">'.$rowCategory['Category_Name'].'</option>';
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+
+                            <!-- Visibility Dropdown -->
+                            <div class="dropdown">
+                                <label for="visibility">Visibility</label>
+                                <select name="visibility" id="visibility" required>
+                                    <option value="">Select Visibility</option>
+                                    <option value="Public">Public</option>
+                                    <option value="Private">Private</option>
+                                </select>
+                            </div>
+
+                            <!-- Anonymous Toggle -->
+                            <div class="toggle">
+                                <label for="anonymous">Anonymous</label>
+                                <input type="checkbox" name="anonymous" id="anonymous">
+                            </div>
+
+                            <!-- Description -->
+                            <label for="description">Description</label>
+                            <div class="editor-container">
+                                <textarea name="description" id="description" placeholder="Enter your post description" required></textarea>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="submit-button">Create Post</button>
                         </div>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>
+
+    <script>
+        // Function to detect if the user is on a mobile device
+        function isMobileDevice() {
+            return /Mobi|Android/i.test(navigator.userAgent);
+        }
+
+        // Function to open the camera and capture images
+        function captureImage() {
+            if (isMobileDevice()) {
+                document.getElementById('post_images').click(); // Open camera on mobile
+            } else {
+                alert("User cannot create a post in desktop mode");
+            }
+        }
+
+        // Preview captured images
+        document.getElementById('post_images').addEventListener('change', function (event) {
+            const imagePreviews = document.getElementById('imagePreviews');
+            imagePreviews.innerHTML = ''; // Clear previous images
+            const files = event.target.files;
+
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.width = '100px'; // Set image preview size
+                    img.style.margin = '10px';
+                    imagePreviews.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+
+        // Disable form submission if no images are uploaded
+        document.getElementById('createPostForm').addEventListener('submit', function (e) {
+            const files = document.getElementById('post_images').files;
+            if (files.length === 0) {
+                e.preventDefault();
+                alert("You must attach at least one photo to create a post.");
+            }
+        });
+    </script>
 
 </body>
 

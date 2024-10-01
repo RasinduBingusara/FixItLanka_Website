@@ -1,12 +1,12 @@
 <?php
-session_start();
+include('NavigationBar.php');
 include("Database.php");
 
 // Initialize an array to hold posts and their images
 $posts = array();
 
 // Fetch all posts from the 'post' table
-$sqlPosts = "SELECT `PID`, `UID`, `Description`, `Category`, `Longitude`, `Latitude`, `Status`, `Status_Message`, `Is_Anonymouse`, `Visibility`, `Created_at` FROM `post`";
+$sqlPosts = "SELECT `PID`, `UID`, `Description`, `Longitude`, `Latitude`, `Status`, `Status_Message`, `Is_Anonymouse`, `Visibility`, `Created_at` FROM `post`";
 $resultPosts = $conn->query($sqlPosts);
 
 // Check if there are any posts
@@ -22,7 +22,6 @@ if ($resultPosts->num_rows > 0) {
 
         $images = array();
         while ($rowImage = $resultImages->fetch_assoc()) {
-            // Assuming images are stored as file paths or URLs
             $images[] = $rowImage['Image'];
         }
         $stmtImages->close();
@@ -32,7 +31,6 @@ if ($resultPosts->num_rows > 0) {
             'PID' => $PID,
             'UID' => $rowPost['UID'],
             'Description' => $rowPost['Description'],
-            'Category' => $rowPost['Category'],
             'Longitude' => $rowPost['Longitude'],
             'Latitude' => $rowPost['Latitude'],
             'Status' => $rowPost['Status'],
@@ -57,44 +55,239 @@ if ($resultPosts->num_rows > 0) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/Home.css">
     <title>Home Page</title>
-    <script src="script/MapAPI.js"></script>
+    <!-- Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_B0Ud1mIL6Ln66nSCnITXRMDV1c3bssc"></script>
     <script>
-        async function initMap() {
+        function initMap() {
             const position = { lat: 6.885497678560704, lng: 79.86034329536008 };
-            const { Map } = await google.maps.importLibrary("maps");
-            const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
-
-            map = new Map(document.getElementById("map"), {
+            const map = new google.maps.Map(document.getElementById("map"), {
                 zoom: 10,
                 center: position,
-                mapId: "DEMO_MAP_ID",
             });
 
-            new AdvancedMarkerElement({
-                map: map,
+            new google.maps.Marker({
                 position: position,
+                map: map,
                 title: "Post Location",
             });
         }
-        initMap();
+
+        // Initialize the map when the window loads
+        window.onload = function() {
+            initMap();
+        }
+
+        // Toggle map visibility on mobile
+        function toggleMap() {
+            const mapContainer = document.getElementById("map-container");
+            const mapButton = document.getElementById("map-toggle-btn");
+            if (mapContainer.style.display === "none" || mapContainer.style.display === "") {
+                mapContainer.style.display = "block";
+                mapButton.textContent = "Hide Map";
+                initMap();
+            } else {
+                mapContainer.style.display = "none";
+                mapButton.textContent = "Show Map";
+            }
+        }
     </script>
+
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Body */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f4f4f4;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Layout container for sidebar, map, and posts */
+        .layout-container {
+            display: flex;
+            height: 100vh;
+            justify-content: center;
+        }
+
+        /* Sidebar styling */
+        .sidebar {
+            width: 250px;
+            background-color: #1d3557;
+            padding: 20px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        /* Main content area for map and posts */
+        .main-content-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+            right: 10px;
+        }
+
+        /* Split layout for map and posts on desktop mode */
+        .map-post-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            height: 100%;
+            margin-top: 20px;
+        }
+
+        /* Map container */
+        .map {
+            flex: 1;
+            margin-right: 10px;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            background-color: #fff;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        /* Posts container */
+        .posts-container {
+            flex: 1;
+            margin-left: 10px;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            background-color: #fff;
+            overflow-y: auto;
+        }
+
+        /* Mobile view - center posts and map */
+        @media (max-width: 768px) {
+            .map-post-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .map,
+            .posts-container {
+                width: 100%;
+                margin: 10px 0;
+            }
+
+            /* Map toggle button only visible on mobile */
+            .map-toggle-btn {
+                display: block;
+                position: fixed;
+                top: 70px;
+                left: 10px;
+                z-index: 1001;
+                background-color: #1d3557;
+                color: white;
+                padding: 10px;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+        }
+
+        /* Hide map button on desktop */
+        @media (min-width: 769px) {
+            .map-toggle-btn {
+                display: none;
+            }
+        }
+
+        /* Post card styling */
+        .post-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .post-header img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .post-content {
+            margin-bottom: 20px;
+        }
+
+        .post-footer {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .footer-btn {
+            display: flex;
+            align-items: center;
+        }
+
+        .footer-btn img {
+            width: 24px;
+            height: 24px;
+            margin-right: 5px;
+        }
+
+        /* Image carousel styling */
+        .image-carousel {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-container {
+            max-width: 100%;
+        }
+
+        .image-carousel img {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .carousel-btn {
+            background-color: transparent;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 
 <body>
 
-    <!-- Include the navigation bar -->
-    <?php include 'NavigationBar.php'; ?>
+    <!-- Fixed Map Toggle Button for Mobile -->
+    <button class="map-toggle-btn" id="map-toggle-btn" onclick="toggleMap()">Show Map</button>
 
-    <div class="home-page-container">
-        <!-- Main Content Area -->
-        <main class="main-content">
-            <div class="content">
+    <div class="layout-container">
+        <!-- Main Content: Map and Posts -->
+        <div class="main-content-container">
+            <div class="map-post-container">
                 <!-- Map Section -->
-                <div class="map">
-                    <div class="map" id="map"></div>
+                <div class="map" id="map-container">
+                    <div id="map" style="width: 100%; height: 100%;"></div>
                 </div>
 
-                <!-- Posts Container -->
+                <!-- Posts Section -->
                 <div class="posts-container">
                     <?php
                     foreach ($posts as $post) {
@@ -195,9 +388,8 @@ if ($resultPosts->num_rows > 0) {
                     ?>
                 </div>
             </div>
-        </main>
+        </div>
     </div>
-
 
 </body>
 
