@@ -12,8 +12,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $visibility = $_POST['visibility'];
     $isAnonymous = isset($_POST['anonymous']) ? 1 : 0;
     $description = $_POST['description'];
-    $latitude = $_POST['latitude'];  // Added to capture latitude
-    $longitude = $_POST['longitude']; // Added to capture longitude
+    $latitude = $_POST['latitude'];
+    $longitude = $_POST['longitude'];
     $uid = $_SESSION["UserData"][0]; // Assuming the user ID is stored in session
 
     // Check if required fields are filled
@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $imageFileType = strtolower(pathinfo($_FILES['post_images']['name'][$index], PATHINFO_EXTENSION));
 
                 // Allow certain file formats
-                $allowedTypes = array('jpg', 'png', 'jpeg', 'gif', 'heic');
+                $allowedTypes = array('jpg', 'png', 'jpeg', 'gif', 'heic'); // Added 'heic' for iPhone compatibility
                 if (in_array($imageFileType, $allowedTypes)) {
                     // Insert binary data into the database
                     $stmtImage = $conn->prepare("INSERT INTO post_image (PID, Image) VALUES (?, ?)");
@@ -46,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $stmtImage->execute();
                     $stmtImage->close();
                 } else {
-                    $error = "Only JPG, JPEG, PNG & GIF files are allowed.";
+                    $error = "Only JPG, JPEG, PNG, GIF & HEIC files are allowed.";
                     break;
                 }
             }
@@ -94,7 +94,7 @@ $resultCategory = $conn->query($sqlCategory);
                     <div class="create-post-content">
                         <div class="image-section">
                             <label for="post_images">Post Images</label>
-                            <input type="file" name="post_images[]" id="post_images" accept="image/*" multiple capture="camera" style="display:none;">
+                            <input type="file" name="post_images[]" id="post_images" accept="image/*" multiple capture="user" style="display:none;">
                             <button type="button" id="cameraButton" class="submit-button" onclick="captureImage()">Open Camera</button>
                             <div id="imagePreviews"></div> <!-- Where the captured images will be displayed -->
                         </div>
