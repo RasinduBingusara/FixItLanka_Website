@@ -98,9 +98,9 @@ $resultCategory = $conn->query($sqlCategory);
                     <div class="create-post-content">
                         <div class="image-section">
                             <label for="post_images">Post Images</label>
-                            <input type="file" name="post_images[]" id="post_images" accept="image/*" capture="camera" style="display:none;">
-                            <button type="button" id="cameraButton" class="submit-button" onclick="captureImage()">Open Camera</button>
-                            <div id="imagePreviews"></div> <!-- Where the captured images will be displayed -->
+                            <label for="post_images" id="cameraButton" class="submit-button">Open Camera</label>
+                            <input type="file" name="post_images[]" id="post_images" accept="image/*" capture="environment" style="display:none;">
+                            <div id="imagePreviews"></div>
                         </div>
                         <div class="right-panel">
                             <!-- Area Dropdown -->
@@ -170,16 +170,6 @@ $resultCategory = $conn->query($sqlCategory);
             return /Mobi|Android/i.test(navigator.userAgent);
         }
 
-        // Function to open the camera and capture images
-        function captureImage() {
-            if (isMobileDevice()) {
-                document.getElementById('post_images').click(); // Open camera on mobile
-            } else {
-                alert("User cannot create a post in desktop mode");
-            }
-        }
-
-        // Preview captured images
         document.getElementById('post_images').addEventListener('change', function(event) {
             const imagePreviews = document.getElementById('imagePreviews');
             imagePreviews.innerHTML = ''; // Clear previous images
@@ -227,21 +217,6 @@ $resultCategory = $conn->query($sqlCategory);
             e.preventDefault(); // Prevent the default form submission
             getLocationAndSubmit(); // Get location and submit the form
         });
-
-        function isIOS() {
-            return /iPhone|iPad|iPod/i.test(navigator.userAgent);
-        }
-
-        function adjustFileInputAttributes() {
-            const fileInput = document.getElementById('post_images');
-            if (isIOS()) {
-                fileInput.removeAttribute('multiple');
-            } else {
-                fileInput.setAttribute('multiple', '');
-            }
-        }
-
-        adjustFileInputAttributes();
     </script>
 
 </body>
