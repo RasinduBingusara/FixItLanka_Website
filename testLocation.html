@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Get City Name from GPS Coordinates</title>
+    <script>
+      function initMap() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
+            
+            // Call Google Geocoding API to get the city name
+            getCityName(latitude, longitude);
+          });
+        } else {
+          alert("Geolocation is not supported by this browser.");
+        }
+      }
+
+      function getCityName(latitude, longitude) {
+        var geocoder = new google.maps.Geocoder();
+        var latlng = new google.maps.LatLng(latitude, longitude);
+
+        geocoder.geocode({ 'location': latlng }, function(results, status) {
+          if (status === 'OK') {
+            if (results[0]) {
+              var addressComponents = results[0].address_components;
+
+              // Loop through the address components to find the city
+              for (var i = 0; i < addressComponents.length; i++) {
+                if (addressComponents[i].types.includes('locality')) {
+                  var city = addressComponents[i].long_name;
+                  alert("City: " + city);
+                  break;
+                }
+              }
+            } else {
+              alert('No results found');
+            }
+          } else {
+            alert('Geocoder failed due to: ' + status);
+          }
+        });
+      }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_B0Ud1mIL6Ln66nSCnITXRMDV1c3bssc&callback=initMap" async defer></script>
+  </head>
+  <body>
+    <h1>Get City Name from GPS Coordinates</h1>
+    <button onclick="initMap()">Get Location</button>
+  </body>
+</html>
