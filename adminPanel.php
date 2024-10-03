@@ -8,27 +8,11 @@
     <title>Admin Panel</title>
 </head>
 <body>
-    <div class="admin-panel">
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar" id="sidebar">
-            <br> <br> <br>
-            <h2>Admin Panel</h2>
-            <ul class="menu">
-                <li class="menu-item active">
-                    <i class="icon">&#x1F512;</i> Dashboard
-                </li>
-                <li class="menu-item"><i class="icon">&#x1F4C5;</i> Admin Review</li>
-                <li class="menu-item"><i class="icon">&#x1F465;</i> Banned Users</li>
-                <li class="menu-item"><i class="icon">&#x1F4C8;</i> Analytics Dashboard</li>
-                <li class="menu-item"><i class="icon">&#x1F4DD;</i> Report issue page</li>
-            </ul>
-            <ul class="menu bottom">
-                <li class="menu-item"><i class="icon">&#x2699;</i> Settings</li>
-                <li class="menu-item"><i class="icon">&#x1F511;</i> Sign Out</li>
-            </ul>
-        </aside>
+    <!-- Include AdminNavigationBar -->
+    <?php include 'AdminNavigationBar.php'; ?>
 
-        <!-- Main Content Area -->
+    <!-- Main Content Area -->
+    <div class="admin-panel">
         <main class="content">
             <div class="header">
                 <div class="hamburger" id="hamburger">&#9776;</div>

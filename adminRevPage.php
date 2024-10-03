@@ -8,19 +8,8 @@
 </head>
 <body>
 
-    <!-- Navigation Bar -->
-    <nav class="navbar">
-        <div class="nav-brand">Admin Panel</div>
-        <div class="nav-links" id="navLinks">
-            <a href="#">Home</a>
-            <a href="#">Reviews</a>
-            <a href="#">Users</a>
-            <a href="#">Settings</a>
-        </div>
-        <div class="hamburger" id="hamburger">
-            ☰
-        </div>
-    </nav>
+    <!-- Include AdminNavigationBar -->
+    <?php include 'AdminNavigationBar.php'; ?>
 
     <div class="header">Admin Review Page</div>
 
@@ -89,11 +78,7 @@
     </div>
 
     <script>
-        // Toggle navbar links on hamburger click
-        document.getElementById('hamburger').addEventListener('click', function() {
-            var navLinks = document.getElementById('navLinks');
-            navLinks.classList.toggle('active');
-        });
+        // Add any necessary JavaScript if needed
     </script>
 
 </body>
