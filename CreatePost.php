@@ -12,9 +12,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $visibility = $_POST['visibility'];
     $isAnonymous = isset($_POST['anonymous']) ? 1 : 0;
     $description = $_POST['description'];
-    $latitude = $_POST['latitude'];  // Added to capture latitude
-    $longitude = $_POST['longitude']; // Added to capture longitude
-    $uid = $_SESSION["UserData"][0]; // Assuming the user ID is stored in session
+    $latitude = $_POST['latitude'];
+    $longitude = $_POST['longitude'];
+    $uid = $_SESSION["UserData"][0];
 
     // Check if required fields are filled
     if (empty($area) || empty($category) || empty($visibility) || empty($description) || empty($latitude) || empty($longitude)) {
@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     // Insert binary data into the database
                     $stmtImage = $conn->prepare("INSERT INTO post_image (PID, Image) VALUES (?, ?)");
                     $stmtImage->bind_param("ib", $postId, $null); // Bind NULL first as we are sending data separately
-                    
+
                     $stmtImage->send_long_data(1, $imageData); // Send the BLOB data
                     $stmtImage->execute();
                     $stmtImage->close();
@@ -86,15 +86,19 @@ $resultCategory = $conn->query($sqlCategory);
                 <h1>Create Post Page</h1>
 
                 <!-- Error / Success Messages -->
-                <?php if (!empty($error)) { echo '<p class="error">'.$error.'</p>'; } ?>
-                <?php if (!empty($success)) { echo '<p class="success">'.$success.'</p>'; } ?>
+                <?php if (!empty($error)) {
+                    echo '<p class="error">' . $error . '</p>';
+                } ?>
+                <?php if (!empty($success)) {
+                    echo '<p class="success">' . $success . '</p>';
+                } ?>
 
                 <!-- Post Form -->
                 <form action="CreatePost.php" method="post" enctype="multipart/form-data" id="createPostForm">
                     <div class="create-post-content">
                         <div class="image-section">
                             <label for="post_images">Post Images</label>
-                            <input type="file" name="post_images[]" id="post_images" accept="image/*" multiple capture="camera" style="display:none;">
+                            <input type="file" name="post_images[]" id="post_images" accept="image/*" capture="camera" style="display:none;">
                             <button type="button" id="cameraButton" class="submit-button" onclick="captureImage()">Open Camera</button>
                             <div id="imagePreviews"></div> <!-- Where the captured images will be displayed -->
                         </div>
@@ -106,7 +110,7 @@ $resultCategory = $conn->query($sqlCategory);
                                     <option value="">Select Area</option>
                                     <?php
                                     while ($rowArea = $resultArea->fetch_assoc()) {
-                                        echo '<option value="'.$rowArea['Area_ID'].'">'.$rowArea['City'].'</option>';
+                                        echo '<option value="' . $rowArea['Area_ID'] . '">' . $rowArea['City'] . '</option>';
                                     }
                                     ?>
                                 </select>
@@ -119,7 +123,7 @@ $resultCategory = $conn->query($sqlCategory);
                                     <option value="">Select Category</option>
                                     <?php
                                     while ($rowCategory = $resultCategory->fetch_assoc()) {
-                                        echo '<option value="'.$rowCategory['Category_ID'].'">'.$rowCategory['Category_Name'].'</option>';
+                                        echo '<option value="' . $rowCategory['Category_ID'] . '">' . $rowCategory['Category_Name'] . '</option>';
                                     }
                                     ?>
                                 </select>
@@ -176,14 +180,14 @@ $resultCategory = $conn->query($sqlCategory);
         }
 
         // Preview captured images
-        document.getElementById('post_images').addEventListener('change', function (event) {
+        document.getElementById('post_images').addEventListener('change', function(event) {
             const imagePreviews = document.getElementById('imagePreviews');
             imagePreviews.innerHTML = ''; // Clear previous images
             const files = event.target.files;
 
             Array.from(files).forEach(file => {
                 const reader = new FileReader();
-                reader.onload = function (e) {
+                reader.onload = function(e) {
                     const img = document.createElement('img');
                     img.src = e.target.result;
                     img.style.width = '100px'; // Set image preview size
@@ -195,7 +199,7 @@ $resultCategory = $conn->query($sqlCategory);
         });
 
         // Disable form submission if no images are uploaded
-        document.getElementById('createPostForm').addEventListener('submit', function (e) {
+        document.getElementById('createPostForm').addEventListener('submit', function(e) {
             const files = document.getElementById('post_images').files;
             if (files.length === 0) {
                 e.preventDefault();
@@ -223,6 +227,21 @@ $resultCategory = $conn->query($sqlCategory);
             e.preventDefault(); // Prevent the default form submission
             getLocationAndSubmit(); // Get location and submit the form
         });
+
+        function isIOS() {
+            return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+        }
+
+        function adjustFileInputAttributes() {
+            const fileInput = document.getElementById('post_images');
+            if (isIOS()) {
+                fileInput.removeAttribute('multiple');
+            } else {
+                fileInput.setAttribute('multiple', '');
+            }
+        }
+
+        adjustFileInputAttributes();
     </script>
 
 </body>
