@@ -8,36 +8,11 @@
     <title>Profile Page</title>
 </head>
 <body>
-    <!-- Fixed Navbar -->
-    <nav class="navbar">
-        <div class="logo">Profile Page</div>
-        <label for="menu-toggle" class="hamburger">&#9776;</label>
-    </nav>
+    <!-- Include NavigationBar -->
+    <?php include 'NavigationBar.php'; ?>
 
+    <!-- Main Content Area -->
     <div class="profile-container">
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar" id="sidebar">
-            <div class="profile-info">
-                <img src="profile-placeholder.png" alt="Profile Picture" class="profile-pic">
-              
-            </div>
-            <nav class="nav-menu">
-                <button class="nav-button active">
-                    <span class="icon">🏠</span> Dashboard
-                </button>
-                <button class="nav-button">
-                    <span class="icon">📁</span> Saved Posts
-                </button>
-                <button class="nav-button">
-                    <span class="icon">⚙️</span> Settings
-                </button>
-                <button class="nav-button">
-                    <span class="icon">🚪</span> Sign Out
-                </button>
-            </nav>
-        </aside>
-
-        <!-- Main Content Area -->
         <main class="profile-content">
             <header class="profile-header">
                 <h1>Profile</h1>
@@ -77,11 +52,9 @@
         </main>
     </div>
 
-    <!-- JavaScript to toggle sidebar visibility on mobile -->
+    <!-- JavaScript to toggle any functionality -->
     <script>
-        document.querySelector('.hamburger').addEventListener('click', function () {
-            document.getElementById('sidebar').classList.toggle('active');
-        });
+        // Add any necessary JavaScript here
     </script>
 </body>
 </html>
