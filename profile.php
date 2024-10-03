@@ -18,28 +18,28 @@
                 <h1>Profile</h1>
                 <button class="edit-profile-btn">Edit Profile</button>
             </header>
-            <form class="profile-form">
+            <div class="profile-info">
                 <div class="form-group">
                     <label for="name">Name:</label>
-                    <input type="text" id="name" name="name" placeholder="Enter your name">
+                    <span id="name">John Doe</span> <!-- Replace with dynamic content -->
                 </div>
                 <div class="form-group">
                     <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" placeholder="Enter your email">
+                    <span id="email">john.doe@example.com</span> <!-- Replace with dynamic content -->
                 </div>
                 <div class="form-group">
                     <label for="dob">Date of Birth:</label>
-                    <input type="date" id="dob" name="dob">
+                    <span id="dob">1990-01-01</span> <!-- Replace with dynamic content -->
                 </div>
                 <div class="form-group">
                     <label for="location">Location:</label>
-                    <input type="text" id="location" name="location" placeholder="Enter your location">
+                    <span id="location">New York, USA</span> <!-- Replace with dynamic content -->
                 </div>
                 <div class="form-group">
                     <label for="contact">Contact No.:</label>
-                    <input type="text" id="contact" name="contact" placeholder="Enter your contact number">
+                    <span id="contact">+1 123-456-7890</span> <!-- Replace with dynamic content -->
                 </div>
-            </form>
+            </div>
             <section class="shared-posts">
                 <h2>Shared Posts</h2>
                 <div class="post">
