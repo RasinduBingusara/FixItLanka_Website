@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["email"]) && isset($_PO
 
     $currentTimestamp = time();
     $currentDateTime = date('Y-m-d H:i:s', $currentTimestamp);
-    $username = $_POST["firstName"] . $_POST["lastName"];
+    $username = $_POST["firstName"] ." ". $_POST["lastName"];
 
     $sql = "INSERT INTO useraccount(Category_ID, Area_ID, Username, Password, Email, ContactNumber, DOB, ProfilePicture, UserType, Acc_Status, Created_At) VALUES (1,1,'" . $username . "','" . $password . "','" . $_POST["email"] . "','" . $_POST["contactNumber"] . "','2024-09-11','','User','Active','" . $currentDateTime . "')";
 

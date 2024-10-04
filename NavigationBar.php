@@ -1,5 +1,10 @@
 <?php
 session_start();
+if (!isset($_SESSION['UserData'])) {
+    // Redirect to login page
+    header("Location: Login.php");
+    exit();
+}
 $Username = $_SESSION["UserData"][2];
 ?>
 
@@ -146,7 +151,7 @@ $Username = $_SESSION["UserData"][2];
     </div>
     <div class="profile">
         <img src="pics/defaultProfile.png" alt="Profile Icon" class="profile-icon">
-        <span class="profile-name" onclick="window.location.href='#';"><?php echo$Username ?></span>
+        <span class="profile-name" onclick="window.location.href='Profile.php';"><?php echo$Username ?></span>
     </div>
 </nav>
 
