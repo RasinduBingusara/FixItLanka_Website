@@ -105,20 +105,15 @@
     <h2>Admin Panel</h2>
     <ul class="menu">
         <li class="menu-item active">
-            <i class="fas fa-tachometer-alt"></i> Dashboard
+        <a href="adminPanel.php" class="circle-btn">Dashboard</a> 
         </li>
         <li class="menu-item">
-            <i class="fas fa-check-circle"></i> Admin Review
+        <a href="adminRevPage.php" class="circle-btn">Admin Review</a>  
         </li>
         <li class="menu-item">
-            <i class="fas fa-user-slash"></i> Banned Users
+        <a href="bannedPage.php" class="circle-btn">Banned Users</a>  
         </li>
-        <li class="menu-item">
-            <i class="fas fa-chart-line"></i> Analytics Dashboard
-        </li>
-        <li class="menu-item">
-            <i class="fas fa-exclamation-circle"></i> Report issue page
-        </li>
+        
     </ul>
     <ul class="menu bottom">
         <li class="menu-item">

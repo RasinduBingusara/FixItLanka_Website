@@ -21,6 +21,7 @@ body {
     top: 0;
     bottom: 0;
     transition: transform 0.3s ease;
+   
 }
 
 .sidebar.active {
@@ -48,7 +49,6 @@ body {
 }
 
 .nav-item.active a {
-    /* font-weight: bold; */
     color: #000;
 }
 
@@ -86,17 +86,21 @@ hr {
 
 h1 {
     font-size: 24px;
+    padding-left: 100px;
     font-weight: bold;
     margin-bottom: 10px;
 }
 
 h2 {
     font-size: 20px;
+    padding-left: 100px;
     margin-bottom: 20px;
 }
 
 .table-container {
+    padding-left: 100px;
     overflow-x: auto; /* Ensure horizontal scrolling on smaller screens */
+    max-width: 1000px;
 }
 
 .user-table {
@@ -170,8 +174,43 @@ h2 {
         transform: translateX(0);
     }
 
+    /* Content will take full width when sidebar is hidden */
     .container {
         margin-left: 0;
         padding-top: 60px; /* For spacing after hamburger */
+    }
+
+    /* Adjust table styles for smaller screens */
+    .table-container {
+        padding-left: 0;
+        max-width: 100%;
+    }
+
+    h1, h2 {
+        padding-left: 0;
+        text-align: center;
+    }
+
+    /* Buttons full width for better touch experience */
+    .edit-button, .delete-button {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Further adjustments for smaller mobile devices */
+    h1 {
+        font-size: 20px;
+    }
+
+    h2 {
+        font-size: 18px;
+    }
+
+    /* Reduce table padding for mobile */
+    .user-table th, .user-table td {
+        padding: 10px;
+        font-size: 12px;
     }
 }
