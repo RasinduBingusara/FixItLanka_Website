@@ -46,29 +46,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (empty($region) || empty($category) || empty($complaint) || empty($visibility) || empty($description) || empty($latitude) || empty($longitude)) {
             $error = "All fields are required!";
         } else {
-            // Initialize $targetFilePath as NULL
-            $targetFilePath = NULL;
+            // Initialize $imageBlob as NULL
+            $imageBlob = NULL;
 
-            // Check if an image is uploaded and the user is on a mobile device
+            // Check if an image is uploaded
             if (isset($_FILES['post_image']) && $_FILES['post_image']['error'] == UPLOAD_ERR_OK) {
                 // Process image upload
                 $Image = $_FILES['post_image'];
-                $targetDir = "uploads/"; // Ensure this directory exists and is writable
-                $fileName = basename($Image['name']);
-                $targetFilePath = $targetDir . $fileName;
-                $fileType = pathinfo($targetFilePath, PATHINFO_EXTENSION);
 
-                // Allow certain file formats
+                // Ensure the uploaded file is a valid image
+                $fileType = pathinfo($Image['name'], PATHINFO_EXTENSION);
                 $allowTypes = array('jpg', 'png', 'jpeg', 'gif');
+
                 if (in_array(strtolower($fileType), $allowTypes)) {
-                    // Upload file to server
-                    if (!move_uploaded_file($Image["tmp_name"], $targetFilePath)) {
-                        $error = "Sorry, there was an error uploading your file.";
-                        $targetFilePath = NULL; // Reset the file path if upload fails
-                    }
+                    // Read the image file and store it as a blob
+                    $imageBlob = file_get_contents($Image['tmp_name']);
                 } else {
                     $error = 'Sorry, only JPG, JPEG, PNG, & GIF files are allowed to upload.';
-                    $targetFilePath = NULL;
                 }
             }
 
@@ -76,7 +70,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (empty($error)) {
                 // Prepare and execute the database insert statement
                 $stmt = $conn->prepare("INSERT INTO post (UID, RegionID, CategoryID, ComplaintID, Description, Visibility, Is_Anonymouse, Latitude, Longitude, Image, Created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
-                $stmt->bind_param("iiiissidds", $uid, $region, $category, $complaint, $description, $visibility, $isAnonymous, $latitude, $longitude, $targetFilePath);
+                $stmt->bind_param("iiiissiddb", $uid, $region, $category, $complaint, $description, $visibility, $isAnonymous, $latitude, $longitude, $imageBlob);
 
                 if ($stmt->execute()) {
                     $success = "Post created successfully!";
