@@ -6,79 +6,115 @@ include("Database.php");
 $error = '';
 $success = '';
 
+// Fetch categories from the database
+$sqlCategory = "SELECT Category_ID, Category_Name FROM category";
+$resultCategory = $conn->query($sqlCategory);
+
+// Initialize form variables
+$category = isset($_POST['category']) ? $_POST['category'] : '';
+$complaint = isset($_POST['complaint']) ? $_POST['complaint'] : '';
+$region = isset($_POST['region']) ? $_POST['region'] : '';
+$visibility = isset($_POST['visibility']) ? $_POST['visibility'] : '';
+$isAnonymous = isset($_POST['anonymous']) ? 1 : 0;
+$description = isset($_POST['description']) ? $_POST['description'] : '';
+$latitude = isset($_POST['latitude']) ? $_POST['latitude'] : '';
+$longitude = isset($_POST['longitude']) ? $_POST['longitude'] : '';
+
+// Fetch complaints and regions based on the selected category
+if (!empty($category)) {
+    $sqlComplaint = "SELECT ComplaintID, Complaint FROM complainttype WHERE CID = " . intval($category);
+    $resultComplaint = $conn->query($sqlComplaint);
+
+    $sqlRegion = "SELECT RegionID, Region FROM region WHERE CID = " . intval($category);
+    $resultRegion = $conn->query($sqlRegion);
+} else {
+    $resultComplaint = false;
+    $resultRegion = false;
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $area = $_POST['area'];
-    $category = $_POST['category'];
-    $visibility = $_POST['visibility'];
-    $isAnonymous = isset($_POST['anonymous']) ? 1 : 0;
-    $description = $_POST['description'];
-    $latitude = $_POST['latitude'];
-    $longitude = $_POST['longitude'];
-    $uid = $_SESSION["UserData"][0];
 
-    // Check if required fields are filled
-    if (empty($area) || empty($category) || empty($visibility) || empty($description) || empty($latitude) || empty($longitude)) {
-        $error = "All fields are required!";
-    } elseif (empty($_FILES['post_images']['tmp_name'][0])) {
-        // Check if at least one image is uploaded
-        $error = "You must attach at least one photo to create a post!";
-    } else {
-        // Insert the post with GPS data into the database
-        $stmt = $conn->prepare("INSERT INTO post (UID, AreaID, CategoryID, Description, Visibility, Is_Anonymouse, latitude, Longitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("iisssidd", $uid, $area, $category, $description, $visibility, $isAnonymous, $latitude, $longitude);
-        if ($stmt->execute()) {
-            $postId = $stmt->insert_id; // Get the last inserted post ID
-            $stmt->close();
+    // Check if the form is submitted to create a post
+    if (isset($_POST['createPost'])) {
 
-            // Handle multiple image uploads
-            foreach ($_FILES['post_images']['tmp_name'] as $index => $tmpName) {
-                $imageData = file_get_contents($tmpName); // Read the image file as binary data
-                $imageFileType = strtolower(pathinfo($_FILES['post_images']['name'][$index], PATHINFO_EXTENSION));
+        // Check if user is logged in
+        if (isset($_SESSION["UserData"])) {
+            $uid = $_SESSION["UserData"][0];
+        } else {
+            $error = "User is not logged in.";
+        }
+
+        // Check for required fields
+        if (empty($region) || empty($category) || empty($complaint) || empty($visibility) || empty($description) || empty($latitude) || empty($longitude)) {
+            $error = "All fields are required!";
+        } else {
+            // Initialize $targetFilePath as NULL
+            $targetFilePath = NULL;
+
+            // Check if an image is uploaded and the user is on a mobile device
+            $isMobile = isset($_POST['isMobile']) ? $_POST['isMobile'] : 'false';
+
+            if ($isMobile === 'true' && isset($_FILES['post_image']) && $_FILES['post_image']['error'] == UPLOAD_ERR_OK) {
+                // Process image upload
+                $Image = $_FILES['post_image'];
+                $targetDir = "uploads/"; // Ensure this directory exists and is writable
+                $fileName = basename($Image['name']);
+                $targetFilePath = $targetDir . $fileName;
+                $fileType = pathinfo($targetFilePath, PATHINFO_EXTENSION);
 
                 // Allow certain file formats
-                $allowedTypes = array('jpg', 'png', 'jpeg', 'gif', 'heic');
-                if (in_array($imageFileType, $allowedTypes)) {
-                    // Insert binary data into the database
-                    $stmtImage = $conn->prepare("INSERT INTO post_image (PID, Image) VALUES (?, ?)");
-                    $stmtImage->bind_param("ib", $postId, $null); // Bind NULL first as we are sending data separately
-
-                    $stmtImage->send_long_data(1, $imageData); // Send the BLOB data
-                    $stmtImage->execute();
-                    $stmtImage->close();
+                $allowTypes = array('jpg', 'png', 'jpeg', 'gif');
+                if (in_array(strtolower($fileType), $allowTypes)) {
+                    // Upload file to server
+                    if (!move_uploaded_file($Image["tmp_name"], $targetFilePath)) {
+                        $error = "Sorry, there was an error uploading your file.";
+                        $targetFilePath = NULL; // Reset the file path if upload fails
+                    }
                 } else {
-                    $error = "Only JPG, JPEG, PNG & GIF files are allowed.";
-                    break;
+                    $error = 'Sorry, only JPG, JPEG, PNG, & GIF files are allowed to upload.';
+                    $targetFilePath = NULL;
+                }
+            } elseif ($isMobile !== 'true' && isset($_FILES['post_image']) && $_FILES['post_image']['error'] == UPLOAD_ERR_OK) {
+                // If the user is on desktop and trying to upload an image, prevent it
+                $error = "Image uploads are only allowed on mobile devices.";
+                $targetFilePath = NULL;
+            }
+
+            // Proceed if there are no errors
+            if (empty($error)) {
+                // Prepare and execute the database insert statement
+                $stmt = $conn->prepare("INSERT INTO post (UID, RegionID, CategoryID, ComplaintID, Description, Visibility, Is_Anonymouse, Latitude, Longitude, Image,Created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,NOW())");
+                $stmt->bind_param("iiiissidds", $uid, $region, $category, $complaint, $description, $visibility, $isAnonymous, $latitude, $longitude, $targetFilePath);
+
+                if ($stmt->execute()) {
+                    $success = "Post created successfully!";
+                    // Reset form variables after successful submission
+                    $category = $complaint = $region = $visibility = $description = '';
+                    $isAnonymous = 0;
+                } else {
+                    $error = "Error: " . $stmt->error;
                 }
             }
-            if (empty($error)) {
-                $success = "Post created successfully with images!";
-            }
-        } else {
-            $error = "Error creating post.";
         }
     }
 }
-
-// Fetch areas and categories from the database for the dropdowns
-$sqlArea = "SELECT Area_ID, City FROM area ORDER BY City ASC";
-$resultArea = $conn->query($sqlArea);
-
-$sqlCategory = "SELECT Category_ID, Category_Name FROM category";
-$resultCategory = $conn->query($sqlCategory);
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+    <!-- Head content -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Post Page</title>
     <link rel="stylesheet" href="css/CreatePost.css">
+    <style>
+        /* Additional CSS styling if needed */
+    </style>
 </head>
 
 <body>
-
     <div class="home-page-container">
         <!-- Main Content -->
         <div class="main-content">
@@ -97,33 +133,61 @@ $resultCategory = $conn->query($sqlCategory);
                 <form action="CreatePost.php" method="post" enctype="multipart/form-data" id="createPostForm">
                     <div class="create-post-content">
                         <div class="image-section">
-                            <label for="post_images">Post Images</label>
-                            <label for="post_images" id="cameraButton" class="submit-button">Open Camera</label>
-                            <input type="file" name="post_images[]" id="post_images" accept="image/*" capture="environment" style="display:none;">
+                            <label for="post_image">Post Image (Optional)</label>
+                            <!-- The Open Camera button will only be displayed and functional on mobile devices -->
+                            <label for="post_image" id="cameraButton" class="submit-button" style="display:none;">Open Camera</label>
+                            <!-- The file input is always available but disabled on desktop devices -->
+                            <input type="file" name="post_image" id="post_image" accept="image/*" disabled style="display:none;">
                             <div id="imagePreviews"></div>
                         </div>
                         <div class="right-panel">
-                            <!-- Area Dropdown -->
+
+                            <!-- Category Dropdown -->
                             <div class="dropdown">
-                                <label for="area">Area</label>
-                                <select name="area" id="area" required>
-                                    <option value="">Select Area</option>
+                                <label for="category">Category</label>
+                                <select name="category" id="category" onchange="this.form.submit()" required>
+                                    <option value="">Select Category</option>
                                     <?php
-                                    while ($rowArea = $resultArea->fetch_assoc()) {
-                                        echo '<option value="' . $rowArea['Area_ID'] . '">' . $rowArea['City'] . '</option>';
+                                    if ($resultCategory->num_rows > 0) {
+                                        $resultCategory->data_seek(0);
+                                        while ($rowCategory = $resultCategory->fetch_assoc()) {
+                                            $selected = ($rowCategory["Category_ID"] == $category) ? 'selected' : '';
+                                            echo '<option value="' . $rowCategory['Category_ID'] . '" ' . $selected . '>' . htmlspecialchars($rowCategory['Category_Name']) . '</option>';
+                                        }
                                     }
                                     ?>
                                 </select>
                             </div>
 
-                            <!-- Category Dropdown -->
+                            <!-- Complaint Dropdown -->
                             <div class="dropdown">
-                                <label for="category">Category</label>
-                                <select name="category" id="category" required>
-                                    <option value="">Select Category</option>
+                                <label for="complaint">Complaint Issue</label>
+                                <select name="complaint" id="complaint" required>
+                                    <option value="">Select Complaint</option>
                                     <?php
-                                    while ($rowCategory = $resultCategory->fetch_assoc()) {
-                                        echo '<option value="' . $rowCategory['Category_ID'] . '">' . $rowCategory['Category_Name'] . '</option>';
+                                    if ($resultComplaint && $resultComplaint->num_rows > 0) {
+                                        $resultComplaint->data_seek(0);
+                                        while ($rowComplaint = $resultComplaint->fetch_assoc()) {
+                                            $selected = ($rowComplaint["ComplaintID"] == $complaint) ? 'selected' : '';
+                                            echo '<option value="' . $rowComplaint['ComplaintID'] . '" ' . $selected . '>' . htmlspecialchars($rowComplaint['Complaint']) . '</option>';
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+
+                            <!-- Region Dropdown -->
+                            <div class="dropdown">
+                                <label for="region">Region</label>
+                                <select name="region" id="region" required>
+                                    <option value="">Select Region</option>
+                                    <?php
+                                    if ($resultRegion && $resultRegion->num_rows > 0) {
+                                        $resultRegion->data_seek(0);
+                                        while ($rowRegion = $resultRegion->fetch_assoc()) {
+                                            $selected = ($rowRegion["RegionID"] == $region) ? 'selected' : '';
+                                            echo '<option value="' . $rowRegion['RegionID'] . '" ' . $selected . '>' . htmlspecialchars($rowRegion['Region']) . '</option>';
+                                        }
                                     }
                                     ?>
                                 </select>
@@ -134,29 +198,30 @@ $resultCategory = $conn->query($sqlCategory);
                                 <label for="visibility">Visibility</label>
                                 <select name="visibility" id="visibility" required>
                                     <option value="">Select Visibility</option>
-                                    <option value="Public">Public</option>
-                                    <option value="Private">Private</option>
+                                    <option value="Public" <?php if ($visibility == "Public") echo "selected"; ?>>Public</option>
+                                    <option value="Private" <?php if ($visibility == "Private") echo "selected"; ?>>Private</option>
                                 </select>
                             </div>
 
                             <!-- Anonymous Toggle -->
                             <div class="toggle">
                                 <label for="anonymous">Anonymous</label>
-                                <input type="checkbox" name="anonymous" id="anonymous">
+                                <input type="checkbox" name="anonymous" id="anonymous" <?php if ($isAnonymous) echo 'checked'; ?>>
                             </div>
 
                             <!-- Description -->
                             <label for="description">Description</label>
                             <div class="editor-container">
-                                <textarea name="description" id="description" placeholder="Enter your post description" required></textarea>
+                                <textarea name="description" id="description" placeholder="Enter your post description" required><?php echo htmlspecialchars($description); ?></textarea>
                             </div>
 
-                            <!-- Hidden fields to store latitude and longitude -->
-                            <input type="hidden" id="latitude" name="latitude">
-                            <input type="hidden" id="longitude" name="longitude">
+                            <!-- Hidden fields to store latitude, longitude, and device type -->
+                            <input type="hidden" id="latitude" name="latitude" value="<?php echo htmlspecialchars($latitude); ?>">
+                            <input type="hidden" id="longitude" name="longitude" value="<?php echo htmlspecialchars($longitude); ?>">
+                            <input type="hidden" id="isMobile" name="isMobile" value="false">
 
                             <!-- Submit Button -->
-                            <button type="submit" class="submit-button">Create Post</button>
+                            <button type="submit" class="submit-button" name="createPost">Create Post</button>
                         </div>
                     </div>
                 </form>
@@ -167,58 +232,73 @@ $resultCategory = $conn->query($sqlCategory);
     <script>
         // Function to detect if the user is on a mobile device
         function isMobileDevice() {
-            return /Mobi|Android/i.test(navigator.userAgent);
+            return /Mobi|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(navigator.userAgent);
         }
 
-        document.getElementById('post_images').addEventListener('change', function(event) {
-            const imagePreviews = document.getElementById('imagePreviews');
-            imagePreviews.innerHTML = ''; // Clear previous images
-            const files = event.target.files;
+        // Show the Open Camera button only on mobile devices
+        document.addEventListener("DOMContentLoaded", function() {
+            const cameraButton = document.getElementById('cameraButton');
+            const postImageInput = document.getElementById('post_image');
+            const isMobileInput = document.getElementById('isMobile');
 
-            Array.from(files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.style.width = '100px'; // Set image preview size
-                    img.style.margin = '10px';
-                    imagePreviews.appendChild(img);
-                };
-                reader.readAsDataURL(file);
-            });
-        });
-
-        // Disable form submission if no images are uploaded
-        document.getElementById('createPostForm').addEventListener('submit', function(e) {
-            const files = document.getElementById('post_images').files;
-            if (files.length === 0) {
-                e.preventDefault();
-                alert("You must attach at least one photo to create a post.");
-            }
-        });
-
-        // Get the GPS location and store it in hidden inputs before form submission
-        function getLocationAndSubmit() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    document.getElementById('latitude').value = position.coords.latitude;
-                    document.getElementById('longitude').value = position.coords.longitude;
-                    document.getElementById('createPostForm').submit();
-                }, function(error) {
-                    alert('Error fetching GPS location: ' + error.message);
-                });
+            if (isMobileDevice()) {
+                cameraButton.style.display = 'inline-block';
+                postImageInput.disabled = false; // Enable the file input
+                postImageInput.setAttribute('capture', 'environment');
+                isMobileInput.value = 'true';
             } else {
-                alert('Geolocation is not supported by your browser.');
+                cameraButton.style.display = 'none';
+                postImageInput.disabled = true; // Disable the file input
+                postImageInput.removeAttribute('capture');
+                isMobileInput.value = 'false';
             }
-        }
-
-        // Attach the function to form submission
-        document.getElementById('createPostForm').addEventListener('submit', function(e) {
-            e.preventDefault(); // Prevent the default form submission
-            getLocationAndSubmit(); // Get location and submit the form
         });
-    </script>
 
+        // Open file chooser when camera button is clicked
+        document.getElementById('cameraButton').addEventListener('click', function(event) {
+            event.preventDefault(); // Prevent default behavior
+            if (isMobileDevice()) {
+                document.getElementById('post_image').click();
+            }
+        });
+
+        // Image preview functionality for a single image
+        document.getElementById('post_image').addEventListener('change', function(event) {
+            if (isMobileDevice()) {
+                const imagePreviews = document.getElementById('imagePreviews');
+                imagePreviews.innerHTML = ''; // Clear previous images
+                const file = event.target.files[0];
+
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.style.width = '100px'; // Set image preview size
+                        img.style.margin = '10px';
+                        imagePreviews.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+
+        // Get location when the page loads
+        window.onload = function() {
+            if (!document.getElementById('latitude').value || !document.getElementById('longitude').value) {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        document.getElementById('latitude').value = position.coords.latitude;
+                        document.getElementById('longitude').value = position.coords.longitude;
+                    }, function(error) {
+                        alert('Error fetching GPS location: ' + error.message);
+                    });
+                } else {
+                    alert('Geolocation is not supported by your browser.');
+                }
+            }
+        };
+    </script>
 </body>
 
 </html>

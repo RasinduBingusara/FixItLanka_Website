@@ -1,76 +1,150 @@
 <?php
 include("Database.php");
 
-// Initialize an array to hold posts and their images
+// Initialize an array to hold posts
 $posts = array();
 
-$sqlPosts = "SELECT `PID`, `UID`, `Description`, `Longitude`, `Latitude`, `Status`, `Status_Message`, `Is_Anonymouse`, `Visibility`, `Created_at` FROM `post` WHERE Visibility = 'Public'";
+// Initialize filter variables
+$categoryFilter = isset($_POST["CategoryList"]) ? $_POST["CategoryList"] : "";
+$regionFilter = isset($_POST["RegionList"]) ? $_POST["RegionList"] : "";
+$complaintFilter = isset($_POST["ComplaintList"]) ? $_POST["ComplaintList"] : "";
+$startDate = isset($_POST["startDate"]) ? $_POST["startDate"] : "";
+$endDate = isset($_POST["endDate"]) ? $_POST["endDate"] : "";
+$searchQuery = isset($_POST["searchInput"]) ? $_POST["searchInput"] : "";
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (isset($_POST["CategoryList"]) && isset($_POST["LocationList"])) {
-        if ($_POST["CategoryList"] != "") {
-            $sqlPosts .= " AND CategoryID = " . $_POST["CategoryList"];
-        }
-        if ($_POST["LocationList"] != "") {
-            $sqlPosts .= " AND AreaID = " . $_POST["LocationList"];
-        }
-    }
-}
-$resultPosts = $conn->query($sqlPosts);
-
-// Check if there are any posts
-if ($resultPosts->num_rows > 0) {
-    while ($rowPost = $resultPosts->fetch_assoc()) {
-        $PID = $rowPost['PID'];
-
-        // Fetch images associated with this post
-        $stmtImages = $conn->prepare("SELECT `Image` FROM `post_image` WHERE `PID` = ?");
-        $stmtImages->bind_param("i", $PID);
-        $stmtImages->execute();
-        $resultImages = $stmtImages->get_result();
-
-        $images = array();
-        while ($rowImage = $resultImages->fetch_assoc()) {
-            $images[] = $rowImage['Image'];
-        }
-        $stmtImages->close();
-
-        // Add the post data and images to the posts array
-        $posts[] = array(
-            'PID' => $PID,
-            'UID' => $rowPost['UID'],
-            'Description' => $rowPost['Description'],
-            'Longitude' => $rowPost['Longitude'],
-            'Latitude' => $rowPost['Latitude'],
-            'Status' => $rowPost['Status'],
-            'Status_Message' => $rowPost['Status_Message'],
-            'Is_Anonymouse' => $rowPost['Is_Anonymouse'],
-            'Visibility' => $rowPost['Visibility'],
-            'Created_at' => $rowPost['Created_at'],
-            'Images' => $images
-        );
-    }
-} else {
-    echo "No posts found.";
-}
-
-$sqlCategory = "SELECT Category_ID, Category_Name AS CategoryName FROM category";
+// Fetch categories from the database
+$sqlCategory = "SELECT Category_ID AS CategoryID, Category_Name AS CategoryName FROM category ORDER BY Category_Name ASC";
 $resultCategory = $conn->query($sqlCategory);
 
-$sqLocation = "SELECT Area_ID AS AreaID, City AS Location from area ORDER BY City ASC";
-$resultLocation = $conn->query($sqLocation);
+// Fetch regions based on CategoryID if selected
+$regions = array();
+if (!empty($categoryFilter)) {
+    $stmtRegions = $conn->prepare("SELECT RegionID, Region FROM region WHERE CID = ? ORDER BY Region ASC");
+    $stmtRegions->bind_param("i", $categoryFilter);
+    $stmtRegions->execute();
+    $resultRegions = $stmtRegions->get_result();
+    if ($resultRegions && $resultRegions->num_rows > 0) {
+        while ($rowRegion = $resultRegions->fetch_assoc()) {
+            $regions[] = $rowRegion;
+        }
+    }
+    $stmtRegions->close();
+}
+
+// Fetch complaint types based on CategoryID if selected
+$complaints = array();
+if (!empty($categoryFilter)) {
+    $stmtComplaints = $conn->prepare("SELECT ComplaintID, Complaint FROM complainttype WHERE CID = ? ORDER BY Complaint ASC");
+    $stmtComplaints->bind_param("i", $categoryFilter);
+    $stmtComplaints->execute();
+    $resultComplaints = $stmtComplaints->get_result();
+    if ($resultComplaints && $resultComplaints->num_rows > 0) {
+        while ($rowComplaint = $resultComplaints->fetch_assoc()) {
+            $complaints[] = $rowComplaint;
+        }
+    }
+    $stmtComplaints->close();
+}
+
+// Build the SQL query with filters
+$sqlPosts = "SELECT `PID`, `UID`, `Description`, `Longitude`, `Latitude`, `Status`, `Status_Message`, `Is_Anonymouse`, `Visibility`, `Created_at`, `Image`, `CategoryID`, `RegionID`, `ComplaintID` 
+             FROM `post` 
+             WHERE Visibility = 'Public'";
+
+$params = array();
+$types = "";
+
+// Category Filter
+if (!empty($categoryFilter)) {
+    $sqlPosts .= " AND CategoryID = ?";
+    $params[] = $categoryFilter;
+    $types .= "i";
+}
+
+// Region Filter
+if (!empty($regionFilter)) {
+    $sqlPosts .= " AND RegionID = ?";
+    $params[] = $regionFilter;
+    $types .= "i";
+}
+
+// Complaint Type Filter
+if (!empty($complaintFilter)) {
+    $sqlPosts .= " AND ComplaintID = ?";
+    $params[] = $complaintFilter;
+    $types .= "i";
+}
+
+// Date Range Filter
+if (!empty($startDate)) {
+    $sqlPosts .= " AND DATE(Created_at) >= ?";
+    $params[] = $startDate;
+    $types .= "s";
+}
+
+if (!empty($endDate)) {
+    $sqlPosts .= " AND DATE(Created_at) <= ?";
+    $params[] = $endDate;
+    $types .= "s";
+}
+
+// Search Query
+if (!empty($searchQuery)) {
+    $sqlPosts .= " AND Description LIKE ?";
+    $params[] = '%' . $searchQuery . '%';
+    $types .= "s";
+}
+
+$stmtPosts = $conn->prepare($sqlPosts);
+
+if ($stmtPosts && !empty($types)) {
+    $stmtPosts->bind_param($types, ...$params);
+}
+
+if ($stmtPosts) {
+    $stmtPosts->execute();
+    $resultPosts = $stmtPosts->get_result();
+    
+    if ($resultPosts && $resultPosts->num_rows > 0) {
+        while ($rowPost = $resultPosts->fetch_assoc()) {
+            $posts[] = array(
+                'PID' => $rowPost['PID'],
+                'UID' => $rowPost['UID'],
+                'Description' => $rowPost['Description'],
+                'Longitude' => $rowPost['Longitude'],
+                'Latitude' => $rowPost['Latitude'],
+                'Status' => $rowPost['Status'],
+                'Status_Message' => $rowPost['Status_Message'],
+                'Is_Anonymouse' => $rowPost['Is_Anonymouse'],
+                'Visibility' => $rowPost['Visibility'],
+                'Created_at' => $rowPost['Created_at'],
+                'Image' => $rowPost['Image'],
+                'CategoryID' => $rowPost['CategoryID'],
+                'RegionID' => $rowPost['RegionID'],
+                'ComplaintID' => $rowPost['ComplaintID']
+            );
+        }
+    }
+    $stmtPosts->close();
+} else {
+    error_log("Error preparing statement: " . $conn->error);
+}
+
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+    <!-- Head content -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All Posts</title>
     <link rel="stylesheet" href="css/AllPost.css">
     <!-- Load Google Maps API (replace YOUR_API_KEY with your actual key) -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_B0Ud1mIL6Ln66nSCnITXRMDV1c3bssc"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script>
+    <!-- Include jQuery for AJAX calls -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body onload="initAllMaps()">
@@ -87,158 +161,161 @@ $resultLocation = $conn->query($sqLocation);
                 <!-- Filters Section -->
                 <div class="filters">
                     <form action="" method="post">
-                        <select name="CategoryList">
-                            <option value="">All Category</option>
+                        <!-- Search Input -->
+                        <input type="text" placeholder="Search" class="search-bar" id="searchInput" name="searchInput" value="<?php echo isset($searchQuery) ? htmlspecialchars($searchQuery) : ''; ?>">
+
+                        <!-- Category Dropdown -->
+                        <select name="CategoryList" id="CategoryList" onchange="categoryChanged()">
+                            <option value="">All Categories</option>
                             <?php
-                            if ($resultCategory->num_rows > 0) {
+                            if ($resultCategory && $resultCategory->num_rows > 0) {
                                 while ($rowCat = $resultCategory->fetch_assoc()) {
-                                    echo "<option value='" . $rowCat["Category_ID"] . "' " . (($rowCat["Category_ID"] == $_POST["CategoryList"]) ? 'selected' : '') . ">" . $rowCat["CategoryName"] . "</option>";
+                                    $selected = ($rowCat["CategoryID"] == $categoryFilter) ? 'selected' : '';
+                                    echo "<option value='" . $rowCat["CategoryID"] . "' $selected>" . htmlspecialchars($rowCat["CategoryName"]) . "</option>";
                                 }
                             }
                             ?>
                         </select>
-                        <select name="LocationList">
-                            <option value="">All Location</option>
+
+                        <!-- Region Dropdown -->
+                        <select name="RegionList" id="RegionList">
+                            <option value="">All Regions</option>
                             <?php
-                            if ($resultLocation->num_rows > 0) {
-                                while ($rowLoc = $resultLocation->fetch_assoc()) {
-                                    echo "<option value='" . $rowLoc["AreaID"] . "' " . (($rowLoc["AreaID"] == $_POST["LocationList"]) ? 'selected' : '') . ">" . $rowLoc["Location"] . "</option>";
+                            if (!empty($categoryFilter) && !empty($regions)) {
+                                foreach ($regions as $rowRegion) {
+                                    $selected = ($rowRegion["RegionID"] == $regionFilter) ? 'selected' : '';
+                                    echo "<option value='" . $rowRegion["RegionID"] . "' $selected>" . htmlspecialchars($rowRegion["Region"]) . "</option>";
                                 }
                             }
                             ?>
                         </select>
+
+                        <!-- Complaint Type Dropdown -->
+                        <select name="ComplaintList" id="ComplaintList">
+                            <option value="">All Complaint Types</option>
+                            <?php
+                            if (!empty($categoryFilter) && !empty($complaints)) {
+                                foreach ($complaints as $rowComplaint) {
+                                    $selected = ($rowComplaint["ComplaintID"] == $complaintFilter) ? 'selected' : '';
+                                    echo "<option value='" . $rowComplaint["ComplaintID"] . "' $selected>" . htmlspecialchars($rowComplaint["Complaint"]) . "</option>";
+                                }
+                            }
+                            ?>
+                        </select>
+
+                        <!-- Date Range Filters -->
+                        <label for="startDate">From:</label>
+                        <input type="date" id="startDate" name="startDate" value="<?php echo isset($startDate) ? htmlspecialchars($startDate) : ''; ?>">
+
+                        <label for="endDate">To:</label>
+                        <input type="date" id="endDate" name="endDate" value="<?php echo isset($endDate) ? htmlspecialchars($endDate) : ''; ?>">
+
+                        <!-- Submit Button -->
                         <input type="submit" class="search-button" value="Search">
                     </form>
                 </div>
 
                 <?php
-                foreach ($posts as $post) {
-                    $userName = 'Anonymous';
-                    $totalUpVotes = '0';
-                    $totalDownVotes = '0';
-                    $totalComments = '0';
+                if (empty($posts)) {
+                    echo "<p>No posts found.</p>";
+                } else {
+                    foreach ($posts as $post) {
+                        $userName = 'Anonymous';
+                        $totalUpVotes = '0';
+                        $totalDownVotes = '0';
+                        $totalComments = '0';
 
-                    if (!$post['Is_Anonymouse']) {
-                        // Fetch username and votes/comments
-                        $stmtUser = $conn->prepare("SELECT `Username` FROM `useraccount` WHERE `UID` = ?");
-                        $stmtUser->bind_param("i", $post['UID']);
-                        $stmtUser->execute();
-                        $resultUser = $stmtUser->get_result();
-                        if ($resultUser->num_rows > 0) {
-                            $rowUser = $resultUser->fetch_assoc();
-                            $userName = htmlspecialchars($rowUser['Username']);
+                        // Fetch username if not anonymous
+                        if (!$post['Is_Anonymouse']) {
+                            $stmtUser = $conn->prepare("SELECT `Username` FROM `useraccount` WHERE `UID` = ?");
+                            $stmtUser->bind_param("i", $post['UID']);
+                            $stmtUser->execute();
+                            $resultUser = $stmtUser->get_result();
+                            if ($resultUser && $resultUser->num_rows > 0) {
+                                $rowUser = $resultUser->fetch_assoc();
+                                $userName = htmlspecialchars($rowUser['Username']);
+                            }
+                            $stmtUser->close();
                         }
-                        $stmtUser->close();
 
-                        // Fetch votes and comments
-                        $stmtUpVotes = $conn->prepare("SELECT COUNT(*) AS totalVotes FROM vote WHERE PID = ? AND Vote_direction = 1;");
-                        $stmtUpVotes->bind_param("i", $post['PID']);
-                        $stmtUpVotes->execute();
-                        $resultUpVotes = $stmtUpVotes->get_result();
-                        if ($resultUpVotes->num_rows > 0) {
-                            $rowvote = $resultUpVotes->fetch_assoc();
-                            $totalUpVotes = htmlspecialchars($rowvote['totalVotes']);
+                        // Fetch votes
+                        $stmtVotes = $conn->prepare("SELECT 
+                            SUM(CASE WHEN Vote_direction = 1 THEN 1 ELSE 0 END) AS totalUpVotes,
+                            SUM(CASE WHEN Vote_direction = -1 THEN 1 ELSE 0 END) AS totalDownVotes
+                            FROM vote WHERE PID = ?");
+                        $stmtVotes->bind_param("i", $post['PID']);
+                        $stmtVotes->execute();
+                        $resultVotes = $stmtVotes->get_result();
+                        if ($resultVotes && $resultVotes->num_rows > 0) {
+                            $rowVotes = $resultVotes->fetch_assoc();
+                            $totalUpVotes = htmlspecialchars($rowVotes['totalUpVotes'] ?? '0');
+                            $totalDownVotes = htmlspecialchars($rowVotes['totalDownVotes'] ?? '0');
                         }
-                        $stmtUpVotes->close();
+                        $stmtVotes->close();
 
-                        $stmtDownVotes = $conn->prepare("SELECT COUNT(*) AS totalVotes FROM vote WHERE PID = ? AND Vote_direction = 0;");
-                        $stmtDownVotes->bind_param("i", $post['PID']);
-                        $stmtDownVotes->execute();
-                        $resultDownVotes = $stmtDownVotes->get_result();
-                        if ($resultDownVotes->num_rows > 0) {
-                            $rowvote = $resultDownVotes->fetch_assoc();
-                            $totalDownVotes = htmlspecialchars($rowvote['totalVotes']);
-                        }
-                        $stmtDownVotes->close();
-
-                        $stmtComments = $conn->prepare("SELECT COUNT(*) AS totalComments FROM comment WHERE PID = ?;");
+                        // Fetch comments count
+                        $stmtComments = $conn->prepare("SELECT COUNT(*) AS totalComments FROM comment WHERE PID = ?");
                         $stmtComments->bind_param("i", $post['PID']);
                         $stmtComments->execute();
                         $resultComments = $stmtComments->get_result();
-                        if ($resultComments->num_rows > 0) {
-                            $rowcom = $resultComments->fetch_assoc();
-                            $totalComments = htmlspecialchars($rowcom['totalComments']);
+                        if ($resultComments && $resultComments->num_rows > 0) {
+                            $rowComments = $resultComments->fetch_assoc();
+                            $totalComments = htmlspecialchars($rowComments['totalComments']);
                         }
                         $stmtComments->close();
-                    }
+
+                        $postUsername = $userName;
+                        $postDescription = htmlspecialchars($post['Description']);
+                        $postImage = $post['Image'];
+                        $PID = $post["PID"];
+                        $UID = $_SESSION["UserData"][0]; // Assuming user is logged in and UID is stored in session
                 ?>
-                    <!-- Post and Map Layout -->
-                    <div class="post-content">
+                        <!-- Post and Map Layout -->
+                        <div class="post-content">
+                            <div class="post-section">
+                                <!-- Display the post card -->
+                                <?php
+                                    include("Post.php");
+                                ?>
+                            </div>
 
-                        <div class="post-section">
-                            <?php
-                            // Display the post card
-                            echo '<div class="post-card">';
-                            echo '    <div class="post-header">';
-                            echo '        <img src="pics/defaultProfile.png" alt="Profile" class="profile-img">';
-                            echo '        <div class="user-info">';
-                            echo '            <span class="user-name">' . $userName . '</span>';
-                            echo '            <span class="post-options">•••</span>';
-                            echo '        </div>';
-                            echo '    </div>';
-                            echo '    <div class="post-incontent">';
-                            echo '        <p class="post-text">' . htmlspecialchars($post['Description']) . '</p>';
-
-                            // Display images if any
-                            if (!empty($post['Images'])) {
-                                echo '<div class="image-carousel">';
-                                echo '    <button class="carousel-btn left-btn">◀</button>';
-                                echo '    <div class="image-container">';
-                                // For simplicity, display the first image
-                                echo '        <img src="data:image/jpeg;base64,' . base64_encode($post['Images'][0]) . '" alt="Post Image">';
-                                echo '    </div>';
-                                echo '    <button class="carousel-btn right-btn">▶</button>';
-                                echo '</div>';
-                            }
-
-                            echo '    </div>';
-                            echo '    <div class="post-footer">';
-                            echo '        <button class="footer-btn">';
-                            echo '            <img src="pics/like.jpg" alt="Like" class="btn-icon">';
-                            echo '            <span class="btn-text">' . $totalUpVotes . '</span>';
-                            echo '        </button>';
-                            echo '        <button class="footer-btn">';
-                            echo '            <img src="pics/dislike.jpg" alt="Dislike" class="btn-icon">';
-                            echo '            <span class="btn-text">' . $totalDownVotes . '</span>';
-                            echo '        </button>';
-                            echo '        <button class="footer-btn">';
-                            echo '            <img src="pics/comment.jpg" alt="Comment" class="btn-icon">';
-                            echo '            <span class="btn-text">' . $totalComments . '</span>';
-                            echo '        </button>';
-                            echo '        <button class="footer-btn">';
-                            echo '            <img src="pics/share.jpg" alt="Share" class="btn-icon">';
-                            echo '            <span class="btn-text">86</span>';
-                            echo '        </button>';
-                            echo '    </div>';
-                            echo '</div>';
-
-                            $Longitude = $post["Longitude"];
-                            $Latitude = $post["Latitude"];
-                            $mapId = 'map_' . $post["PID"];
-                            ?>
+                            <?php if (!empty($post['Image'])) { ?>
+                                <!-- Map container -->
+                                <div id="map_<?php echo $post['PID']; ?>" style="height: 400px; width: 100%;"></div>
+                            <?php } ?>
                         </div>
 
-                        <!-- Map container -->
-                        <div id="<?php echo $mapId; ?>" style="height: 400px; width: 600px;"></div>
+                        <?php if (!empty($post['Image'])) { ?>
+                            <script>
+                                function initMap_<?php echo $post["PID"]; ?>() {
+                                    const position = {
+                                        lat: <?php echo $post['Latitude']; ?>,
+                                        lng: <?php echo $post['Longitude']; ?>
+                                    };
+                                    const map = new google.maps.Map(document.getElementById('map_<?php echo $post['PID']; ?>'), {
+                                        zoom: 15,
+                                        center: position
+                                    });
+                                    const marker = new google.maps.Marker({
+                                        position: position,
+                                        map: map,
+                                        title: "Post Location"
+                                    });
 
-                    </div>
+                                    // Optional: Add InfoWindow if needed
+                                    const infoWindow = new google.maps.InfoWindow({
+                                        content: `<p><?php echo $postDescription; ?></p>`
+                                    });
 
-                    <script>
-                        function initMap_<?php echo $post["PID"]; ?>() {
-                            const position = { lat: <?php echo $Latitude; ?>, lng: <?php echo $Longitude; ?> };
-                            const map = new google.maps.Map(document.getElementById('<?php echo $mapId; ?>'), {
-                                zoom: 10,
-                                center: position
-                            });
-                            const marker = new google.maps.Marker({
-                                position: position,
-                                map: map,
-                                title: "Post Location"
-                            });
-                        }
-                    </script>
+                                    marker.addListener('click', function() {
+                                        infoWindow.open(map, marker);
+                                    });
+                                }
+                            </script>
+                        <?php } ?>
 
                 <?php
+                    }
                 }
                 ?>
             </div>
@@ -249,10 +326,95 @@ $resultLocation = $conn->query($sqLocation);
         function initAllMaps() {
             <?php
             foreach ($posts as $post) {
-                echo "initMap_" . $post['PID'] . "();";
+                if (!empty($post['Image'])) {
+                    echo "initMap_" . $post['PID'] . "();";
+                }
             }
             ?>
         }
+
+        function categoryChanged() {
+            const categoryID = document.getElementById('CategoryList').value;
+            loadRegions(categoryID);
+            loadComplaints(categoryID);
+        }
+
+        // Function to fetch regions based on selected category
+        function loadRegions(categoryID) {
+            if (categoryID) {
+                $.ajax({
+                    url: 'fetch_regions.php',
+                    type: 'POST',
+                    data: { categoryID: categoryID },
+                    success: function(data) {
+                        $('#RegionList').html(data);
+                    },
+                    error: function() {
+                        console.error('Error fetching regions.');
+                    }
+                });
+            } else {
+                $('#RegionList').html('<option value="">All Regions</option>');
+            }
+        }
+
+        // Function to fetch complaint types based on selected category
+        function loadComplaints(categoryID) {
+            if (categoryID) {
+                $.ajax({
+                    url: 'fetch_complaints.php',
+                    type: 'POST',
+                    data: { categoryID: categoryID },
+                    success: function(data) {
+                        $('#ComplaintList').html(data);
+                    },
+                    error: function() {
+                        console.error('Error fetching complaint types.');
+                    }
+                });
+            } else {
+                $('#ComplaintList').html('<option value="">All Complaint Types</option>');
+            }
+        }
+
+        $(document).ready(function() {
+            // If a category is already selected, load regions and complaints
+            const selectedCategoryID = $('#CategoryList').val();
+            const selectedRegionID = '<?php echo isset($regionFilter) ? $regionFilter : ''; ?>';
+            const selectedComplaintID = '<?php echo isset($complaintFilter) ? $complaintFilter : ''; ?>';
+
+            if (selectedCategoryID) {
+                $.ajax({
+                    url: 'fetch_regions.php',
+                    type: 'POST',
+                    data: { 
+                        categoryID: selectedCategoryID,
+                        selectedRegionID: selectedRegionID 
+                    },
+                    success: function(data) {
+                        $('#RegionList').html(data);
+                    },
+                    error: function() {
+                        console.error('Error fetching regions.');
+                    }
+                });
+
+                $.ajax({
+                    url: 'fetch_complaints.php',
+                    type: 'POST',
+                    data: { 
+                        categoryID: selectedCategoryID,
+                        selectedComplaintID: selectedComplaintID 
+                    },
+                    success: function(data) {
+                        $('#ComplaintList').html(data);
+                    },
+                    error: function() {
+                        console.error('Error fetching complaint types.');
+                    }
+                });
+            }
+        });
     </script>
 
 </body>

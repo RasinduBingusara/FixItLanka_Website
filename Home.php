@@ -2,33 +2,37 @@
 include('NavigationBar.php');
 include("Database.php");
 
-// Initialize an array to hold posts and their images
+// Initialize an array to hold posts
 $posts = array();
 
-// Fetch all posts from the 'post' table
-$sqlPosts = "SELECT `PID`, `UID`, `Description`, `Longitude`, `Latitude`, `Status`, `Status_Message`, `Is_Anonymouse`, `Visibility`, `Created_at` FROM `post`";
+// Fetch today's highest voted posts
+$sqlPosts = "
+SELECT p.`PID`, p.`UID`, p.`Description`, p.`Longitude`, p.`Latitude`, p.`Status`, 
+       p.`Status_Message`, p.`Is_Anonymouse`, p.`Visibility`, p.`Created_at`, 
+       p.`Image`, 
+       COALESCE(v.upVotes, 0) as totalUpVotes,
+       COALESCE(v.downVotes, 0) as totalDownVotes
+FROM `post` p
+LEFT JOIN (
+    SELECT `PID`, 
+           SUM(CASE WHEN `Vote_direction` = 1 THEN 1 ELSE 0 END) as upVotes,
+           SUM(CASE WHEN `Vote_direction` = 0 THEN 1 ELSE 0 END) as downVotes
+    FROM `vote` 
+    WHERE DATE(`Created_at`) = CURDATE() 
+    GROUP BY `PID`
+) v ON p.`PID` = v.`PID`
+WHERE p.Visibility = 'Public'
+ORDER BY totalUpVotes DESC
+LIMIT 10";
+
 $resultPosts = $conn->query($sqlPosts);
 
 // Check if there are any posts
 if ($resultPosts->num_rows > 0) {
     while ($rowPost = $resultPosts->fetch_assoc()) {
-        $PID = $rowPost['PID'];
-
-        // Fetch images associated with this post
-        $stmtImages = $conn->prepare("SELECT `Image` FROM `post_image` WHERE `PID` = ?");
-        $stmtImages->bind_param("i", $PID);
-        $stmtImages->execute();
-        $resultImages = $stmtImages->get_result();
-
-        $images = array();
-        while ($rowImage = $resultImages->fetch_assoc()) {
-            $images[] = $rowImage['Image'];
-        }
-        $stmtImages->close();
-
-        // Add the post data and images to the posts array
+        // Add the post data to the posts array
         $posts[] = array(
-            'PID' => $PID,
+            'PID' => $rowPost['PID'],
             'UID' => $rowPost['UID'],
             'Description' => $rowPost['Description'],
             'Longitude' => $rowPost['Longitude'],
@@ -38,7 +42,9 @@ if ($resultPosts->num_rows > 0) {
             'Is_Anonymouse' => $rowPost['Is_Anonymouse'],
             'Visibility' => $rowPost['Visibility'],
             'Created_at' => $rowPost['Created_at'],
-            'Images' => $images
+            'Image' => $rowPost['Image'],
+            'totalUpVotes' => $rowPost['totalUpVotes'],
+            'totalDownVotes' => $rowPost['totalDownVotes']
         );
     }
 } else {
@@ -55,9 +61,10 @@ if ($resultPosts->num_rows > 0) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/Home.css">
     <title>Home Page</title>
-    <!-- Google Maps API -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_B0Ud1mIL6Ln66nSCnITXRMDV1c3bssc"></script>
     <script>
+        let postsData = <?php echo json_encode($posts); ?>; // Pass PHP array to JavaScript
+
         function initMap() {
             const position = { lat: 6.885497678560704, lng: 79.86034329536008 };
             const map = new google.maps.Map(document.getElementById("map"), {
@@ -65,10 +72,24 @@ if ($resultPosts->num_rows > 0) {
                 center: position,
             });
 
-            new google.maps.Marker({
-                position: position,
-                map: map,
-                title: "Post Location",
+            // Loop through postsData and create markers
+            postsData.forEach(post => {
+                const markerPosition = { lat: parseFloat(post.Latitude), lng: parseFloat(post.Longitude) };
+                const marker = new google.maps.Marker({
+                    position: markerPosition,
+                    map: map,
+                    title: post.Description, // Title can be changed as needed
+                });
+
+                // Info Window for each marker
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `<h4>${post.Description}</h4>
+                              <p>Votes: ${post.totalUpVotes} Up / ${post.totalDownVotes} Down</p>`
+                });
+
+                marker.addListener('click', () => {
+                    infoWindow.open(map, marker);
+                });
             });
         }
 
@@ -118,15 +139,6 @@ if ($resultPosts->num_rows > 0) {
             justify-content: center;
         }
 
-        /* Sidebar styling */
-        .sidebar {
-            width: 250px;
-            background-color: #1d3557;
-            padding: 20px;
-            color: white;
-            flex-shrink: 0;
-        }
-
         /* Main content area for map and posts */
         .main-content-container {
             display: flex;
@@ -134,7 +146,9 @@ if ($resultPosts->num_rows > 0) {
             width: 100%;
             max-width: 1200px;
             padding: 20px;
-            right: 10px;
+            margin-top: 50px;
+            margin-bottom: 20px;
+            margin-left: 300px;
         }
 
         /* Split layout for map and posts on desktop mode */
@@ -167,10 +181,15 @@ if ($resultPosts->num_rows > 0) {
             border-radius: 8px;
             background-color: #fff;
             overflow-y: auto;
+            padding: 10px; /* Padding around the posts */
         }
 
         /* Mobile view - center posts and map */
         @media (max-width: 768px) {
+
+            .main-content-container{
+                margin-left: 0;
+            }
             .map-post-container {
                 flex-direction: column;
                 align-items: center;
@@ -289,6 +308,7 @@ if ($resultPosts->num_rows > 0) {
 
                 <!-- Posts Section -->
                 <div class="posts-container">
+                    <h1>Today's Top 10 Highest Voted Posts</h1>
                     <?php
                     foreach ($posts as $post) {
                         $userName = 'Anonymous';
@@ -297,7 +317,7 @@ if ($resultPosts->num_rows > 0) {
                         $totalComments = '0';
 
                         if (!$post['Is_Anonymouse']) {
-                            // Fetch username and votes/comments
+                            // Fetch username
                             $stmtUser = $conn->prepare("SELECT `Username` FROM `useraccount` WHERE `UID` = ?");
                             $stmtUser->bind_param("i", $post['UID']);
                             $stmtUser->execute();
@@ -308,82 +328,40 @@ if ($resultPosts->num_rows > 0) {
                             }
                             $stmtUser->close();
 
-                            // Fetch votes and comments
-                            $stmtUpVotes = $conn->prepare("SELECT COUNT(*) AS totalVotes FROM vote WHERE PID = ? AND Vote_direction = 1;");
-                            $stmtUpVotes->bind_param("i", $post['PID']);
-                            $stmtUpVotes->execute();
-                            $resultUpVotes = $stmtUpVotes->get_result();
-                            if ($resultUpVotes->num_rows > 0) {
-                                $rowvote = $resultUpVotes->fetch_assoc();
-                                $totalUpVotes = htmlspecialchars($rowvote['totalVotes']);
+                            // Fetch votes
+                            $stmtVotes = $conn->prepare("SELECT 
+                                SUM(CASE WHEN Vote_direction = 1 THEN 1 ELSE 0 END) AS totalUpVotes,
+                                SUM(CASE WHEN Vote_direction = 0 THEN 1 ELSE 0 END) AS totalDownVotes
+                                FROM vote WHERE PID = ?");
+                            $stmtVotes->bind_param("i", $post['PID']);
+                            $stmtVotes->execute();
+                            $resultVotes = $stmtVotes->get_result();
+                            if ($resultVotes->num_rows > 0) {
+                                $rowVotes = $resultVotes->fetch_assoc();
+                                $totalUpVotes = htmlspecialchars($rowVotes['totalUpVotes'] ?? '0');
+                                $totalDownVotes = htmlspecialchars($rowVotes['totalDownVotes'] ?? '0');
                             }
-                            $stmtUpVotes->close();
+                            $stmtVotes->close();
 
-                            $stmtDownVotes = $conn->prepare("SELECT COUNT(*) AS totalVotes FROM vote WHERE PID = ? AND Vote_direction = 0;");
-                            $stmtDownVotes->bind_param("i", $post['PID']);
-                            $stmtDownVotes->execute();
-                            $resultDownVotes = $stmtDownVotes->get_result();
-                            if ($resultDownVotes->num_rows > 0) {
-                                $rowvote = $resultDownVotes->fetch_assoc();
-                                $totalDownVotes = htmlspecialchars($rowvote['totalVotes']);
-                            }
-                            $stmtDownVotes->close();
-
-                            $stmtComments = $conn->prepare("SELECT COUNT(*) AS totalComments FROM comment WHERE PID = ?;");
+                            // Fetch comments count
+                            $stmtComments = $conn->prepare("SELECT COUNT(*) AS totalComments FROM comment WHERE PID = ?");
                             $stmtComments->bind_param("i", $post['PID']);
                             $stmtComments->execute();
                             $resultComments = $stmtComments->get_result();
                             if ($resultComments->num_rows > 0) {
-                                $rowcom = $resultComments->fetch_assoc();
-                                $totalComments = htmlspecialchars($rowcom['totalComments']);
+                                $rowComments = $resultComments->fetch_assoc();
+                                $totalComments = htmlspecialchars($rowComments['totalComments']);
                             }
                             $stmtComments->close();
                         }
 
-                        // Display the post card
-                        echo '<div class="post-card">';
-                        echo '    <div class="post-header">';
-                        echo '        <img src="pics/defaultProfile.png" alt="Profile" class="profile-img">';
-                        echo '        <div class="user-info">';
-                        echo '            <span class="user-name">' . $userName . '</span>';
-                        echo '            <span class="post-options">•••</span>';
-                        echo '        </div>';
-                        echo '    </div>';
-                        echo '    <div class="post-content">';
-                        echo '        <p class="post-text">' . htmlspecialchars($post['Description']) . '</p>';
+                        $postUsername = $userName;
+                        $postDescription = $post["Description"];
+                        $postImage = $post["Image"];
+                        $PID = $post["PID"];
+                        $UID = $post["UID"];
 
-                        // Display images if any
-                        if (!empty($post['Images'])) {
-                            echo '<div class="image-carousel">';
-                            echo '    <button class="carousel-btn left-btn">◀</button>';
-                            echo '    <div class="image-container">';
-                            // For simplicity, display the first image
-                            echo '        <img src="data:image/jpeg;base64,' . base64_encode($post['Images'][0]) . '" alt="Post Image">';
-                            echo '    </div>';
-                            echo '    <button class="carousel-btn right-btn">▶</button>';
-                            echo '</div>';
-                        }
-
-                        echo '    </div>';
-                        echo '    <div class="post-footer">';
-                        echo '        <button class="footer-btn">';
-                        echo '            <img src="pics/like.jpg" alt="Like" class="btn-icon">';
-                        echo '            <span class="btn-text">' . $totalUpVotes . '</span>';
-                        echo '        </button>';
-                        echo '        <button class="footer-btn">';
-                        echo '            <img src="pics/dislike.jpg" alt="Dislike" class="btn-icon">';
-                        echo '            <span class="btn-text">' . $totalDownVotes . '</span>';
-                        echo '        </button>';
-                        echo '        <button class="footer-btn">';
-                        echo '            <img src="pics/comment.jpg" alt="Comment" class="btn-icon">';
-                        echo '            <span class="btn-text">' . $totalComments . '</span>';
-                        echo '        </button>';
-                        echo '        <button class="footer-btn">';
-                        echo '            <img src="pics/share.jpg" alt="Share" class="btn-icon">';
-                        echo '            <span class="btn-text">86</span>';
-                        echo '        </button>';
-                        echo '    </div>';
-                        echo '</div>';
+                        include("Post.php");
                     }
                     ?>
                 </div>
