@@ -33,10 +33,8 @@ if (!empty($category)) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
     // Check if the form is submitted to create a post
     if (isset($_POST['createPost'])) {
-
         // Check if user is logged in
         if (isset($_SESSION["UserData"])) {
             $uid = $_SESSION["UserData"][0];
@@ -52,9 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $targetFilePath = NULL;
 
             // Check if an image is uploaded and the user is on a mobile device
-            $isMobile = isset($_POST['isMobile']) ? $_POST['isMobile'] : 'false';
-
-            if ($isMobile === 'true' && isset($_FILES['post_image']) && $_FILES['post_image']['error'] == UPLOAD_ERR_OK) {
+            if (isset($_FILES['post_image']) && $_FILES['post_image']['error'] == UPLOAD_ERR_OK) {
                 // Process image upload
                 $Image = $_FILES['post_image'];
                 $targetDir = "uploads/"; // Ensure this directory exists and is writable
@@ -74,16 +70,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $error = 'Sorry, only JPG, JPEG, PNG, & GIF files are allowed to upload.';
                     $targetFilePath = NULL;
                 }
-            } elseif ($isMobile !== 'true' && isset($_FILES['post_image']) && $_FILES['post_image']['error'] == UPLOAD_ERR_OK) {
-                // If the user is on desktop and trying to upload an image, prevent it
-                $error = "Image uploads are only allowed on mobile devices.";
-                $targetFilePath = NULL;
             }
 
             // Proceed if there are no errors
             if (empty($error)) {
                 // Prepare and execute the database insert statement
-                $stmt = $conn->prepare("INSERT INTO post (UID, RegionID, CategoryID, ComplaintID, Description, Visibility, Is_Anonymouse, Latitude, Longitude, Image,Created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,NOW())");
+                $stmt = $conn->prepare("INSERT INTO post (UID, RegionID, CategoryID, ComplaintID, Description, Visibility, Is_Anonymouse, Latitude, Longitude, Image, Created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
                 $stmt->bind_param("iiiissidds", $uid, $region, $category, $complaint, $description, $visibility, $isAnonymous, $latitude, $longitude, $targetFilePath);
 
                 if ($stmt->execute()) {
@@ -104,7 +96,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="en">
 
 <head>
-    <!-- Head content -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Post Page</title>
@@ -116,7 +107,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <body>
     <div class="home-page-container">
-        <!-- Main Content -->
         <div class="main-content">
             <div class="create-post-container">
                 <h1>Create Post Page</h1>
@@ -134,15 +124,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <div class="create-post-content">
                         <div class="image-section">
                             <label for="post_image">Post Image (Optional)</label>
-                            <!-- The Open Camera button will only be displayed and functional on mobile devices -->
-                            <label for="post_image" id="cameraButton" class="submit-button" style="display:none;">Open Camera</label>
-                            <!-- The file input is always available but disabled on desktop devices -->
-                            <input type="file" name="post_image" id="post_image" accept="image/*" disabled style="display:none;">
+                            <label for="post_image" id="cameraButton" class="submit-button">Open Camera</label>
+                            <input type="file" name="post_image" id="post_image" accept="image/*" style="display:none;">
                             <div id="imagePreviews"></div>
                         </div>
                         <div class="right-panel">
-
-                            <!-- Category Dropdown -->
                             <div class="dropdown">
                                 <label for="category">Category</label>
                                 <select name="category" id="category" onchange="this.form.submit()" required>
@@ -159,7 +145,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 </select>
                             </div>
 
-                            <!-- Complaint Dropdown -->
                             <div class="dropdown">
                                 <label for="complaint">Complaint Issue</label>
                                 <select name="complaint" id="complaint" required>
@@ -176,7 +161,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 </select>
                             </div>
 
-                            <!-- Region Dropdown -->
                             <div class="dropdown">
                                 <label for="region">Region</label>
                                 <select name="region" id="region" required>
@@ -193,7 +177,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 </select>
                             </div>
 
-                            <!-- Visibility Dropdown -->
                             <div class="dropdown">
                                 <label for="visibility">Visibility</label>
                                 <select name="visibility" id="visibility" required>
@@ -203,24 +186,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 </select>
                             </div>
 
-                            <!-- Anonymous Toggle -->
                             <div class="toggle">
                                 <label for="anonymous">Anonymous</label>
                                 <input type="checkbox" name="anonymous" id="anonymous" <?php if ($isAnonymous) echo 'checked'; ?>>
                             </div>
 
-                            <!-- Description -->
                             <label for="description">Description</label>
                             <div class="editor-container">
                                 <textarea name="description" id="description" placeholder="Enter your post description" required><?php echo htmlspecialchars($description); ?></textarea>
                             </div>
 
-                            <!-- Hidden fields to store latitude, longitude, and device type -->
                             <input type="hidden" id="latitude" name="latitude" value="<?php echo htmlspecialchars($latitude); ?>">
                             <input type="hidden" id="longitude" name="longitude" value="<?php echo htmlspecialchars($longitude); ?>">
                             <input type="hidden" id="isMobile" name="isMobile" value="false">
 
-                            <!-- Submit Button -->
                             <button type="submit" class="submit-button" name="createPost">Create Post</button>
                         </div>
                     </div>
@@ -230,12 +209,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 
     <script>
-        // Function to detect if the user is on a mobile device
         function isMobileDevice() {
             return /Mobi|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(navigator.userAgent);
         }
 
-        // Show the Open Camera button only on mobile devices
         document.addEventListener("DOMContentLoaded", function() {
             const cameraButton = document.getElementById('cameraButton');
             const postImageInput = document.getElementById('post_image');
@@ -254,15 +231,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         });
 
-        // Open file chooser when camera button is clicked
         document.getElementById('cameraButton').addEventListener('click', function(event) {
-            event.preventDefault(); // Prevent default behavior
+            event.preventDefault();
             if (isMobileDevice()) {
                 document.getElementById('post_image').click();
             }
         });
 
-        // Image preview functionality for a single image
         document.getElementById('post_image').addEventListener('change', function(event) {
             if (isMobileDevice()) {
                 const imagePreviews = document.getElementById('imagePreviews');
@@ -283,7 +258,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         });
 
-        // Get location when the page loads
         window.onload = function() {
             if (!document.getElementById('latitude').value || !document.getElementById('longitude').value) {
                 if (navigator.geolocation) {
