@@ -11,7 +11,7 @@ body {
 /* Navigation Bar Styles */
 .navbar {
     width: 100%;
-    background-color:  #1d3557;
+    background-color: #1d3557;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -40,7 +40,7 @@ body {
     cursor: pointer;
 }
 
-/* Responsive Styles */
+/* Responsive Navigation */
 @media (max-width: 768px) {
     .nav-links {
         display: none;
@@ -70,7 +70,9 @@ body {
     text-align: center;
 }
 
+/* Panel Container */
 .panel-container {
+    padding-left: 390px;
     display: flex;
     gap: 20px;
     width: 90%;
@@ -79,6 +81,7 @@ body {
 
 .posts-section {
     display: flex;
+    max-width: 1000px;
     flex-direction: column;
     gap: 20px;
     flex: 1;
@@ -140,6 +143,7 @@ body {
     width: 150px;
 }
 
+/* Map Section */
 .map-section {
     width: 300px;
     background-color: #e0e0e0;
@@ -153,4 +157,90 @@ body {
 .map-label {
     font-size: 18px;
     color: #555;
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+    .panel-container {
+        padding-left: 0;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .posts-section {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .post-item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .post-image {
+        width: 100px;
+        height: 100px;
+    }
+
+    .info-section {
+        align-items: center;
+    }
+
+    .status select {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        font-size: 20px;
+        margin: 10px 0;
+    }
+
+    .post-item {
+        gap: 10px;
+        padding: 15px;
+    }
+
+    .post-image {
+        width: 80px;
+        height: 80px;
+    }
+
+    .info-section {
+        font-size: 14px;
+        gap: 5px;
+    }
+
+    .status select {
+        width: 100%;
+    }
+
+    .map-section {
+        display: none; /* Hide map section on smaller screens */
+    }
+}
+
+@media (max-width: 480px) {
+    .post-item {
+        gap: 5px;
+        padding: 10px;
+    }
+
+    .post-image {
+        width: 60px;
+        height: 60px;
+    }
+
+    .info-section {
+        font-size: 12px;
+        gap: 5px;
+    }
+
+    .status select {
+        font-size: 12px;
+        padding: 5px;
+        width: 100%;
+    }
 }

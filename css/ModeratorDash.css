@@ -8,6 +8,30 @@ body {
     display: flex;
 }
 
+.circle-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border-radius: 50px;
+    background-color: #4CAF50; /* Green background */
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    margin-left: 10px;
+}
+
+.circle-btn:hover {
+    background-color: #45a049; /* Darker green on hover */
+}
+
+.circle-btn:active {
+    background-color: #3e8e41; /* Even darker green when active */
+    transform: scale(0.95); /* Slight scale effect on click */
+}
+
+
 .sidebar {
     width: 250px;
     background-color: #f7f8fa;

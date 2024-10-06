@@ -3,43 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Supervisor Account Management</title>
-    <link rel="stylesheet" href="css/supervisor-account-management.css">
+    <title>Supervisor Update User Account</title> 
+    <link rel="stylesheet" href="css/supervisorUpdateUserAcc.css">
 </head>
 <body>
 
-    <!-- Sidebar Toggle Button for Mobile (Hamburger Icon) -->
-    <div id="hamburger" class="hamburger">☰</div>
-
-    <!-- Sidebar Navigation -->
-    <aside class="sidebar" id="sidebar">
-        <ul class="nav-menu">
-            <br> <br>   <br> <br>
-            <li class="nav-item">
-                <span class="icon">🔒</span>
-                <a href="#">Add Account</a>
-            </li>
-            <li class="nav-item active">
-                <span class="icon">✏️</span>
-                <a href="#">Edit Account</a>
-            </li>
-            <hr>
-            <li class="nav-item">
-                <span class="icon">⚙️</span>
-                <a href="#">Settings</a>
-            </li>
-            <li class="nav-item">
-                <span class="icon">🚪</span>
-                <a href="#">Sign Out</a>
-            </li>
-        </ul>
-    </aside>
+    <!-- Include SupervisorNavBar -->
+    <?php include 'SupervisorNavBar.php'; ?>
 
     <div class="container">
         <!-- Main Content -->
         <main class="main-content">
-            <h1>Supervisor Account Management</h1>
-            <h2>Users</h2>
+            <h1>Update User Account</h1>
+            <h3>Users</h3>
             <div class="table-container">
                 <table class="user-table">
                     <thead>
@@ -48,7 +24,7 @@
                             <th>UserName</th>
                             <th>Password</th>
                             <th>Email</th>
-                            <th>Contact no.</th>
+                            <th>Contact No.</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -102,14 +78,6 @@
             </div>
         </main>
     </div>
-
-    <script>
-        // Toggle sidebar visibility on hamburger click
-        document.getElementById('hamburger').addEventListener('click', function() {
-            var sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('active');
-        });
-    </script>
 
 </body>
 </html>

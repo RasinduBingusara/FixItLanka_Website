@@ -8,19 +8,8 @@
 </head>
 <body>
 
-    <!-- Navigation Bar -->
-    <nav class="navbar">
-        <div class="nav-brand">Supervisor Panel</div>
-        <div class="nav-links" id="navLinks">
-            <a href="#">Dashboard</a>
-            <a href="#">Posts</a>
-            <a href="#">Users</a>
-            <a href="#">Settings</a>
-        </div>
-        <div class="hamburger" id="hamburger">
-            ☰
-        </div>
-    </nav>
+    <!-- Include SupervisorNavBar -->
+    <?php include 'SupervisorNavBar.php'; ?>
 
     <div class="header">Supervisor Panel Page</div>
 
@@ -48,6 +37,7 @@
                             <option>Option 1</option>
                             <option>Option 2</option>
                         </select>
+                        <a href="" class="circle-btn">Done</a> 
                     </div>
                 </div>
             </div>
@@ -73,6 +63,7 @@
                             <option>Option 1</option>
                             <option>Option 2</option>
                         </select>
+                        <a href="" class="circle-btn">Done</a> 
                     </div>
                 </div>
             </div>
@@ -97,24 +88,17 @@
                             <option>Option 1</option>
                             <option>Option 2</option>
                         </select>
+                        <a href="" class="circle-btn">Done</a> 
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Right Side with Map -->
-        <div class="map-section">
+        <!-- <div class="map-section">
             <div class="map-label">Map</div>
-        </div>
+        </div> -->
     </div>
-
-    <script>
-        // Toggle navbar links on hamburger click
-        document.getElementById('hamburger').addEventListener('click', function() {
-            var navLinks = document.getElementById('navLinks');
-            navLinks.classList.toggle('active');
-        });
-    </script>
 
 </body>
 </html>

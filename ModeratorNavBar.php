@@ -109,13 +109,13 @@
 <!-- Sidebar -->
 <aside class="sidebar" id="sidebar">
     <br> <br> <br>
-    <h2>Supervisor Panel</h2>
+    <h2>Moderator Panel</h2>
     <ul class="menu">
         <li class="menu-item">
-            <a href="superVisorPanel.php" class="circle-btn">DashBoard</a> 
+            <a href="ModeratorDash.php" class="circle-btn">DashBoard</a> 
         </li>
         <li class="menu-item">
-            <a href="supervisorUpdateUserAcc.php" class="circle-btn">Edit User</a>  
+            <a href="ModeraterAddSuperVisorAcc.php" class="circle-btn">Add Supervisor</a>  
         </li>
        
     </ul>

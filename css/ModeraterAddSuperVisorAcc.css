@@ -10,62 +10,7 @@ body {
     min-height: 100vh;
 }
 
-/* Sidebar Styles */
-.sidebar {
-    width: 200px;
-    background-color: #ffffff;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    border-right: 1px solid #e0e0e0;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Added shadow for better definition */
-    position: fixed;
-    height: 100%;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    transition: transform 0.3s ease;
-    transform: translateX(0);
-}
 
-.sidebar h2 {
-    font-size: 18px;
-    color: #333;
-    margin-bottom: 20px;
-}
-
-.menu {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.menu-item {
-    padding: 12px 20px;
-    color: #555;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    border-radius: 4px;
-    margin-bottom: 10px;
-    transition: background 0.3s;
-}
-
-.menu-item i.icon {
-    margin-right: 15px; /* Increased spacing between icon and text */
-    font-size: 18px;
-}
-
-.menu-item:hover,
-.menu-item.active {
-    background-color: #e0e0e0;
-    font-weight: bold; /* Makes the active link more distinct */
-}
-
-.menu.bottom {
-    margin-top: auto;
-}
 
 /* Main Content */
 .content {
