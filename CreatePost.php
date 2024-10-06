@@ -49,7 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Initialize $imageBlob as NULL
             $imageBlob = NULL;
 
-            // // Check if an image is uploaded
+            // Check if an image is uploaded
             // if (isset($_FILES['post_image']) && $_FILES['post_image']['error'] == UPLOAD_ERR_OK) {
             //     // Process image upload
             //     $Image = $_FILES['post_image'];
@@ -66,23 +66,50 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             //     }
             // }
 
-            // Proceed if there are no errors
-            if (empty($error)) {
-                // Prepare and execute the database insert statement
-                $stmt = $conn->prepare("INSERT INTO post (UID, RegionID, CategoryID, ComplaintID, Description, Visibility, Is_Anonymouse, Latitude, Longitude, Image, Created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
-                
-                // Ensure $imageBlob is correctly passed
-                $stmt->bind_param("iiiissiddb", $uid, $region, $category, $complaint, $description, $visibility, $isAnonymous, $latitude, $longitude, $imageBlob);
-
-                if ($stmt->execute()) {
-                    $success = "Post created successfully!";
-                    // Reset form variables after successful submission
-                    $category = $complaint = $region = $visibility = $description = '';
+            if (isset($_FILES['post_image']) && $_FILES['post_image']['error'] == UPLOAD_ERR_OK) {
+                // Process image upload
+                $Image = $_FILES['post_image'];
+                $fileType = pathinfo($Image['name'], PATHINFO_EXTENSION);
+                $allowTypes = array('jpg', 'png', 'jpeg', 'gif');
+            
+                if (in_array(strtolower($fileType), $allowTypes)) {
+                    // Read the image file and store it as a blob
+                    $imageBlob = file_get_contents($Image['tmp_name']);
+            
+                    // Prepare and execute the database insert statement
+                    $stmt = $conn->prepare("INSERT INTO post (UID, RegionID, CategoryID, ComplaintID, Description, Visibility, Is_Anonymouse, Latitude, Longitude, Image, Created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
+                    $stmt->bind_param("iiiissiddb", $uid, $region, $category, $complaint, $description, $visibility, $isAnonymous, $latitude, $longitude, $imageBlob);
+            
+                    if ($stmt->execute()) {
+                        $success = "Post created successfully!";
+                        $category = $complaint = $region = $visibility = $description = '';
                     $isAnonymous = 0;
+                    } else {
+                        $error = "Error: " . $stmt->error;  // Log error
+                    }
                 } else {
-                    $error = "Error: " . $stmt->error;
+                    $error = 'Sorry, only JPG, JPEG, PNG, & GIF files are allowed to upload.';
                 }
             }
+            
+
+            // Proceed if there are no errors
+            // if (empty($error)) {
+            //     // Prepare and execute the database insert statement
+            //     $stmt = $conn->prepare("INSERT INTO post (UID, RegionID, CategoryID, ComplaintID, Description, Visibility, Is_Anonymouse, Latitude, Longitude, Image, Created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
+                
+            //     // Ensure $imageBlob is correctly passed
+            //     $stmt->bind_param("iiiissiddb", $uid, $region, $category, $complaint, $description, $visibility, $isAnonymous, $latitude, $longitude, $imageBlob);
+
+            //     if ($stmt->execute()) {
+            //         $success = "Post created successfully!";
+            //         // Reset form variables after successful submission
+            //         $category = $complaint = $region = $visibility = $description = '';
+            //         $isAnonymous = 0;
+            //     } else {
+            //         $error = "Error: " . $stmt->error;
+            //     }
+            // }
         }
     }
 }
