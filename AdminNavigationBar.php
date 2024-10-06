@@ -118,6 +118,9 @@
         <a href="adminRevPage.php" class="circle-btn">Admin Review</a>  
         </li>
         <li class="menu-item">
+        <a href="adminCreateModeratorAcc.php" class="circle-btn">Add Moderator Account</a>  
+        </li>
+        <li class="menu-item">
         <a href="bannedPage.php" class="circle-btn">Banned Users</a> 
         </li>
     </ul>

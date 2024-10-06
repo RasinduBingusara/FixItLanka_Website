@@ -1,0 +1,151 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f7fa;
+}
+
+/* Dashboard Layout */
+.dashboard {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Main Content */
+.content {
+    flex: 1;
+    padding: 20px;
+    margin-left: 250px; /* Space for sidebar */
+    transition: margin-left 0.3s ease;
+}
+
+/* Header */
+.header h1 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    color: #333;
+    font-weight: bold;
+}
+
+/* Account Form */
+.account-form {
+    max-width: 500px;
+    margin-top: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 5px;
+    font-size: 14px;
+    color: #555;
+}
+
+input {
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+}
+
+input:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+/* Add Button */
+.add-button {
+    padding: 12px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-size: 16px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.add-button:hover {
+    background-color: #0056b3;
+}
+
+/* Hamburger Icon for Mobile */
+.hamburger {
+    display: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 10px;
+    background-color: #ffffff;
+    color: rgb(0, 0, 0);
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1000;
+}
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    .hamburger {
+        display: block;
+    }
+
+    .sidebar {
+        transform: translateX(-100%); /* Hide sidebar by default */
+    }
+
+    .sidebar.active {
+        transform: translateX(0); /* Show sidebar when active */
+    }
+
+    .content {
+        margin-left: 0;
+        padding-top: 60px;
+    }
+
+    .header h1 {
+        font-size: 22px;
+        margin-bottom: 15px;
+    }
+
+    .account-form {
+        max-width: 100%;
+        margin: 0 20px; /* Add some space on the sides */
+    }
+
+    input {
+        font-size: 16px;
+        padding: 10px;
+    }
+
+    .add-button {
+        font-size: 18px;
+        padding: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header h1 {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    .account-form {
+        margin: 0 10px; /* Less space on smaller screens */
+    }
+
+    input {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    .add-button {
+        font-size: 16px;
+        padding: 12px;
+    }
+}
