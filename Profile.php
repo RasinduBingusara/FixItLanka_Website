@@ -79,7 +79,7 @@ if (isset($_GET["otherUID"])) {
 
 $sqlPosts = "SELECT `PID`, `UID`, `Description`, `Longitude`, `Latitude`, `Status`, `Status_Message`, `Is_Anonymouse`, `Visibility`, `Created_at`, `Image`, `CategoryID`, `RegionID`, `ComplaintID` 
              FROM `post` 
-             WHERE Visibility = 'Public'";
+             WHERE Visibility = 'Public' AND UID = ".$CurrentProfileUserID;
 
 $params = array();
 
@@ -204,7 +204,7 @@ if ($stmtPosts) {
                 </div>
 
                 <section class="shared-posts">
-                    <h2>Shared Posts</h2>
+                    <!-- <h2>Shared Posts</h2> -->
                     <?php
                 if (empty($posts)) {
                     echo "<p>No posts found.</p>";
