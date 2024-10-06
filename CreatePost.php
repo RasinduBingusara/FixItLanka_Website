@@ -49,22 +49,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Initialize $imageBlob as NULL
             $imageBlob = NULL;
 
-            // Check if an image is uploaded
-            if (isset($_FILES['post_image']) && $_FILES['post_image']['error'] == UPLOAD_ERR_OK) {
-                // Process image upload
-                $Image = $_FILES['post_image'];
+            // // Check if an image is uploaded
+            // if (isset($_FILES['post_image']) && $_FILES['post_image']['error'] == UPLOAD_ERR_OK) {
+            //     // Process image upload
+            //     $Image = $_FILES['post_image'];
 
-                // Ensure the uploaded file is a valid image
-                $fileType = pathinfo($Image['name'], PATHINFO_EXTENSION);
-                $allowTypes = array('jpg', 'png', 'jpeg', 'gif');
+            //     // Ensure the uploaded file is a valid image
+            //     $fileType = pathinfo($Image['name'], PATHINFO_EXTENSION);
+            //     $allowTypes = array('jpg', 'png', 'jpeg', 'gif');
 
-                if (in_array(strtolower($fileType), $allowTypes)) {
-                    // Read the image file and store it as a blob
-                    $imageBlob = file_get_contents($Image['tmp_name']);
-                } else {
-                    $error = 'Sorry, only JPG, JPEG, PNG, & GIF files are allowed to upload.';
-                }
-            }
+            //     if (in_array(strtolower($fileType), $allowTypes)) {
+            //         // Read the image file and store it as a blob
+            //         $imageBlob = file_get_contents($Image['tmp_name']);
+            //     } else {
+            //         $error = 'Sorry, only JPG, JPEG, PNG, & GIF files are allowed to upload.';
+            //     }
+            // }
 
             // Proceed if there are no errors
             if (empty($error)) {
