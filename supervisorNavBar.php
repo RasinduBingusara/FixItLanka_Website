@@ -1,7 +1,7 @@
 <style>
   /* Sidebar Styles */
   .sidebar {
-      width: 220px;
+      width: 175px;
       background-color: #f7f8fa;
       padding: 20px;
       position: fixed;
@@ -29,7 +29,7 @@
       cursor: pointer;
       border-radius: 4px;
       margin-bottom: 10px;
-      transition: background 0.3s;
+      transition: background-color 0.3s;
       display: flex;
       align-items: center;
   }
@@ -65,7 +65,6 @@
       top: 0;
       left: 0;
       width: 100%;
-      z-index: 999;
   }
 
   .top-nav h1 {
@@ -78,12 +77,13 @@
   .hamburger {
       font-size: 30px;
       cursor: pointer;
+      z-index: 999;
   }
 
   /* Adjust main content to avoid overlap with the sidebar */
   .content {
       padding-top: 60px;
-      padding-left: 270px; /* Account for sidebar width */
+      padding-left: 220px; /* Adjusted for sidebar width */
   }
 
   /* Media query for mobile view */
@@ -110,15 +110,14 @@
 <aside class="sidebar" id="sidebar">
     <h2>Admin Panel</h2>
     <ul class="menu">
-        <br> <br> <br>
-        <li class="menu-item ">
-        <a href="adminPanel.php" class="circle-btn">Dashboard</a> 
+        <li class="menu-item">
+            <a href="superVisorManageAcc.html" class="circle-btn">Add Account</a> 
         </li>
         <li class="menu-item">
-        <a href="adminRevPage.php" class="circle-btn">Admin Review</a>  
+            <a href="adminRevPage.php" class="circle-btn">Admin Review</a>  
         </li>
         <li class="menu-item">
-        <a href="bannedPage.php" class="circle-btn">Banned Users</a> 
+            <a href="bannedPage.php" class="circle-btn">Banned Users</a>  
         </li>
     </ul>
     <ul class="menu bottom">
@@ -139,12 +138,12 @@
 <!-- Script to toggle sidebar visibility -->
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    var hamburger = document.getElementById('hamburger');
-    var sidebar = document.getElementById('sidebar');
+      var hamburger = document.getElementById('hamburger');
+      var sidebar = document.getElementById('sidebar');
 
-    // Toggle sidebar visibility on hamburger click
-    hamburger.addEventListener('click', function() {
-        sidebar.classList.toggle('open');
-    });
+      // Toggle sidebar visibility on hamburger click
+      hamburger.addEventListener('click', function() {
+          sidebar.classList.toggle('open');
+      });
   });
 </script>

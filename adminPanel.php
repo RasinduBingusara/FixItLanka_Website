@@ -8,14 +8,13 @@
     <title>Admin Panel</title>
 </head>
 <body>
-    <!-- Include AdminNavigationBar -->
+    <!-- Include Admin Navigation Bar -->
     <?php include 'AdminNavigationBar.php'; ?>
 
     <!-- Main Content Area -->
     <div class="admin-panel">
         <main class="content">
             <div class="header">
-                <div class="hamburger" id="hamburger">&#9776;</div>
                 <h1>Admin Panel</h1>
             </div>
 
@@ -33,12 +32,6 @@
         </main>
     </div>
 
-    <script>
-        // Toggle sidebar visibility when hamburger is clicked
-        document.getElementById('hamburger').addEventListener('click', function() {
-            var sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('open');
-        });
-    </script>
+   
 </body>
 </html>
