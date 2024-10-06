@@ -142,7 +142,7 @@ if ($stmtPosts) {
     <title>All Posts</title>
     <link rel="stylesheet" href="css/AllPost.css">
     <!-- Load Google Maps API (replace YOUR_API_KEY with your actual key) -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_B0Ud1mIL6Ln66nSCnITXRMDV1c3bssc"></script>
     <!-- Include jQuery for AJAX calls -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
