@@ -35,6 +35,15 @@
                 <input type="text" id="location" name="location">
             </div>
             <div class="form-group">
+                <label for="location">category:</label>
+                <select name="cars" id="cars">
+  <option value="volvo">Volvo</option>
+  <option value="saab">Saab</option>
+  <option value="mercedes">Mercedes</option>
+  <option value="audi">Audi</option>
+</select>
+            </div>
+            <div class="form-group">
                 <label for="contact">Contact No.:</label>
                 <input type="text" id="contact" name="contact">
             </div>
