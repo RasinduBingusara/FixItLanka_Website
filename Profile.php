@@ -5,7 +5,6 @@ $Username = "";
 $Email = "";
 $ContactNumber = "";
 $DOB = "-";
-$Location = "";
 $otherUID;
 $editDetailsAccess = false;
 $IsCurrentUser = true;
@@ -16,7 +15,7 @@ if (isset($_GET["otherUID"])) {
     $IsCurrentUser = false;
     $CurrentProfileUserID = $otherUID;
 
-    $result = $conn->query("SELECT u.Username, u.Email, u.ContactNumber, u.DOB, u.ProfilePicture, a.City FROM useraccount u JOIN area a ON a.Area_ID = u.Area_ID WHERE UID = ".$otherUID);
+    $result = $conn->query("SELECT u.Username, u.Email, u.ContactNumber, u.DOB, u.ProfilePicture FROM useraccount WHERE UID = ".$otherUID);
 
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
@@ -24,7 +23,6 @@ if (isset($_GET["otherUID"])) {
             $Email = $row["Email"];
             $ContactNumber = $row["ContactNumber"];
             $DOB = $row["DOB"];
-            $Location = $row["City"];
         }
     }
 } else {
@@ -73,7 +71,6 @@ if (isset($_GET["otherUID"])) {
         $Email = $_SESSION["UserData"][3];
         $ContactNumber = $_SESSION["UserData"][4];
         $DOB = $_SESSION["UserData"][5];
-        $Location = $_SESSION["UserData"][8];
     }
 }
 
@@ -166,10 +163,6 @@ if ($stmtPosts) {
                             <span id="dob"><?php echo $DOB ?></span> <!-- Replace with dynamic content -->
                         </div>
                         <div class="form-group">
-                            <label for="location">Location:</label>
-                            <span id="location"><?php echo $Location ?></span> <!-- Replace with dynamic content -->
-                        </div>
-                        <div class="form-group">
                             <label for="contact">Contact No.:</label>
                             <input type="text" id="ContactNumber" name="ContactNumber" value="<?php echo $ContactNumber ?>">
                         </div>
@@ -192,10 +185,6 @@ if ($stmtPosts) {
                     <div class="form-group">
                         <label for="dob">Date of Birth:</label>
                         <span id="dob"><?php echo $DOB ?></span> <!-- Replace with dynamic content -->
-                    </div>
-                    <div class="form-group">
-                        <label for="location">Location:</label>
-                        <span id="location"><?php echo $Location ?></span> <!-- Replace with dynamic content -->
                     </div>
                     <div class="form-group">
                         <label for="contact">Contact No.:</label>
