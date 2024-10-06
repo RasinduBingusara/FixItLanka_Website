@@ -7,6 +7,29 @@ body {
     flex-direction: column;
     align-items: center;
 }
+#done {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #1d3557; /* Green background */
+    color: white; /* White text */
+    text-align: center;
+    text-decoration: none; /* Removes underline */
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Adds a slight shadow */
+    transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transitions */
+}
+
+#done:hover {
+    background-color: #1d3557; /* Darker green on hover */
+    transform: scale(1.1); /* Slight zoom effect on hover */
+}
+
+#done:active {
+    background-color: #1d3557; /* Even darker green when clicked */
+    transform: scale(1); /* Reset scale when clicked */
+}
+
 
 /* Navigation Bar Styles */
 .navbar {

@@ -37,7 +37,7 @@
                             <option>Option 1</option>
                             <option>Option 2</option>
                         </select>
-                        <a href="" class="circle-btn">Done</a>  
+                        <a href="" id="done" class="circle-btn">Done</a>  
                     </div>
                 </div>
             </div>
@@ -63,7 +63,7 @@
                             <option>Option 1</option>
                             <option>Option 2</option>
                         </select>
-                        <a href="" class="circle-btn">Done</a> 
+                        <a href="" id="done" class="circle-btn">Done</a> 
                     </div>
                 </div>
             </div>
@@ -88,7 +88,7 @@
                             <option>Option 1</option>
                             <option>Option 2</option>
                         </select>
-                        <a href="" class="circle-btn">Done</a> 
+                        <a href="" id="done" class="circle-btn">Done</a> 
                     </div>
                 </div>
             </div>
