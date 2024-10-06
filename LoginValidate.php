@@ -52,6 +52,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["email"]) && isset($_PO
           }, 1000);
           </script>';
         }
+        else if($row["UserType"] == "Supervisor"){
+          echo '<script>
+        setTimeout(function() {
+          window.location.href = "ModeratorPanel.php";
+          }, 1000);
+          </script>';
+        }
         else{
           echo '<script>
           setTimeout(function() {
