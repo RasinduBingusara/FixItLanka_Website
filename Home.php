@@ -213,6 +213,7 @@ if ($resultPosts->num_rows > 0) {
                 padding: 10px;
                 border-radius: 5px;
                 cursor: pointer;
+                z-index: 100;
             }
         }
 
@@ -360,7 +361,7 @@ if ($resultPosts->num_rows > 0) {
                         $postImage = $post["Image"];
                         $PID = $post["PID"];
                         $UID = $post["UID"];
-
+                        $PostUID = $post["UID"];
                         include("Post.php");
                     }
                     ?>

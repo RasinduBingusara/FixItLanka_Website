@@ -84,6 +84,7 @@ $Username = $_SESSION["UserData"][2];
         box-shadow: 2px 0px 10px rgba(0, 0, 0, 0.1);
         transition: transform 0.3s ease;
         overflow-y: auto;
+        z-index: 200;
     }
 
     .nav-menu {
@@ -176,7 +177,7 @@ $Username = $_SESSION["UserData"][2];
             <button class="nav-button">
                 <span class="icon">⚙️</span> Settings
             </button>
-            <button class="nav-button">
+            <button class="nav-button" onclick="window.location.href='Signout.php';">
                 <span class="icon">🚪</span> Sign Out
             </button>
         </div>

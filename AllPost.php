@@ -269,6 +269,7 @@ if ($stmtPosts) {
                         $postImage = $post['Image'];
                         $PID = $post["PID"];
                         $UID = $_SESSION["UserData"][0]; // Assuming user is logged in and UID is stored in session
+                        $PostUID = $post["UID"];
                 ?>
                         <!-- Post and Map Layout -->
                         <div class="post-content">
