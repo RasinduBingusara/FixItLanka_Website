@@ -117,9 +117,6 @@
     <h2>Admin Panel</h2>
     <ul class="menu">
         <br> <br> <br>
-        <li class="menu-item ">
-            <a href="adminPanel.php" class="circle-btn">Dashboard</a>
-        </li>
         <li class="menu-item">
             <a href="adminRevPage.php" class="circle-btn">Admin Review</a>
         </li>
