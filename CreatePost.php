@@ -70,6 +70,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if (empty($error)) {
                 // Prepare and execute the database insert statement
                 $stmt = $conn->prepare("INSERT INTO post (UID, RegionID, CategoryID, ComplaintID, Description, Visibility, Is_Anonymouse, Latitude, Longitude, Image, Created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
+                
+                // Ensure $imageBlob is correctly passed
                 $stmt->bind_param("iiiissiddb", $uid, $region, $category, $complaint, $description, $visibility, $isAnonymous, $latitude, $longitude, $imageBlob);
 
                 if ($stmt->execute()) {
@@ -94,9 +96,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Post Page</title>
     <link rel="stylesheet" href="css/CreatePost.css">
-    <style>
-        /* Additional CSS styling if needed */
-    </style>
 </head>
 
 <body>
@@ -106,12 +105,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <h1>Create Post Page</h1>
 
                 <!-- Error / Success Messages -->
-                <?php if (!empty($error)) {
-                    echo '<p class="error">' . $error . '</p>';
-                } ?>
-                <?php if (!empty($success)) {
-                    echo '<p class="success">' . $success . '</p>';
-                } ?>
+                <?php if (!empty($error)) { echo '<p class="error">' . $error . '</p>'; } ?>
+                <?php if (!empty($success)) { echo '<p class="success">' . $success . '</p>'; } ?>
 
                 <!-- Post Form -->
                 <form action="CreatePost.php" method="post" enctype="multipart/form-data" id="createPostForm">
@@ -129,7 +124,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <option value="">Select Category</option>
                                     <?php
                                     if ($resultCategory->num_rows > 0) {
-                                        $resultCategory->data_seek(0);
                                         while ($rowCategory = $resultCategory->fetch_assoc()) {
                                             $selected = ($rowCategory["Category_ID"] == $category) ? 'selected' : '';
                                             echo '<option value="' . $rowCategory['Category_ID'] . '" ' . $selected . '>' . htmlspecialchars($rowCategory['Category_Name']) . '</option>';
@@ -145,7 +139,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <option value="">Select Complaint</option>
                                     <?php
                                     if ($resultComplaint && $resultComplaint->num_rows > 0) {
-                                        $resultComplaint->data_seek(0);
                                         while ($rowComplaint = $resultComplaint->fetch_assoc()) {
                                             $selected = ($rowComplaint["ComplaintID"] == $complaint) ? 'selected' : '';
                                             echo '<option value="' . $rowComplaint['ComplaintID'] . '" ' . $selected . '>' . htmlspecialchars($rowComplaint['Complaint']) . '</option>';
@@ -161,7 +154,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <option value="">Select Region</option>
                                     <?php
                                     if ($resultRegion && $resultRegion->num_rows > 0) {
-                                        $resultRegion->data_seek(0);
                                         while ($rowRegion = $resultRegion->fetch_assoc()) {
                                             $selected = ($rowRegion["RegionID"] == $region) ? 'selected' : '';
                                             echo '<option value="' . $rowRegion['RegionID'] . '" ' . $selected . '>' . htmlspecialchars($rowRegion['Region']) . '</option>';
