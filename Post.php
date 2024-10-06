@@ -100,7 +100,7 @@
 
     <?php
     // Display image if it exists
-    if (isset($postImage)) {
+    if (!empty($postImage)) {
       // Convert the Blob to a Base64 encoded string
       $imageData = base64_encode($postImage);
       echo '<div class="image-container">';
