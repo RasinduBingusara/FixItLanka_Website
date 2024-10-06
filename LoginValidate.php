@@ -37,11 +37,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["email"]) && isset($_PO
       } else {
 
         $_SESSION["UserData"] = array($row["UID"],  $row["Category_ID"], $row["Username"], $row["Email"], $row["ContactNumber"],  $row["DOB"], $row["UserType"], base64_encode($row["ProfilePicture"]), $row["City"]);
-        echo '<script>
+
+        if($row["UserType"] == "Admin"){
+          echo '<script>
         setTimeout(function() {
-          window.location.href = "Home.php";
+          window.location.href = "AdminPanel.php";
           }, 1000);
           </script>';
+        }
+        else{
+          echo '<script>
+          setTimeout(function() {
+            window.location.href = "Home.php";
+            }, 1000);
+            </script>';
+        }
+       
       }
     }
   }

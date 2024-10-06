@@ -52,34 +52,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Check if an image is uploaded
             if (isset($_FILES['post_image']) && $_FILES['post_image']['error'] == UPLOAD_ERR_OK) {
                 // Process image upload
-                $Image = $_FILES['post_image'];
-
-                // Ensure the uploaded file is a valid image
-                $fileType = pathinfo($Image['name'], PATHINFO_EXTENSION);
-                $allowTypes = array('jpg', 'png', 'jpeg', 'gif');
-
-                if (in_array(strtolower($fileType), $allowTypes)) {
-                    // Read the image file and store it as a blob
-                    $imageBlob = file_get_contents($Image['tmp_name']);
-                } else {
-                    $error = 'Sorry, only JPG, JPEG, PNG, & GIF files are allowed to upload.';
-                }
+                $fileTmpPath = $_FILES['post_image']['tmp_name'];
+                $imageBlob = addslashes(file_get_contents($fileTmpPath));
             }
 
             // Proceed if there are no errors
             if (empty($error)) {
                 // Prepare and execute the database insert statement
-                $stmt = $conn->prepare("INSERT INTO post (UID, RegionID, CategoryID, ComplaintID, Description, Visibility, Is_Anonymouse, Latitude, Longitude, Image, Created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
-                $stmt->bind_param("iiiissiddb", $uid, $region, $category, $complaint, $description, $visibility, $isAnonymous, $latitude, $longitude, $imageBlob);
+                $sql = "INSERT INTO post (UID, RegionID, CategoryID, ComplaintID, Description, Visibility, Is_Anonymouse, Latitude, Longitude, Image, Created_at) VALUES ({$uid}, {$region}, {$category}, {$complaint}, '{$description}', '{$visibility}','{$isAnonymous}', {$latitude}, {$longitude}, '{$imageBlob}', NOW())";
 
-                if ($stmt->execute()) {
+                if (mysqli_query($conn, $sql)) {
+                    echo "<script> console.log('Record updated successfully');</script>";
                     $success = "Post created successfully!";
                     // Reset form variables after successful submission
                     $category = $complaint = $region = $visibility = $description = '';
                     $isAnonymous = 0;
-                } else {
-                    $error = "Error: " . $stmt->error;
-                }
+                  } else {
+                    echo "<script> console.log('Error updating record: " . mysqli_error($conn) . "');</script>";
+                  }
             }
         }
     }

@@ -40,7 +40,7 @@
     justify-content: center;
     align-items: center;
     z-index: 1000;
-}
+  }
 
   .modal-content {
     background-color: #fff;
@@ -110,19 +110,19 @@
     ?>
   </div>
   <div class="post-footer">
-    <button class="footer-btn upvote-button" onclick="updateVotes(1,<?php echo $PID ?>,<?php echo $UID ?>)">
+    <button class="footer-btn upvote-button" onclick="updateVotes(1, <?php echo $PID ?>)">
       <img src="pics/like.jpg" alt="Like" class="btn-icon">
       <span class="btn-text upvote-count"><?php echo $totalUpVotes; ?></span>
     </button>
-    <button class="footer-btn downvote-button" onclick="updateVotes(0,<?php echo $PID ?>,<?php echo $UID ?>)">
+    <button class="footer-btn downvote-button" onclick="updateVotes(0, <?php echo $PID ?>)">
       <img src="pics/dislike.jpg" alt="Dislike" class="btn-icon">
       <span class="btn-text downvote-count"><?php echo $totalDownVotes; ?></span>
     </button>
-    <button class="footer-btn" onclick="popUpCommentPanel(<?php echo $PID ?>,<?php echo $UID ?>)">
+    <button class="footer-btn" onclick="popUpCommentPanel(<?php echo $PID ?>)">
       <img src="pics/comment.jpg" alt="Comment" class="btn-icon">
       <span class="btn-text"><?php echo $totalComments; ?></span>
     </button>
-    <button class="footer-btn" onclick="sharePost(<?php echo $PID; ?>, <?php echo $UID; ?>)">
+    <button class="footer-btn" onclick="sharePost(<?php echo $PID; ?>)">
       <img src="pics/share.jpg" alt="Share" class="btn-icon">
       <span class="btn-text">Share</span>
     </button>
@@ -169,7 +169,7 @@
     }
 
     const data = {
-      UID: <?php echo $UID; ?>, // Pass the UID directly
+      UID: <?php echo $_SESSION["UserData"][0]; ?>, // Use session UID
       PID: PID,
       Report_Message: reportMessage,
     };
@@ -206,7 +206,8 @@
     });
   };
 
-  function updateVotes(value, PID, UID) {
+  function updateVotes(value, PID) {
+    const UID = <?php echo $_SESSION["UserData"][0]; ?>; // Use session UID
     if (!PID || !UID) {
       alert('You must be logged in to vote.');
       return;
@@ -260,12 +261,12 @@
     }
   }
 
-  function popUpCommentPanel(PostID, UserID) {
-    console.log('Pop-up triggered for Post ID:', PostID, 'User ID:', UserID); // Debug log
+  function popUpCommentPanel(PostID) {
+    console.log('Pop-up triggered for Post ID:', PostID); // Debug log
 
-    // Check if the PostID and UserID are provided
-    if (!PostID || !UserID) {
-        alert('Post ID and User ID must be provided.');
+    // Check if the PostID is provided
+    if (!PostID) {
+        alert('Post ID must be provided.');
         return;
     }
 
@@ -300,14 +301,14 @@
     modal.querySelector('#submitComment').addEventListener('click', function() {
         const commentText = document.getElementById('newComment').value.trim();
         if (commentText !== '') {
-            submitComment(PostID, UserID, commentText); // Call the function to submit the comment
+            const UID = <?php echo $_SESSION["UserData"][0]; ?>; // Get UID from session
+            submitComment(PostID, UID, commentText); // Call the function to submit the comment
         }
     });
 
     // Display the modal
     modal.style.display = 'flex'; // Ensure the modal is displayed
 }
-
 
   function loadComments(PID) {
     fetch('fetch_comments.php?PID=' + encodeURIComponent(PID))
@@ -319,7 +320,7 @@
           const commentDiv = document.createElement('div');
           commentDiv.classList.add('comment');
           commentDiv.innerHTML = `
-          <div style = "display:flex;">
+          <div style="display:flex;">
             <a href="#"><strong>${comment.username}</strong></a>
             <p style="padding-left: 20px;">${comment.text}</p>
           </div>
@@ -360,9 +361,9 @@
       });
   }
 
-  function sharePost(PID, UID) {
+  function sharePost(PID) {
     const data = {
-      UID: UID,
+      UID: <?php echo $_SESSION["UserData"][0]; ?>, // Use session UID
       PID: PID,
     };
 
