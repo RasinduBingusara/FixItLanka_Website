@@ -2,7 +2,7 @@
     /* Sidebar Styles */
     .sidebar {
         width: 220px;
-        background-color: #f7f8fa;
+        background-color: #1d3557;
         padding: 20px;
         position: fixed;
         top: 0;
@@ -13,7 +13,7 @@
 
     .sidebar h2 {
         font-size: 20px;
-        color: #333;
+        color: white;
         margin-bottom: 20px;
     }
 
@@ -36,7 +36,7 @@
 
     .circle-btn {
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        color: black;
+        color: white;
         text-decoration: none;
     }
 
@@ -59,7 +59,7 @@
         /* Hidden by default on desktop */
         justify-content: space-between;
         align-items: center;
-        background-color: #f7f8fa;
+        background-color: #1d3557;
         padding: 15px;
         border-bottom: 1px solid #e0e0e0;
         position: fixed;
@@ -79,6 +79,7 @@
     .hamburger {
         font-size: 30px;
         cursor: pointer;
+        color: white;
     }
 
     /* Adjust main content to avoid overlap with the sidebar */
