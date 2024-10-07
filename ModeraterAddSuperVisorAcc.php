@@ -100,7 +100,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($stmt = $conn->prepare($sqlInsert)) {
             // Bind parameters: i = integer, s = string
-            $stmt->bind_param("iissss", $categoryID,$region, $name, $hashed_password, $email, $contact);
+            $stmt->bind_param("iissss", $categoryID, $region, $name, $hashed_password, $email, $contact);
 
             // Execute the statement
             if ($stmt->execute()) {
@@ -131,11 +131,12 @@ $conn->close();
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Head content -->
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Supervisor Account</title>
-    <link rel="stylesheet" href="css/ModeraterAddSuperVisorAcc.css">
+    <link rel="stylesheet" href="css/adminCreateSupervisorAcc.css">
     <!-- Optional: Include Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnH1zpsaqe7Nj3U5ZL9vFSJ0YB8HlvBl4ipnJ8FgVsz8w+/X7z1+Nl7OY2r/kH8G4nD4rJ4Fw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
@@ -144,21 +145,21 @@ $conn->close();
     <!-- Include Moderator Navigation Bar -->
     <?php include 'ModeratorNavBar.php'; ?>
 
-    <main class="content">
-        <div class="header">
+    <main class="main-content">
+        <header class="page-header">
             <h1>Add Supervisor Account</h1>
-        </div>
+        </header>
 
         <!-- Display Success Message -->
         <?php if (!empty($success)): ?>
-            <div class="success-message">
+            <div class="alert success">
                 <?php echo htmlspecialchars($success); ?>
             </div>
         <?php endif; ?>
 
         <!-- Display Error Messages -->
         <?php if (!empty($errors)): ?>
-            <div class="error-messages">
+            <div class="alert error">
                 <ul>
                     <?php foreach ($errors as $error): ?>
                         <li><?php echo htmlspecialchars($error); ?></li>
@@ -210,6 +211,7 @@ $conn->close();
             <button type="submit" class="add-button">Add</button>
         </form>
     </main>
+
 
 </body>
 </html>

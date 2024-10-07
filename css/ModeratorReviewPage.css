@@ -1,0 +1,350 @@
+/* ModeratorPanel.css */
+
+/* Reset and Base Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+    display: flex;
+    min-height: 100vh;
+}
+.menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-item {
+    padding: 10px 15px;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.menu-item a {
+    color: #fff;
+    text-decoration: none;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.menu-item i {
+    margin-right: 10px;
+}
+
+.menu-item:hover,
+.menu-item.active {
+    background-color: #e0e0e0;
+    color: #1d3557;
+}
+
+.menu.bottom {
+    margin-top: auto;
+}
+
+/* Main Content Area */
+.main-content {
+    flex: 1;
+    padding: 20px;
+    margin-left: 175px; /* Width of the sidebar */
+    transition: margin-left 0.3s ease;
+    width: 100%;
+}
+
+/* Page Header */
+.page-header {
+    margin-bottom: 20px;
+}
+
+.page-header h1 {
+    font-size: 28px;
+    color: #1d3557;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 10px;
+}
+
+/* Alert Messages */
+.alert {
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.alert.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert ul {
+    list-style-type: disc;
+    margin-left: 20px;
+}
+
+/* Panel Container */
+.panel-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Posts Section */
+.posts-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+}
+
+/* Post Item */
+.post-item {
+    display: flex;
+    align-items: flex-start;
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    gap: 20px;
+    transition: box-shadow 0.3s ease;
+}
+
+.post-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Post Image */
+.post-image {
+    flex-shrink: 0;
+    width: 150px;
+    height: 150px;
+    background-color: #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    position: relative;
+}
+
+.post-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.post-label {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background-color: rgba(29, 53, 87, 0.8);
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+/* Information Sections */
+.info-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex: 1;
+}
+
+/* User Information */
+.user-info, .category-info, .description, .status-message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    color: #333;
+}
+
+/* Icons */
+.icon {
+    font-size: 18px;
+    color: #1d3557;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: #fff;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.btn i {
+    margin-right: 5px;
+}
+
+.approve-post {
+    background-color: #28a745;
+}
+
+.approve-post:hover {
+    background-color: #218838;
+}
+
+.reject-post {
+    background-color: #dc3545;
+}
+
+.reject-post:hover {
+    background-color: #c82333;
+}
+
+.needs-revision-post {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.needs-revision-post:hover {
+    background-color: #e0a800;
+}
+
+/* No Data Message */
+.no-data {
+    text-align: center;
+    font-size: 18px;
+    color: #555;
+}
+
+/* Responsive Design */
+
+/* Adjustments for Tablets and Small Screens */
+@media (max-width: 992px) {
+    .main-content {
+        margin-left: 175px; /* Maintain sidebar width */
+    }
+
+    .page-header h1 {
+        font-size: 24px;
+    }
+
+    .post-item {
+        padding: 15px;
+        gap: 15px;
+    }
+
+    .post-image {
+        width: 120px;
+        height: 120px;
+    }
+
+    .user-info, .category-info, .description, .status-message {
+        font-size: 15px;
+    }
+
+    .btn {
+        font-size: 13px;
+        padding: 8px 16px;
+    }
+}
+
+/* Adjustments for Mobile Devices */
+@media (max-width: 768px) {
+    /* Content will take full width when sidebar is hidden */
+    .main-content {
+        margin-left: 0;
+        padding-top: 80px; /* For spacing after hamburger */
+    }
+
+    .page-header h1 {
+        font-size: 22px;
+        text-align: center;
+    }
+
+    .panel-container {
+        padding: 0 10px;
+    }
+
+    .review-item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .post-image {
+        width: 100%;
+        height: 200px;
+    }
+
+    .info-section {
+        align-items: center;
+    }
+
+    .action-buttons {
+        flex-direction: row;
+        gap: 10px;
+    }
+
+    .btn {
+        width: 48%;
+        justify-content: center;
+    }
+
+    .map-section {
+        display: none; /* Hide map section on smaller screens */
+    }
+}
+
+/* Further Adjustments for Extra Small Devices */
+@media (max-width: 480px) {
+    .page-header h1 {
+        font-size: 20px;
+    }
+
+    .post-item {
+        padding: 10px 12px;
+    }
+
+    .user-info, .category-info, .description, .status-message {
+        font-size: 14px;
+    }
+
+    .btn {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+
+    .btn i {
+        margin-right: 3px;
+    }
+}
