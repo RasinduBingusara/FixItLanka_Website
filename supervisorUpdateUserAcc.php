@@ -7,41 +7,51 @@ session_start();
 // Include the database connection file
 include("Database.php");
 
-// Initialize an array to hold moderators
-$moderators = array();
+// Check if the admin user is logged in
+if (!isset($_SESSION["UserData"][0])) {
+    // Redirect to login page or display an error
+    header("Location: login.php");
+    exit();
+}
 
-// Fetch moderators from the useraccount table joined with category table
-$sqlModerators = "
+// Initialize an array to hold supervisors
+$supervisors = array();
+
+// Corrected SQL Query to fetch supervisors
+$sqlSupervisors = "
     SELECT 
         u.UID,
         u.Username,
         u.Email,
         u.ContactNumber,
-        c.Category_Name
+        c.Category_Name,
+        r.Region
     FROM 
         useraccount u
     JOIN 
         category c ON u.Category_ID = c.Category_ID
+    JOIN 
+        region r ON u.RegionID = r.RegionID
     WHERE 
-        u.UserType = 'Moderator'
+        u.UserType = 'Supervisor'
     ORDER BY 
         u.Username ASC
 ";
 
 // Prepare and execute the query
-if ($stmt = $conn->prepare($sqlModerators)) {
+if ($stmt = $conn->prepare($sqlSupervisors)) {
     $stmt->execute();
-    $resultModerators = $stmt->get_result();
+    $resultSupervisors = $stmt->get_result();
 
-    if ($resultModerators && $resultModerators->num_rows > 0) {
-        while ($moderator = $resultModerators->fetch_assoc()) {
-            $moderators[] = $moderator;
+    if ($resultSupervisors && $resultSupervisors->num_rows > 0) {
+        while ($supervisor = $resultSupervisors->fetch_assoc()) {
+            $supervisors[] = $supervisor;
         }
     }
     $stmt->close();
 } else {
     // Handle query preparation error
-    $error = "Error fetching moderators: " . $conn->error;
+    $error = "Error fetching supervisors: " . $conn->error;
 }
 
 $conn->close();
@@ -58,18 +68,18 @@ $conn->close();
 </head>
 <body>
 
-    <!-- Include AdminNavigationBar -->
+    <!-- Include Admin Navigation Bar -->
     <?php include 'ModeratorNavBar.php'; ?>
 
     <main class="main-content">
         <header class="page-header">
-            <h1>Manage Moderator Accounts</h1>
+            <h1>Manage Supervisor Accounts</h1>
         </header>
 
         <!-- Display Success Message -->
         <?php if (isset($_GET['success']) && $_GET['success'] == 1): ?>
             <div class="alert success">
-                Moderator account updated successfully.
+                Supervisor account updated successfully.
             </div>
         <?php endif; ?>
 
@@ -89,23 +99,25 @@ $conn->close();
                         <th>Name</th>
                         <th>Email</th>
                         <th>Category</th>
+                        <th>Region</th>
                         <th>Contact Number</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if (!empty($moderators)): ?>
-                        <?php foreach ($moderators as $moderator): ?>
-                            <tr id="row-<?php echo htmlspecialchars($moderator['UID']); ?>">
-                                <td class="name"><?php echo htmlspecialchars($moderator['Username']); ?></td>
-                                <td class="email"><?php echo htmlspecialchars($moderator['Email']); ?></td>
-                                <td class="category"><?php echo htmlspecialchars($moderator['Category_Name']); ?></td>
-                                <td class="contact"><?php echo htmlspecialchars($moderator['ContactNumber']); ?></td>
+                    <?php if (!empty($supervisors)): ?>
+                        <?php foreach ($supervisors as $supervisor): ?>
+                            <tr id="row-<?php echo htmlspecialchars($supervisor['UID']); ?>">
+                                <td class="name"><?php echo htmlspecialchars($supervisor['Username']); ?></td>
+                                <td class="email"><?php echo htmlspecialchars($supervisor['Email']); ?></td>
+                                <td class="category"><?php echo htmlspecialchars($supervisor['Category_Name']); ?></td>
+                                <td class="region"><?php echo htmlspecialchars($supervisor['Region']); ?></td>
+                                <td class="contact"><?php echo htmlspecialchars($supervisor['ContactNumber']); ?></td>
                                 <td class="actions">
-                                    <button class="btn edit-btn" onclick="editRow(<?php echo htmlspecialchars($moderator['UID']); ?>)">
+                                    <button class="btn edit-btn" onclick="editRow(<?php echo htmlspecialchars($supervisor['UID']); ?>)">
                                         <i class="fas fa-edit"></i> Edit
                                     </button>
-                                    <button class="btn delete-btn" onclick="deleteRow(<?php echo htmlspecialchars($moderator['UID']); ?>)">
+                                    <button class="btn delete-btn" onclick="deleteRow(<?php echo htmlspecialchars($supervisor['UID']); ?>)">
                                         <i class="fas fa-trash-alt"></i> Delete
                                     </button>
                                 </td>
@@ -113,7 +125,7 @@ $conn->close();
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="5">No moderators found.</td>
+                            <td colspan="6">No supervisors found.</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
@@ -147,9 +159,9 @@ $conn->close();
             const currentContact = contactCell.textContent;
 
             // Replace text with input fields
-            nameCell.innerHTML = `<input type="text" class="edit-input" id="name-${uid}" value="${currentName}">`;
-            emailCell.innerHTML = `<input type="email" class="edit-input" id="email-${uid}" value="${currentEmail}">`;
-            contactCell.innerHTML = `<input type="text" class="edit-input" id="contact-${uid}" value="${currentContact}" pattern="^\\+?[0-9]{7,15}$" title="Enter a valid contact number (7-15 digits, may start with '+')">`;
+            nameCell.innerHTML = `<input type="text" class="edit-input" id="name-${uid}" value="${currentName}" required>`;
+            emailCell.innerHTML = `<input type="email" class="edit-input" id="email-${uid}" value="${currentEmail}" required>`;
+            contactCell.innerHTML = `<input type="text" class="edit-input" id="contact-${uid}" value="${currentContact}" pattern="^\\+?[0-9]{7,15}$" title="Enter a valid contact number (7-15 digits, may start with '+')" required>`;
 
             // Replace Edit and Delete buttons with Update and Cancel buttons
             const actionsCell = row.querySelector('.actions');
@@ -161,10 +173,6 @@ $conn->close();
                     <i class="fas fa-times-circle"></i> Cancel
                 </button>
             `;
-
-            // Move the edited row to the top
-            const tbody = row.parentElement;
-            tbody.insertBefore(row, tbody.firstChild);
         }
 
         function cancelEdit(uid) {
@@ -227,8 +235,8 @@ $conn->close();
                 return;
             }
 
-            // Send AJAX request to update the moderator
-            fetch('update_moderator.php', {
+            // Send AJAX request to update supervisor
+            fetch('update_supervisor.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -243,7 +251,7 @@ $conn->close();
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Moderator account updated successfully.');
+                    alert('Supervisor account updated successfully.');
 
                     // Update the table with new data
                     const row = document.getElementById(`row-${uid}`);
@@ -261,40 +269,24 @@ $conn->close();
                         </button>
                     `;
 
-                    // Move the updated row back to its original position (alphabetical order)
-                    const tbody = row.parentElement;
-                    const allRows = Array.from(tbody.querySelectorAll('tr')).slice(1); // Exclude header
-
-                    // Find the correct position based on Username
-                    const index = allRows.findIndex(r => {
-                        const name = r.querySelector('.name').textContent.toLowerCase();
-                        return name > updatedName.toLowerCase();
-                    });
-
-                    if (index === -1) {
-                        tbody.appendChild(row);
-                    } else {
-                        tbody.insertBefore(row, allRows[index]);
-                    }
-
                     currentEditingRow = null;
                 } else {
-                    alert('Error updating moderator: ' + data.message);
+                    alert('Error updating supervisor: ' + data.message);
                 }
             })
             .catch((error) => {
                 console.error('Error:', error);
-                alert('An error occurred while updating the moderator account.');
+                alert('An error occurred while updating the supervisor account.');
             });
         }
 
         function deleteRow(uid) {
-            if (!confirm("Are you sure you want to delete this moderator account?")) {
+            if (!confirm("Are you sure you want to delete this supervisor account?")) {
                 return;
             }
 
-            // Send AJAX request to delete the moderator
-            fetch('delete_moderator.php', {
+            // Send AJAX request to delete supervisor
+            fetch('delete_supervisor.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -306,7 +298,7 @@ $conn->close();
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Moderator account deleted successfully.');
+                    alert('Supervisor account deleted successfully.');
 
                     // Remove the row from the table
                     const row = document.getElementById(`row-${uid}`);
@@ -314,12 +306,12 @@ $conn->close();
                         row.remove();
                     }
                 } else {
-                    alert('Error deleting moderator: ' + data.message);
+                    alert('Error deleting supervisor: ' + data.message);
                 }
             })
             .catch((error) => {
                 console.error('Error:', error);
-                alert('An error occurred while deleting the moderator account.');
+                alert('An error occurred while deleting the supervisor account.');
             });
         }
     </script>

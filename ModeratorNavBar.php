@@ -120,6 +120,9 @@
         <li class="menu-item">
             <a href="ModeraterAddSuperVisorAcc.php" class="circle-btn">Add Supervisor</a>  
         </li>
+        <li class="menu-item">
+            <a href="supervisorUpdateUserAcc.php" class="circle-btn">Manage Supervisor Account</a>  
+        </li>
        
     </ul>
     <ul class="menu bottom">

@@ -8,22 +8,18 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
     background-color: #f5f5f5;
-    color: #333;
-    display: flex;
-    min-height: 100vh;
 }
 
-/* Main Content Area */
 .main-content {
-    flex: 1;
     padding: 20px;
-    margin-left: 220px; /* Width of the sidebar */
-    transition: margin-left 0.3s ease;
+    margin: auto;
+    max-width: 1200px;
 }
 
-/* Page Header */
 .page-header {
     margin-bottom: 20px;
 }
@@ -65,35 +61,29 @@ body {
 
 /* Table Container */
 .table-container {
-    width: 90%;
-    max-width: 1200px;
-    margin: 0 auto 40px auto;
     overflow-x: auto;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* User Table */
 .user-table {
     width: 100%;
     border-collapse: collapse;
+    margin-bottom: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .user-table th, .user-table td {
-    padding: 15px;
+    padding: 12px 15px;
     text-align: left;
     border-bottom: 1px solid #ddd;
 }
 
 .user-table th {
     background-color: #1d3557;
-    color: #fff;
-    font-weight: normal;
-}
-
-.user-table tbody tr:hover {
-    background-color: #f1f1f1;
+    color: white;
 }
 
 /* Action Buttons */
@@ -251,5 +241,86 @@ body {
 
     .btn i {
         margin-right: 1px;
+    }
+}
+
+
+/* Responsive styles and layout adjustments */
+
+
+
+
+
+
+.edit-input {
+    padding: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+}
+
+.btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.edit-btn {
+    background-color: #007bff;
+    color: white;
+    margin-right: 10px;
+}
+
+.edit-btn:hover {
+    background-color: #0056b3;
+}
+
+.delete-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+}
+
+.update-btn {
+    background-color: #28a745;
+    color: white;
+    margin-right: 10px;
+}
+
+.update-btn:hover {
+    background-color: #218838;
+}
+
+.cancel-btn {
+    background-color: #6c757d;
+    color: white;
+}
+
+.cancel-btn:hover {
+    background-color: #5a6268;
+}
+
+@media (max-width: 768px) {
+    .page-header h1 {
+        text-align: center;
+    }
+
+    .user-table th, .user-table td {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .edit-btn, .delete-btn {
+        margin-bottom: 10px;
     }
 }

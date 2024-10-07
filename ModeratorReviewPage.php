@@ -230,18 +230,6 @@ $conn->close();
           alert('An error occurred while updating the status.');
         });
     }
-
-    // Responsive Navigation Toggle
-    document.addEventListener('DOMContentLoaded', function() {
-      const hamburger = document.getElementById('hamburger');
-      const sidebar = document.getElementById('sidebar');
-
-      if (hamburger) {
-        hamburger.addEventListener('click', function() {
-          sidebar.classList.toggle('open');
-        });
-      }
-    });
   </script>
 
 </body>
