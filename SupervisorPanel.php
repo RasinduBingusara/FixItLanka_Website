@@ -84,7 +84,7 @@ $conn->close();
 
     <!-- Sign-out button at top-right -->
     <div class="signout-container">
-        <a href="signout.php" class="signout-btn">Sign Out</a>
+        <a href="Signout.php" class="signout-btn">Sign Out</a>
     </div>
 
     <main class="main-content">
