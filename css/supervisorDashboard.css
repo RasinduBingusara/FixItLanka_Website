@@ -1,0 +1,202 @@
+/* Reset and Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f5f5;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Sign-out button at the top-right */
+.signout-container {
+  position: fixed;
+  top: 10px;
+  right: 20px;
+}
+
+.signout-btn {
+  padding: 10px 15px;
+  background-color: #ff6b6b;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.signout-btn:hover {
+  background-color: #ff5252;
+}
+
+/* Main Content Area */
+.main-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Changed from center to flex-start */
+  flex: 1;
+  padding: 20px;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.page-header h1 {
+  font-size: 28px;
+  color: #1d3557;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 10px;
+}
+
+/* Panel Container */
+.panel-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 800px;
+}
+
+/* Posts Section */
+.posts-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+/* Post Item */
+.post-item {
+  background: #fff;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.label {
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.value {
+  flex: 1;
+  text-align: left;
+}
+
+/* Post Image with reduced size to 10px */
+.post-image img {
+  width: 10px;
+  height: 10px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* Action Buttons */
+.action-buttons {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.no-data {
+  font-size: 18px;
+  color: #555;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .main-content {
+      padding: 10px;
+  }
+
+  .row {
+      flex-direction: column;
+      align-items: flex-start;
+  }
+
+  /* Maintain the 10px image size on mobile devices as well */
+  .post-image img {
+      width: 10px;
+      height: 10px;
+  }
+}
+
+/* Dropdown (Select) Style */
+select {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
+  transition: border-color 0.3s;
+  appearance: none;
+  outline: none;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+select:focus {
+  border-color: #1d3557; /* Add a blue border on focus */
+}
+
+/* Optional: Customize the appearance of the arrow for the dropdown */
+select::-ms-expand {
+  display: none; /* Remove default arrow on IE and Edge */
+}
+
+select:focus::-ms-expand {
+  display: block; /* Show the arrow on focus for IE and Edge */
+}
+
+/* Input Field Style */
+input[type="text"], input[type="email"], input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
+  transition: border-color 0.3s;
+  outline: none;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus {
+  border-color: #1d3557; /* Add a blue border on focus */
+}
+
+/* Button for the Submit action */
+.submit-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #1d3557;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.submit-button:hover {
+  background-color: #457b9d; /* Darker blue on hover */
+}

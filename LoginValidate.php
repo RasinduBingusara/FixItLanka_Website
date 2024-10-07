@@ -4,7 +4,7 @@ include("Database.php");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["email"]) && isset($_POST["password"])) {
 
-  $sqlVal = "SELECT UID, Category_ID, Username, Email, Password, ContactNumber, DOB, UserType, ProfilePicture, Acc_Status FROM useraccount WHERE Email = '" . $_POST["email"] . "'";
+  $sqlVal = "SELECT UID, Category_ID, RegionID, Username, Email, Password, ContactNumber, DOB, UserType, ProfilePicture, Acc_Status FROM useraccount WHERE Email = '" . $_POST["email"] . "'";
 
   $result = $conn->query($sqlVal);
 
@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["email"]) && isset($_PO
 <?php
       } else {
 
-        $_SESSION["UserData"] = array($row["UID"],  $row["Category_ID"], $row["Username"], $row["Email"], $row["ContactNumber"],  $row["DOB"], $row["UserType"], base64_encode($row["ProfilePicture"]));
+        $_SESSION["UserData"] = array($row["UID"],  $row["Category_ID"], $row["Username"], $row["Email"], $row["ContactNumber"],  $row["DOB"], $row["UserType"], base64_encode($row["ProfilePicture"]), $row["RegionID"]);
 
         if($row["UserType"] == "Admin"){
           echo '<script>
@@ -55,7 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["email"]) && isset($_PO
         else if($row["UserType"] == "Supervisor"){
           echo '<script>
         setTimeout(function() {
-          window.location.href = "ModeratorPanel.php";
+          window.location.href = "SupervisorPanel.php";
           }, 1000);
           </script>';
         }
