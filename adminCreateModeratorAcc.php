@@ -81,11 +81,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $user_type = "Moderator";
         $profile_picture = "pics/defaultProfile.png"; // Default profile picture
         $created_at = date("Y-m-d H:i:s"); // Current timestamp
+        $region = 1;
 
         // Prepare the INSERT statement
-        $sqlInsert = "INSERT INTO useraccount (Category_ID, Username, Password, Email, ContactNumber, Acc_Status, UserType, Created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        $sqlInsert = "INSERT INTO useraccount (Category_ID, RegionID, Username, Password, Email, ContactNumber, Acc_Status, UserType, Created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         if ($stmtInsert = $conn->prepare($sqlInsert)) {
-            $stmtInsert->bind_param("isssssss", $category, $name, $hashed_password, $email, $contact, $acc_status, $user_type, $created_at);
+            $stmtInsert->bind_param("iisssssss", $category, $region, $name, $hashed_password, $email, $contact, $acc_status, $user_type, $created_at);
 
             if ($stmtInsert->execute()) {
                 $success_message = "Moderator account created successfully.";
