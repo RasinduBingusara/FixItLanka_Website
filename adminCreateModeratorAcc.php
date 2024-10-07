@@ -7,13 +7,6 @@ session_start();
 // Include the database connection file
 include("Database.php");
 
-// Check if the admin user is logged in
-if (!isset($_SESSION["UserData"][0])) {
-    // Redirect to login page or display an error
-    header("Location: login.php");
-    exit();
-}
-
 // Initialize variables for form fields and messages
 $name = $email = $password = $confirm_password = $category = $contact = "";
 $errors = array();
@@ -140,21 +133,21 @@ $conn->close();
     <!-- Include Admin Navigation Bar -->
     <?php include 'AdminNavigationBar.php'; ?>
 
-    <main class="content">
+    <main class="main-content">
         <div class="header">
             <h1>Add Moderator Account</h1>
         </div>
 
         <!-- Display Success Message -->
         <?php if (!empty($success_message)): ?>
-            <div class="success-message">
+            <div class="alert success">
                 <?php echo htmlspecialchars($success_message); ?>
             </div>
         <?php endif; ?>
 
         <!-- Display Error Messages -->
         <?php if (!empty($errors)): ?>
-            <div class="error-messages">
+            <div class="alert error">
                 <ul>
                     <?php foreach ($errors as $error): ?>
                         <li><?php echo htmlspecialchars($error); ?></li>
@@ -163,7 +156,7 @@ $conn->close();
             </div>
         <?php endif; ?>
 
-        <form class="account-form" method="POST" action="adminCreateModeratorAcc.php">
+        <form class="account-form" method="POST" action="adminCreateModeratorAcc.php" novalidate>
             <div class="form-group">
                 <label for="name">Name:<span class="required">*</span></label>
                 <input type="text" id="name" name="name" value="<?php echo htmlspecialchars($name); ?>" required>
@@ -175,6 +168,7 @@ $conn->close();
             <div class="form-group">
                 <label for="password">Password:<span class="required">*</span></label>
                 <input type="password" id="password" name="password" required>
+                <small class="password-hint">Must be at least 8 characters, include letters and numbers.</small>
             </div>
             <div class="form-group">
                 <label for="confirm_password">Confirm Password:<span class="required">*</span></label>
@@ -194,10 +188,29 @@ $conn->close();
             <div class="form-group">
                 <label for="contact">Contact Number:<span class="required">*</span></label>
                 <input type="text" id="contact" name="contact" value="<?php echo htmlspecialchars($contact); ?>" required>
+                <small class="contact-hint">Include country code (e.g., +1234567890).</small>
             </div>
-            <button type="submit" class="add-button">Add</button>
+            <button type="submit" class="add-button">Add Moderator</button>
         </form>
     </main>
+
+    <!-- Optional JavaScript for Enhanced UX -->
+    <script>
+        // Example: Client-side validation for password match
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('.account-form');
+            const password = document.getElementById('password');
+            const confirmPassword = document.getElementById('confirm_password');
+
+            form.addEventListener('submit', function(e) {
+                if (password.value !== confirmPassword.value) {
+                    e.preventDefault();
+                    alert('Passwords do not match.');
+                    confirmPassword.focus();
+                }
+            });
+        });
+    </script>
 
 </body>
 </html>

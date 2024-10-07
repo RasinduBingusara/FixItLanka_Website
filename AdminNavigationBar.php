@@ -9,6 +9,7 @@
         left: 0;
         height: 100%;
         transition: transform 0.3s ease;
+        z-index: 200;
     }
 
     .sidebar h2 {
@@ -123,6 +124,9 @@
         </li>
         <li class="menu-item">
             <a href="adminCreateModeratorAcc.php" class="circle-btn">Add Moderator Account</a>
+        </li>
+        <li class="menu-item">
+            <a href="AdminAccountManage.php" class="circle-btn">Manage Accounts</a>
         </li>
         <li class="menu-item">
             <a href="bannedPage.php" class="circle-btn">Banned Users</a>

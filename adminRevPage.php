@@ -20,44 +20,42 @@ $reports = array();
 // Fetch data from admin_report, post, and useraccount tables using JOINs
 $sqlReports = "
     SELECT 
-    ar.PID, 
-    ar.UID AS ReportedUID, 
-    ar.Report_Message, 
-    ar.Created_at AS ReportCreatedAt,
-    p.UID AS PostUID,
-    p.CategoryID, 
-    p.ComplaintID, 
-    p.RegionID, 
-    p.Description, 
-    p.Longitude, 
-    p.Latitude, 
-    p.Status, 
-    p.Status_Message, 
-    p.Is_Anonymouse, 
-    p.Image, 
-    p.Visibility, 
-    p.Created_at AS PostCreatedAt,
-    u.Username AS ReportedUsername, 
-    u.Email, 
-    u.ContactNumber,
-    pu.Username AS PostCreatorUsername, -- Original Post Creator's Username
-    (SELECT COUNT(*) FROM vote WHERE vote.PID = p.PID AND vote.Vote_direction = 1) AS totalUpVotes,
-    (SELECT COUNT(*) FROM vote WHERE vote.PID = p.PID AND vote.Vote_direction = -1) AS totalDownVotes,
-    (SELECT COUNT(*) FROM comment WHERE comment.PID = p.PID) AS totalComments
-FROM 
-    admin_report ar
-JOIN 
-    post p ON ar.PID = p.PID
-JOIN 
-    useraccount u ON ar.UID = u.UID -- Reported User
-JOIN 
-    useraccount pu ON p.UID = pu.UID -- Original Post Creator
-WHERE 
-    p.Visibility != 'Hide'
-ORDER BY 
-    ar.Created_at DESC ;
-
-
+        ar.PID, 
+        ar.UID AS ReportedUID, 
+        ar.Report_Message, 
+        ar.Created_at AS ReportCreatedAt,
+        p.UID AS PostUID,
+        p.CategoryID, 
+        p.ComplaintID, 
+        p.RegionID, 
+        p.Description, 
+        p.Longitude, 
+        p.Latitude, 
+        p.Status, 
+        p.Status_Message, 
+        p.Is_Anonymouse, 
+        p.Image, 
+        p.Visibility, 
+        p.Created_at AS PostCreatedAt,
+        u.Username AS ReportedUsername, 
+        u.Email, 
+        u.ContactNumber,
+        pu.Username AS PostCreatorUsername, -- Original Post Creator's Username
+        (SELECT COUNT(*) FROM vote WHERE vote.PID = p.PID AND vote.Vote_direction = 1) AS totalUpVotes,
+        (SELECT COUNT(*) FROM vote WHERE vote.PID = p.PID AND vote.Vote_direction = -1) AS totalDownVotes,
+        (SELECT COUNT(*) FROM comment WHERE comment.PID = p.PID) AS totalComments
+    FROM 
+        admin_report ar
+    JOIN 
+        post p ON ar.PID = p.PID
+    JOIN 
+        useraccount u ON ar.UID = u.UID -- Reported User
+    JOIN 
+        useraccount pu ON p.UID = pu.UID -- Original Post Creator
+    WHERE 
+        p.Visibility != 'Hide'
+    ORDER BY 
+        ar.Created_at DESC;
 ";
 
 // Prepare and execute the query
@@ -97,58 +95,72 @@ $conn->close();
     <!-- Include Admin Navigation Bar -->
     <?php include 'AdminNavigationBar.php'; ?>
 
-    <div class="header">Admin Review Page</div>
+    <main class="main-content">
+        <header class="page-header">
+            <h1>Admin Review Page</h1>
+        </header>
 
-    <div class="review-container">
-        <?php if (empty($reports)): ?>
-            <p>No reports found.</p>
-        <?php else: ?>
-            <?php foreach ($reports as $report): ?>
-                <div class="review-item">
-                    <!-- Post Block -->
-                    <div class="post-block">
-                        <?php
-                        // Set variables for Post.php
-                        $PID = $report["PID"];
-                        $postUsername = $report["PostCreatorUsername"];
-                        $PostUID = $report["ReportedUID"];
-                        $postDescription = $report["Description"];
-                        $postImage = $report["Image"]; // Assuming this is a file path. If it's a blob, adjust accordingly.
-                        $totalUpVotes = $report["totalUpVotes"];
-                        $totalDownVotes = $report["totalDownVotes"];
-                        $totalComments = $report["totalComments"];
-                        $currentUserUID = $_SESSION["UserData"][0]; // Logged-in admin UID
-
-                        include("Post.php");
-                        ?>
-                    </div>
-
-                    <!-- Other Sections -->
-                    <div class="info-section">
-                        <!-- Reported User Information -->
-                        <div class="report-info">
-                            <span class="icon"><i class="fas fa-user"></i></span>
-                            <span>Reported User: <?php echo htmlspecialchars($report['ReportedUsername']); ?> (UID: <?php echo htmlspecialchars($report['ReportedUID']); ?>)</span>
-                        </div>
-
-                        <!-- Report Description -->
-                        <div class="description">
-                            <span class="icon"><i class="fas fa-file-alt"></i></span>
-                            <span><?php echo nl2br(htmlspecialchars($report['Report_Message'])); ?></span>
-                        </div>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="action-buttons">
-                        <button class="hide-post" onclick="hidePost(<?php echo htmlspecialchars($report['PID']); ?>)">Hide Post</button>
-                        <button class="ban-user" onclick="banUser(<?php echo htmlspecialchars($report['PostUID']); ?>)">Ban User</button>
-                    </div>
-                </div>
-            <?php endforeach; ?>
+        <!-- Display Success Message -->
+        <?php if (isset($_GET['success']) && $_GET['success'] == 1): ?>
+            <div class="alert success">
+                Report has been addressed successfully.
+            </div>
         <?php endif; ?>
-    </div>
 
-    <!-- JavaScript for action buttons -->
+        <!-- Display Error Messages -->
+        <?php if (isset($_GET['error'])): ?>
+            <div class="alert error">
+                <?php echo htmlspecialchars($_GET['error']); ?>
+            </div>
+        <?php endif; ?>
+
+        <div class="review-container">
+            <?php if (empty($reports)): ?>
+                <p class="no-data">No reports found.</p>
+            <?php else: ?>
+                <?php foreach ($reports as $report): ?>
+                    <div class="review-item" id="review-<?php echo htmlspecialchars($report['PID']); ?>">
+                        <!-- Post Block -->
+                        <div class="post-block">
+                            <?php if (!empty($report['Image'])): ?>
+                                <img src="<?php echo htmlspecialchars($report['Image']); ?>" alt="Post Image">
+                            <?php else: ?>
+                                <img src="pics/FIXITLANKALOGO.jpg" alt="Default Post Image">
+                            <?php endif; ?>
+                            <div class="post-label">Post</div>
+                            <div class="post-details">
+                                <span class="post-creator">By: <?php echo htmlspecialchars($report['PostCreatorUsername']); ?></span>
+                                <p class="post-description"><?php echo nl2br(htmlspecialchars($report['Description'])); ?></p>
+                            </div>
+                        </div>
+
+                        <!-- Information Sections -->
+                        <div class="info-section">
+                            <!-- Reported User Information -->
+                            <div class="report-info">
+                                <span class="icon"><i class="fas fa-user-shield"></i></span>
+                                <span>Reported User: <?php echo htmlspecialchars($report['ReportedUsername']); ?> (UID: <?php echo htmlspecialchars($report['ReportedUID']); ?>)</span>
+                            </div>
+
+                            <!-- Report Description -->
+                            <div class="description">
+                                <span class="icon"><i class="fas fa-file-alt"></i></span>
+                                <span><?php echo nl2br(htmlspecialchars($report['Report_Message'])); ?></span>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="action-buttons">
+                            <button class="btn hide-post" onclick="hidePost(<?php echo htmlspecialchars($report['PID']); ?>)"><i class="fas fa-eye-slash"></i> Hide Post</button>
+                            <button class="btn ban-user" onclick="banUser(<?php echo htmlspecialchars($report['PostUID']); ?>)"><i class="fas fa-user-times"></i> Ban User</button>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+        </div>
+    </main>
+
+    <!-- JavaScript for action buttons and responsive navigation -->
     <script>
         // Function to hide a post
         function hidePost(PID) {
@@ -166,9 +178,11 @@ $conn->close();
                     .then(data => {
                         if (data.success) {
                             alert('Post hidden successfully.');
-                            // Optionally, you can remove the post from the DOM or update its status
-                            // For example, reload the page to reflect changes
-                            location.reload();
+                            // Remove the post from the DOM
+                            const reviewDiv = document.getElementById('review-' + PID);
+                            if (reviewDiv) {
+                                reviewDiv.remove();
+                            }
                         } else {
                             alert('Error hiding post: ' + data.message);
                         }
@@ -196,8 +210,7 @@ $conn->close();
                     .then(data => {
                         if (data.success) {
                             alert('User banned successfully.');
-                            // Optionally, you can remove the user's posts or update the UI accordingly
-                            // For example, reload the page to reflect changes
+                            // Optionally, you can remove all posts by this user or update the UI accordingly
                             location.reload();
                         } else {
                             alert('Error banning user: ' + data.message);
@@ -210,19 +223,17 @@ $conn->close();
             }
         }
 
-        // Function to escape HTML characters to prevent XSS
-        function escapeHtml(text) {
-            var map = {
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#039;'
-            };
-            return text.replace(/[&<>"']/g, function(m) {
-                return map[m];
-            });
-        }
+        // Responsive Navigation Toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.getElementById('hamburger');
+            const navLinks = document.querySelector('.nav-links');
+
+            if (hamburger) {
+                hamburger.addEventListener('click', function() {
+                    navLinks.classList.toggle('active');
+                });
+            }
+        });
     </script>
 
 </body>
