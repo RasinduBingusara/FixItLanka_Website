@@ -9,23 +9,31 @@
 body {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
   background-color: #f4f4f4;
   color: #333;
+}
+
+
+.icon {
+  font-size: 20px;
 }
 
 /* Main Content */
 .map-page-container {
   display: flex;
   flex: 1;
-  padding-top: 70px;
+  padding-top: 70px; /* Height of the navbar */
+  margin-left: 250px; /* Width of the sidebar */
+  transition: margin-left 0.3s ease;
 }
 
 .main-content {
   flex: 1;
   padding: 20px;
-  margin-left: 270px;
   background-color: #f4f4f4;
+  margin-left: 300px;
+  margin-top: 60px;
 }
 
 .content {
@@ -34,11 +42,12 @@ body {
   gap: 20px;
 }
 
+/* Search Bar and Dropdown Section */
 .search-bar-container {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-bottom: 20px;
+  align-items: center;
 }
 
 .search-bar-container input,
@@ -47,10 +56,12 @@ body {
   padding: 10px;
   border-radius: 8px;
   border: 1px solid #ddd;
+  font-size: 14px;
 }
 
 .search-bar-container .search-bar {
   flex: 1;
+  min-width: 150px;
 }
 
 .search-bar-container .search-button {
@@ -58,8 +69,36 @@ body {
   color: white;
   border: none;
   cursor: pointer;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 16px;
 }
 
+.search-bar-container .dropdown {
+  min-width: 150px;
+}
+
+/* Date Filters */
+.date-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.date-filters label {
+  margin-right: 5px;
+  font-size: 14px;
+}
+
+.date-filters input[type="date"] {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+}
+
+/* Map Section */
 .map-container {
   display: flex;
   justify-content: center;
@@ -75,27 +114,51 @@ body {
 }
 
 /* Responsive Design */
-@media (min-width: 768px) {
-  .map {
-    display: block;
-    width: 100%;
-    height: calc(100vh - 150px);
-    position: sticky;
-    top: 90px;
+@media (max-width: 1200px) {
+
+  .map-page-container {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 992px) {
+  .map-page-container {
+    padding: 10px;
   }
 
-  .sidebar {
-    transform: translateX(0);
+  #map {
+    height: 400px;
   }
 }
 
 @media (max-width: 768px) {
-  .main-content {
+  
+  .main-content{
     margin-left: 0;
+  margin-top: 60px;
   }
 
-  .map {
+  /* Adjust main content margin */
+  .map-page-container {
+    margin-left: 0;
+    margin-top: 60px;
+  }
+
+  /* Search bar and filters stacking */
+  .search-bar-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-bar-container .search-bar,
+  .search-bar-container .search-button,
+  .search-bar-container .dropdown,
+  .date-filters {
     width: 100%;
+  }
+
+  /* Adjust map height */
+  #map {
     height: 300px;
   }
 }

@@ -4,7 +4,7 @@ include("Database.php");
 
 // Initialize an array to hold posts
 $posts = array();
-
+$locationArr = array();
 // Fetch today's highest voted posts
 $sqlPosts = "
 SELECT p.`PID`, p.`UID`, p.`Description`, p.`Longitude`, p.`Latitude`, p.`Status`, 
@@ -46,6 +46,11 @@ if ($resultPosts->num_rows > 0) {
             'totalUpVotes' => $rowPost['totalUpVotes'],
             'totalDownVotes' => $rowPost['totalDownVotes']
         );
+        $locationArr[] = array(
+            'Description' => $rowPost['Description'],
+            'Longitude' => $rowPost['Longitude'],
+            'Latitude' => $rowPost['Latitude']
+        );
     }
 } else {
     echo "No posts found.";
@@ -63,7 +68,7 @@ if ($resultPosts->num_rows > 0) {
     <title>Home Page</title>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_B0Ud1mIL6Ln66nSCnITXRMDV1c3bssc"></script>
     <script>
-        let postsData = <?php echo json_encode($posts); ?>; // Pass PHP array to JavaScript
+        let postsData = <?php echo json_encode($locationArr); ?>; // Pass PHP array to JavaScript
 
         function initMap() {
             const position = { lat: 6.885497678560704, lng: 79.86034329536008 };
@@ -170,6 +175,7 @@ if ($resultPosts->num_rows > 0) {
             background-color: #fff;
             height: 100%;
             overflow: hidden;
+            z-index: 120;
         }
 
         /* Posts container */
@@ -213,7 +219,7 @@ if ($resultPosts->num_rows > 0) {
                 padding: 10px;
                 border-radius: 5px;
                 cursor: pointer;
-                z-index: 100;
+                z-index: 150;
             }
         }
 

@@ -1,5 +1,6 @@
 <?php
 include("Database.php");
+include('NavigationBar.php');
 
 // Fetch categories from the database
 $categoryResult = $conn->query("SELECT Category_ID AS CategoryID, Category_Name AS CategoryName FROM category ORDER BY Category_Name ASC");
@@ -15,92 +16,92 @@ $endDate = isset($_POST["endDate"]) ? $_POST["endDate"] : '';
 
 // Fetch locations based on filters
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Build the SQL query with filters
-    $sql = "SELECT post.Longitude, post.Latitude, post.Description
+  // Build the SQL query with filters
+  $sql = "SELECT post.Longitude, post.Latitude, post.Description
             FROM post
             INNER JOIN category ON post.CategoryID = category.Category_ID
             INNER JOIN region ON post.RegionID = region.RegionID
             INNER JOIN complainttype ON post.ComplaintID = complainttype.ComplaintID
             WHERE 1=1";
-    
-    $params = array();
-    $types = "";
 
-    if (!empty($categoryID)) {
-        $sql .= " AND category.Category_ID = ?";
-        $params[] = $categoryID;
-        $types .= "i";
+  $params = array();
+  $types = "";
+
+  if (!empty($categoryID)) {
+    $sql .= " AND category.Category_ID = ?";
+    $params[] = $categoryID;
+    $types .= "i";
+  }
+
+  if (!empty($regionID)) {
+    $sql .= " AND region.RegionID = ?";
+    $params[] = $regionID;
+    $types .= "i";
+  }
+
+  if (!empty($complaintID)) {
+    $sql .= " AND complainttype.ComplaintID = ?";
+    $params[] = $complaintID;
+    $types .= "i";
+  }
+
+  if (!empty($searchQuery)) {
+    $sql .= " AND post.Description LIKE ?";
+    $params[] = '%' . $searchQuery . '%';
+    $types .= "s";
+  }
+
+  if (!empty($startDate)) {
+    $sql .= " AND post.Created_at >= ?";
+    $params[] = $startDate;
+    $types .= "s";
+  }
+
+  if (!empty($endDate)) {
+    $sql .= " AND post.Created_at <= ?";
+    $params[] = $endDate;
+    $types .= "s";
+  }
+
+  $stmt = $conn->prepare($sql);
+
+  if ($stmt && $types) {
+    $stmt->bind_param($types, ...$params);
+  }
+
+  if ($stmt) {
+    $stmt->execute();
+    $stmt->bind_result($longitude, $latitude, $description);
+
+    while ($stmt->fetch()) {
+      $locations[] = array(
+        'latitude'    => $latitude,
+        'longitude'   => $longitude,
+        'description' => $description
+      );
     }
-
-    if (!empty($regionID)) {
-        $sql .= " AND region.RegionID = ?";
-        $params[] = $regionID;
-        $types .= "i";
-    }
-
-    if (!empty($complaintID)) {
-        $sql .= " AND complainttype.ComplaintID = ?";
-        $params[] = $complaintID;
-        $types .= "i";
-    }
-
-    if (!empty($searchQuery)) {
-        $sql .= " AND post.Description LIKE ?";
-        $params[] = '%' . $searchQuery . '%';
-        $types .= "s";
-    }
-
-    if (!empty($startDate)) {
-        $sql .= " AND post.Created_at >= ?";
-        $params[] = $startDate;
-        $types .= "s";
-    }
-
-    if (!empty($endDate)) {
-        $sql .= " AND post.Created_at <= ?";
-        $params[] = $endDate;
-        $types .= "s";
-    }
-
-    $stmt = $conn->prepare($sql);
-
-    if ($stmt && $types) {
-        $stmt->bind_param($types, ...$params);
-    }
-
-    if ($stmt) {
-        $stmt->execute();
-        $stmt->bind_result($longitude, $latitude, $description);
-
-        while ($stmt->fetch()) {
-            $locations[] = array(
-                'latitude'    => $latitude,
-                'longitude'   => $longitude,
-                'description' => $description
-            );
-        }
-        $stmt->close();
-    } else {
-        error_log("Error preparing statement: " . $conn->error);
-    }
+    $stmt->close();
+  } else {
+    error_log("Error preparing statement: " . $conn->error);
+  }
 } else {
-    // Fetch all locations if no filters are applied
-    $stmt = $conn->prepare("SELECT Longitude, Latitude, Description FROM post");
-    if ($stmt) {
-        $stmt->execute();
-        $stmt->bind_result($longitude, $latitude, $description);
+  // Fetch all locations if no filters are applied
+  $stmt = $conn->prepare("SELECT Longitude, Latitude, Description FROM post");
+  if ($stmt) {
+    $stmt->execute();
+    $stmt->bind_result($longitude, $latitude, $description);
 
-        while ($stmt->fetch()) {
-            $locations[] = array(
-                'latitude'    => $latitude,
-                'longitude'   => $longitude,
-                'description' => $description
-            );
-        }
-        $stmt->close();
-    } else {
-        error_log("Error preparing statement: " . $conn->error);
+    while ($stmt->fetch()) {
+      $locations[] = array(
+        'latitude'    => $latitude,
+        'longitude'   => $longitude,
+        'description' => $description
+      );
     }
+    $stmt->close();
+  } else {
+    error_log("Error preparing statement: " . $conn->error);
+  }
 }
 
 // Encode the locations array as JSON for use in JavaScript
@@ -117,66 +118,67 @@ $locations_json = json_encode($locations);
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <!-- Replace 'YOUR_API_KEY' with your actual Google Maps API key -->
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_B0Ud1mIL6Ln66nSCnITXRMDV1c3bssc"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
 <body>
 
-  <!-- Include the navigation bar -->
-  <?php include 'NavigationBar.php'; ?>
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <div class="content">
+      <!-- Search Bar and Dropdown Section -->
+      <div class="search-bar-container">
+        <form id="filterForm" action="" method="post">
+          <!-- Search Input -->
+           <div>
+           <input type="text" placeholder="Search" class="search-bar" id="searchInput" name="searchInput" value="<?php echo isset($_POST['searchInput']) ? htmlspecialchars($_POST['searchInput']) : ''; ?>">
+           <button type="submit" class="search-button" id="searchButton">&#128269;</button>
+           </div>
+          
 
-  <div class="map-page-container">
-    <!-- Main Content Area -->
-    <main class="main-content">
-      <div class="content">
-        <!-- Search Bar and Dropdown Section -->
-        <div class="search-bar-container">
-          <form id="filterForm" action="" method="post">
-            <!-- Search Input -->
-            <input type="text" placeholder="Search" class="search-bar" id="searchInput" name="searchInput" value="<?php echo isset($_POST['searchInput']) ? htmlspecialchars($_POST['searchInput']) : ''; ?>">
-            <button type="submit" class="search-button" id="searchButton">&#128269;</button>
-
-            <!-- Category Dropdown -->
-            <select class="dropdown" id="categoryDropdown" name="categoryDropdown">
-              <option value="">Select Category</option>
-              <?php
-              if ($categoryResult->num_rows > 0) {
-                  while ($row = $categoryResult->fetch_assoc()) {
-                      $categoryName = htmlspecialchars($row['CategoryName'], ENT_QUOTES);
-                      $categoryId = $row['CategoryID'];
-                      echo '<option value="' . $categoryId . '"' . ((isset($_POST['categoryDropdown']) && $_POST['categoryDropdown'] == $categoryId) ? ' selected' : '') . '>' . $categoryName . '</option>';
-                  }
+          <!-- Category Dropdown -->
+          <select class="dropdown" id="categoryDropdown" name="categoryDropdown">
+            <option value="">Select Category</option>
+            <?php
+            if ($categoryResult->num_rows > 0) {
+              while ($row = $categoryResult->fetch_assoc()) {
+                $categoryName = htmlspecialchars($row['CategoryName'], ENT_QUOTES);
+                $categoryId = $row['CategoryID'];
+                echo '<option value="' . $categoryId . '"' . ((isset($_POST['categoryDropdown']) && $_POST['categoryDropdown'] == $categoryId) ? ' selected' : '') . '>' . $categoryName . '</option>';
               }
-              ?>
-            </select>
+            }
+            ?>
+          </select>
 
-            <!-- Region Dropdown -->
-            <select class="dropdown" id="regionDropdown" name="regionDropdown">
-              <option value="">Select Region</option>
-              <!-- Regions will be populated based on selected category -->
-            </select>
+          <!-- Region Dropdown -->
+          <select class="dropdown" id="regionDropdown" name="regionDropdown">
+            <option value="">Select Region</option>
+            <!-- Regions will be populated based on selected category -->
+          </select>
 
-            <!-- Complaint Type Dropdown -->
-            <select class="dropdown" id="complaintDropdown" name="complaintDropdown">
-              <option value="">Select Complaint Type</option>
-              <!-- Complaint types will be populated based on selected category -->
-            </select>
+          <!-- Complaint Type Dropdown -->
+          <select class="dropdown" id="complaintDropdown" name="complaintDropdown">
+            <option value="">Select Complaint Type</option>
+            <!-- Complaint types will be populated based on selected category -->
+          </select>
 
-            <!-- Date Range Filters -->
+          <!-- Date Range Filters -->
+          <div class="date-filters">
             <label for="startDate">Start Date:</label>
             <input type="date" id="startDate" name="startDate" value="<?php echo isset($_POST['startDate']) ? htmlspecialchars($_POST['startDate']) : ''; ?>">
 
             <label for="endDate">End Date:</label>
             <input type="date" id="endDate" name="endDate" value="<?php echo isset($_POST['endDate']) ? htmlspecialchars($_POST['endDate']) : ''; ?>">
-
-          </form>
-        </div>
-
-        <!-- Map Section -->
-        <div class="map-container">
-          <div id="map" style="height: 500px; width: 100%;"></div>
-        </div>
+          </div>
+        </form>
       </div>
-    </main>
+
+      <!-- Map Section -->
+      <div class="map-container">
+        <div id="map"></div>
+      </div>
+    </div>
+  </main>
   </div>
 
   <script>
@@ -188,7 +190,7 @@ $locations_json = json_encode($locations);
       const defaultLocation = {
         lat: 7.8731,
         lng: 80.7718
-      }; // Example: Center of Sri Lanka
+      }; // Center of Sri Lanka
 
       // Set map center
       const mapCenter = locations.length > 0 ? {
@@ -230,7 +232,10 @@ $locations_json = json_encode($locations);
         $.ajax({
           url: 'fetch_regions.php',
           type: 'POST',
-          data: { categoryID: categoryID, selectedRegionID: selectedRegionID },
+          data: {
+            categoryID: categoryID,
+            selectedRegionID: selectedRegionID
+          },
           success: function(data) {
             $('#regionDropdown').html(data);
           },
@@ -249,7 +254,10 @@ $locations_json = json_encode($locations);
         $.ajax({
           url: 'fetch_complaints.php',
           type: 'POST',
-          data: { categoryID: categoryID, selectedComplaintID: selectedComplaintID },
+          data: {
+            categoryID: categoryID,
+            selectedComplaintID: selectedComplaintID
+          },
           success: function(data) {
             $('#complaintDropdown').html(data);
           },

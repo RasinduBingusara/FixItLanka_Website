@@ -7,13 +7,6 @@ session_start();
 // Include the database connection file
 include("Database.php");
 
-// Check if the supervisor user is logged in
-if (!isset($_SESSION["UserData"][0])) {
-    // Redirect to login page or display an error
-    header("Location: login.php");
-    exit();
-}
-
 // Get supervisor's category and region from the session
 $categoryID = $_SESSION["UserData"][1]; // Category ID
 $regionID = $_SESSION["UserData"][8]; // Region ID
