@@ -59,7 +59,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Proceed if there are no errors
             if (empty($error)) {
                 // Prepare and execute the database insert statement
-                $sql = "INSERT INTO post (UID, RegionID, CategoryID, ComplaintID, Description, Visibility, Is_Anonymouse, Latitude, Longitude, Image, Created_at) VALUES ({$uid}, {$region}, {$category}, {$complaint}, '{$description}', '{$visibility}','{$isAnonymous}', {$latitude}, {$longitude}, '{$imageBlob}', NOW())";
+                $sql = "INSERT INTO post (UID, RegionID, CategoryID, ComplaintID, Description, Visibility, Is_Anonymouse, Latitude, Longitude, Image, Created_at, Status) VALUES ({$uid}, {$region}, {$category}, {$complaint}, '{$description}', '{$visibility}','{$isAnonymous}', {$latitude}, {$longitude}, '{$imageBlob}', NOW(), 'Pending')";
 
                 if (mysqli_query($conn, $sql)) {
                     echo "<script> console.log('Record updated successfully');</script>";
