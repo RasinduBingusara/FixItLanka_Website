@@ -171,11 +171,8 @@ $Username = $_SESSION["UserData"][2];
             </button>
         </div>
         <div class="bottom-nav">
-            <button class="nav-button">
+            <button class="nav-button" onclick="window.location.href='Terms&Policies.php';">
                 <span class="icon">📜</span> Terms and Policies
-            </button>
-            <button class="nav-button">
-                <span class="icon">⚙️</span> Settings
             </button>
             <button class="nav-button" onclick="window.location.href='Signout.php';">
                 <span class="icon">🚪</span> Sign Out
