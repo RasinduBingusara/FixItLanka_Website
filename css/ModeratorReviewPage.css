@@ -1,4 +1,4 @@
-/* ModeratorPanel.css */
+/* ModeratorReviewPage.css */
 
 /* Reset and Base Styles */
 * {
@@ -14,6 +14,7 @@ body {
     display: flex;
     min-height: 100vh;
 }
+
 .menu {
     list-style: none;
     padding: 0;
@@ -124,6 +125,7 @@ body {
 /* Post Item */
 .post-item {
     display: flex;
+    flex-wrap: wrap;
     align-items: flex-start;
     background: #fff;
     padding: 20px;
@@ -191,52 +193,55 @@ body {
     color: #1d3557;
 }
 
-/* Action Buttons */
-.action-buttons {
+/* Action Form */
+.action-form {
+    width: 100%;
+    max-width: 300px;
+}
+
+.status-form {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-.btn {
-    display: inline-flex;
-    align-items: center;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    color: #fff;
+.status-form .form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.status-form label {
     font-size: 14px;
-    transition: background-color 0.3s ease;
+    color: #555;
+    margin-bottom: 5px;
 }
 
-.btn i {
-    margin-right: 5px;
+.status-form select, .status-form input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.3s;
 }
 
-.approve-post {
-    background-color: #28a745;
+.status-form select:focus, .status-form input:focus {
+    border-color: #007bff;
+    outline: none;
 }
 
-.approve-post:hover {
-    background-color: #218838;
+.submit-button {
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
 }
 
-.reject-post {
-    background-color: #dc3545;
-}
-
-.reject-post:hover {
-    background-color: #c82333;
-}
-
-.needs-revision-post {
-    background-color: #ffc107;
-    color: #212529;
-}
-
-.needs-revision-post:hover {
-    background-color: #e0a800;
+.submit-button:hover {
+    background-color: #0056b3;
 }
 
 /* No Data Message */
@@ -272,14 +277,15 @@ body {
         font-size: 15px;
     }
 
-    .btn {
+    .submit-button {
         font-size: 13px;
-        padding: 8px 16px;
+        padding: 8px;
     }
 }
 
 /* Adjustments for Mobile Devices */
 @media (max-width: 768px) {
+
     /* Content will take full width when sidebar is hidden */
     .main-content {
         margin-left: 0;
@@ -295,7 +301,7 @@ body {
         padding: 0 10px;
     }
 
-    .review-item {
+    .post-item {
         flex-direction: column;
         align-items: center;
         text-align: center;
@@ -310,18 +316,16 @@ body {
         align-items: center;
     }
 
-    .action-buttons {
-        flex-direction: row;
-        gap: 10px;
+    .action-form {
+        max-width: 100%;
     }
 
-    .btn {
-        width: 48%;
-        justify-content: center;
+    .status-form {
+        width: 100%;
     }
 
-    .map-section {
-        display: none; /* Hide map section on smaller screens */
+    .submit-button {
+        width: 100%;
     }
 }
 
@@ -339,12 +343,8 @@ body {
         font-size: 14px;
     }
 
-    .btn {
+    .submit-button {
         font-size: 12px;
-        padding: 6px 10px;
-    }
-
-    .btn i {
-        margin-right: 3px;
+        padding: 6px;
     }
 }

@@ -9,6 +9,7 @@
       left: 0;
       height: 100%;
       transition: transform 0.3s ease;
+      z-index: 200;
   }
 
   .sidebar h2 {
@@ -65,6 +66,7 @@
       top: 0;
       left: 0;
       width: 100%;
+      z-index: 250;
   }
 
   .top-nav h1 {
