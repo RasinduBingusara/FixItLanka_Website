@@ -29,7 +29,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["email"]) && isset($_PO
 
       echo "<script>
         setTimeout(function() {
-          window.location.href = 'login.php';
+          window.location.href = 'Login.php';
         }, 1000);
       </script>";
     } else {
