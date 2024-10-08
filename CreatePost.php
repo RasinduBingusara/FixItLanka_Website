@@ -1,6 +1,7 @@
 <?php
 include('NavigationBar.php');
 include("Database.php");
+session_start(); // Ensure session is started
 
 // Initialize variables
 $error = '';
@@ -46,14 +47,60 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (empty($region) || empty($category) || empty($complaint) || empty($visibility) || empty($description) || empty($latitude) || empty($longitude)) {
             $error = "All fields are required!";
         } else {
+            // Define maximum file size (e.g., 10MB)
+            $maxFileSize = 10 * 1024 * 1024; // 10MB in bytes
+
             // Initialize $imageBlob as NULL
             $imageBlob = NULL;
 
             // Check if an image is uploaded
-            if (isset($_FILES['post_image']) && $_FILES['post_image']['error'] == UPLOAD_ERR_OK) {
-                // Process image upload
-                $fileTmpPath = $_FILES['post_image']['tmp_name'];
-                $imageBlob = addslashes(file_get_contents($fileTmpPath));
+            if (isset($_FILES['post_image']) && $_FILES['post_image']['error'] != UPLOAD_ERR_NO_FILE) {
+                // Handle different upload errors
+                if ($_FILES['post_image']['error'] !== UPLOAD_ERR_OK) {
+                    switch ($_FILES['post_image']['error']) {
+                        case UPLOAD_ERR_INI_SIZE:
+                        case UPLOAD_ERR_FORM_SIZE:
+                            $error = "The uploaded file exceeds the maximum allowed size of 10MB.";
+                            break;
+                        case UPLOAD_ERR_PARTIAL:
+                            $error = "The file was only partially uploaded.";
+                            break;
+                        case UPLOAD_ERR_NO_FILE:
+                            $error = "No file was uploaded.";
+                            break;
+                        case UPLOAD_ERR_NO_TMP_DIR:
+                            $error = "Missing a temporary folder.";
+                            break;
+                        case UPLOAD_ERR_CANT_WRITE:
+                            $error = "Failed to write file to disk.";
+                            break;
+                        case UPLOAD_ERR_EXTENSION:
+                            $error = "A PHP extension stopped the file upload.";
+                            break;
+                        default:
+                            $error = "An unknown error occurred during file upload.";
+                            break;
+                    }
+                } else {
+                    // Validate file size
+                    if ($_FILES['post_image']['size'] > $maxFileSize) {
+                        $error = "The uploaded file exceeds the maximum allowed size of 10MB.";
+                    } else {
+                        // Optionally, validate file type here (e.g., only allow images)
+                        $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                        $mimeType = finfo_file($finfo, $_FILES['post_image']['tmp_name']);
+                        finfo_close($finfo);
+
+                        if (!in_array($mimeType, $allowedMimeTypes)) {
+                            $error = "Only JPG, PNG, and GIF files are allowed.";
+                        } else {
+                            // Process image upload
+                            $fileTmpPath = $_FILES['post_image']['tmp_name'];
+                            $imageBlob = addslashes(file_get_contents($fileTmpPath));
+                        }
+                    }
+                }
             }
 
             // Proceed if there are no errors
@@ -67,9 +114,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     // Reset form variables after successful submission
                     $category = $complaint = $region = $visibility = $description = '';
                     $isAnonymous = 0;
-                  } else {
+                } else {
                     echo "<script> console.log('Error updating record: " . mysqli_error($conn) . "');</script>";
-                  }
+                    $error = "There was an error creating your post. Please try again.";
+                }
             }
         }
     }
@@ -97,14 +145,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 <!-- Error / Success Messages -->
                 <?php if (!empty($error)) {
-                    echo '<p class="error">' . $error . '</p>';
+                    echo '<p class="error">' . htmlspecialchars($error) . '</p>';
                 } ?>
                 <?php if (!empty($success)) {
-                    echo '<p class="success">' . $success . '</p>';
+                    echo '<p class="success">' . htmlspecialchars($success) . '</p>';
                 } ?>
 
                 <!-- Post Form -->
                 <form action="CreatePost.php" method="post" enctype="multipart/form-data" id="createPostForm">
+                    <!-- Optional: Specify maximum file size to the browser -->
+                    <input type="hidden" name="MAX_FILE_SIZE" value="10485760" /> <!-- 10MB in bytes -->
+
                     <div class="create-post-content">
                         <div class="image-section">
                             <label for="post_image">Post Image (Optional)</label>
@@ -122,7 +173,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         $resultCategory->data_seek(0);
                                         while ($rowCategory = $resultCategory->fetch_assoc()) {
                                             $selected = ($rowCategory["Category_ID"] == $category) ? 'selected' : '';
-                                            echo '<option value="' . $rowCategory['Category_ID'] . '" ' . $selected . '>' . htmlspecialchars($rowCategory['Category_Name']) . '</option>';
+                                            echo '<option value="' . htmlspecialchars($rowCategory['Category_ID']) . '" ' . $selected . '>' . htmlspecialchars($rowCategory['Category_Name']) . '</option>';
                                         }
                                     }
                                     ?>
@@ -138,7 +189,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         $resultComplaint->data_seek(0);
                                         while ($rowComplaint = $resultComplaint->fetch_assoc()) {
                                             $selected = ($rowComplaint["ComplaintID"] == $complaint) ? 'selected' : '';
-                                            echo '<option value="' . $rowComplaint['ComplaintID'] . '" ' . $selected . '>' . htmlspecialchars($rowComplaint['Complaint']) . '</option>';
+                                            echo '<option value="' . htmlspecialchars($rowComplaint['ComplaintID']) . '" ' . $selected . '>' . htmlspecialchars($rowComplaint['Complaint']) . '</option>';
                                         }
                                     }
                                     ?>
@@ -154,7 +205,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         $resultRegion->data_seek(0);
                                         while ($rowRegion = $resultRegion->fetch_assoc()) {
                                             $selected = ($rowRegion["RegionID"] == $region) ? 'selected' : '';
-                                            echo '<option value="' . $rowRegion['RegionID'] . '" ' . $selected . '>' . htmlspecialchars($rowRegion['Region']) . '</option>';
+                                            echo '<option value="' . htmlspecialchars($rowRegion['RegionID']) . '" ' . $selected . '>' . htmlspecialchars($rowRegion['Region']) . '</option>';
                                         }
                                     }
                                     ?>
