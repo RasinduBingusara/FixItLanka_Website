@@ -54,7 +54,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $error = "All fields are required!";
         } else {
             // Define maximum file size (e.g., 10MB)
-            $maxFileSize = 10 * 1024 * 1024; // 10MB in bytes
+            $maxFileSize = 100 * 1024 * 1024; // 10MB in bytes
 
             // Initialize $imageBlob as NULL
             $imageBlob = NULL;
