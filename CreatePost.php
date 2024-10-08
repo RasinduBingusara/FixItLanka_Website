@@ -12,22 +12,28 @@ $sqlCategory = "SELECT Category_ID, Category_Name FROM category";
 $resultCategory = $conn->query($sqlCategory);
 
 // Initialize form variables
-$category = isset($_POST['category']) ? $_POST['category'] : '';
-$complaint = isset($_POST['complaint']) ? $_POST['complaint'] : '';
-$region = isset($_POST['region']) ? $_POST['region'] : '';
-$visibility = isset($_POST['visibility']) ? $_POST['visibility'] : '';
+$category = $_POST['category'] ?? '';
+$complaint = $_POST['complaint'] ?? '';
+$region = $_POST['region'] ?? '';
+$visibility = $_POST['visibility'] ?? '';
 $isAnonymous = isset($_POST['anonymous']) ? 1 : 0;
-$description = isset($_POST['description']) ? $_POST['description'] : '';
-$latitude = isset($_POST['latitude']) ? $_POST['latitude'] : '';
-$longitude = isset($_POST['longitude']) ? $_POST['longitude'] : '';
+$description = $_POST['description'] ?? '';
+$latitude = $_POST['latitude'] ?? '';
+$longitude = $_POST['longitude'] ?? '';
 
 // Fetch complaints and regions based on the selected category
 if (!empty($category)) {
-    $sqlComplaint = "SELECT ComplaintID, Complaint FROM complainttype WHERE CID = " . intval($category);
-    $resultComplaint = $conn->query($sqlComplaint);
+    $sqlComplaint = "SELECT ComplaintID, Complaint FROM complainttype WHERE CID = ?";
+    $stmtComplaint = $conn->prepare($sqlComplaint);
+    $stmtComplaint->bind_param("i", $category);
+    $stmtComplaint->execute();
+    $resultComplaint = $stmtComplaint->get_result();
 
-    $sqlRegion = "SELECT RegionID, Region FROM region WHERE CID = " . intval($category);
-    $resultRegion = $conn->query($sqlRegion);
+    $sqlRegion = "SELECT RegionID, Region FROM region WHERE CID = ?";
+    $stmtRegion = $conn->prepare($sqlRegion);
+    $stmtRegion->bind_param("i", $category);
+    $stmtRegion->execute();
+    $resultRegion = $stmtRegion->get_result();
 } else {
     $resultComplaint = false;
     $resultRegion = false;
@@ -86,18 +92,82 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     if ($_FILES['post_image']['size'] > $maxFileSize) {
                         $error = "The uploaded file exceeds the maximum allowed size of 10MB.";
                     } else {
-                        // Optionally, validate file type here (e.g., only allow images)
-                        $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                        // Validate file type
+                        $allowedMimeTypes = [
+                            'image/jpeg',
+                            'image/png',
+                            'image/gif',
+                            'image/heic',
+                            'image/heif',
+                            'image/webp'
+                        ];
                         $finfo = finfo_open(FILEINFO_MIME_TYPE);
                         $mimeType = finfo_file($finfo, $_FILES['post_image']['tmp_name']);
                         finfo_close($finfo);
 
                         if (!in_array($mimeType, $allowedMimeTypes)) {
-                            $error = "Only JPG, PNG, and GIF files are allowed.";
+                            $error = "Only JPG, PNG, GIF, HEIC, HEIF, and WEBP files are allowed.";
                         } else {
-                            // Process image upload
+                            // Optional: Resize image to reduce size (requires GD or Imagick)
+                            // Uncomment the following lines if you want to resize images
+                            /*
+                            $imageResource = null;
+                            switch ($mimeType) {
+                                case 'image/jpeg':
+                                    $imageResource = imagecreatefromjpeg($_FILES['post_image']['tmp_name']);
+                                    break;
+                                case 'image/png':
+                                    $imageResource = imagecreatefrompng($_FILES['post_image']['tmp_name']);
+                                    break;
+                                case 'image/gif':
+                                    $imageResource = imagecreatefromgif($_FILES['post_image']['tmp_name']);
+                                    break;
+                                case 'image/webp':
+                                    $imageResource = imagecreatefromwebp($_FILES['post_image']['tmp_name']);
+                                    break;
+                                // HEIC/HEIF support may require additional libraries
+                                default:
+                                    $imageResource = null;
+                            }
+
+                            if ($imageResource) {
+                                // Define desired width and height
+                                $desiredWidth = 800;
+                                $desiredHeight = 600;
+
+                                // Get current dimensions
+                                $width = imagesx($imageResource);
+                                $height = imagesy($imageResource);
+
+                                // Calculate new dimensions while maintaining aspect ratio
+                                $aspectRatio = $width / $height;
+                                if ($desiredWidth / $desiredHeight > $aspectRatio) {
+                                    $desiredWidth = $desiredHeight * $aspectRatio;
+                                } else {
+                                    $desiredHeight = $desiredWidth / $aspectRatio;
+                                }
+
+                                // Create a new resized image
+                                $resizedImage = imagecreatetruecolor($desiredWidth, $desiredHeight);
+                                imagecopyresampled($resizedImage, $imageResource, 0, 0, 0, 0, $desiredWidth, $desiredHeight, $width, $height);
+
+                                // Save the resized image to a temporary location
+                                $tempPath = tempnam(sys_get_temp_dir(), 'upload_');
+                                imagejpeg($resizedImage, $tempPath, 85); // Adjust quality as needed
+
+                                // Update the file path and size
+                                $_FILES['post_image']['tmp_name'] = $tempPath;
+                                $_FILES['post_image']['size'] = filesize($tempPath);
+
+                                // Clean up
+                                imagedestroy($imageResource);
+                                imagedestroy($resizedImage);
+                            }
+                            */
+
+                            // Read the image content
                             $fileTmpPath = $_FILES['post_image']['tmp_name'];
-                            $imageBlob = addslashes(file_get_contents($fileTmpPath));
+                            $imageBlob = file_get_contents($fileTmpPath);
                         }
                     }
                 }
@@ -105,18 +175,49 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             // Proceed if there are no errors
             if (empty($error)) {
-                // Prepare and execute the database insert statement
-                $sql = "INSERT INTO post (UID, RegionID, CategoryID, ComplaintID, Description, Visibility, Is_Anonymouse, Latitude, Longitude, Image, Created_at, Status) VALUES ({$uid}, {$region}, {$category}, {$complaint}, '{$description}', '{$visibility}','{$isAnonymous}', {$latitude}, {$longitude}, '{$imageBlob}', NOW(), 'Pending')";
+                // Prepare and execute the database insert statement using prepared statements
+                $sql = "INSERT INTO post (UID, RegionID, CategoryID, ComplaintID, Description, Visibility, Is_Anonymouse, Latitude, Longitude, Image, Created_at, Status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 'Pending')";
 
-                if (mysqli_query($conn, $sql)) {
-                    echo "<script> console.log('Record updated successfully');</script>";
-                    $success = "Post created successfully!";
-                    // Reset form variables after successful submission
-                    $category = $complaint = $region = $visibility = $description = '';
-                    $isAnonymous = 0;
+                if ($stmt = $conn->prepare($sql)) {
+                    // Bind parameters
+                    // 'i' - integer, 's' - string, 'd' - double, 'b' - blob
+                    $stmt->bind_param(
+                        "iiisssddbs",
+                        $uid,
+                        $region,
+                        $category,
+                        $complaint,
+                        $description,
+                        $visibility,
+                        $isAnonymous,
+                        $latitude,
+                        $longitude,
+                        $imageBlob // Note: For large blobs, you may need to use send_long_data
+                    );
+
+                    // Handle BLOB data
+                    if ($imageBlob !== NULL) {
+                        $stmt->send_long_data(9, $imageBlob); // 0-based index
+                    }
+
+                    // Execute the statement
+                    if ($stmt->execute()) {
+                        $success = "Post created successfully!";
+                        // Reset form variables after successful submission
+                        $category = $complaint = $region = $visibility = $description = '';
+                        $isAnonymous = 0;
+                    } else {
+                        // Log the error and set a user-friendly message
+                        error_log("Database Insert Error: " . $stmt->error);
+                        $error = "There was an error creating your post. Please try again.";
+                    }
+
+                    // Close the statement
+                    $stmt->close();
                 } else {
-                    echo "<script> console.log('Error updating record: " . mysqli_error($conn) . "');</script>";
-                    $error = "There was an error creating your post. Please try again.";
+                    // Log the error and set a user-friendly message
+                    error_log("Database Prepare Error: " . $conn->error);
+                    $error = "There was an error preparing your request. Please try again.";
                 }
             }
         }

@@ -1,435 +1,414 @@
-<link rel="stylesheet" href="css/AllPost.css">
-<style>
-  /* Dropdown Menu */
-  .dropdown-menu {
-    display: none;
-    position: absolute;
-    background-color: #fff;
-    border: 1px solid #e0e0e0;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    border-radius: 5px;
-    min-width: 150px;
-    margin-top: 5px;
-    /* Added space between icon and dropdown */
-  }
+<?php
+include('NavigationBar.php');
+include("Database.php");
+session_start(); // Ensure session is started
 
-  .dropdown-menu a {
-    display: block;
-    padding: 10px;
-    color: #333;
-    text-decoration: none;
-  }
+// Initialize variables
+$error = '';
+$success = '';
 
-  .dropdown-menu a:hover {
-    background-color: #f0f0f0;
-  }
+// Fetch categories from the database
+$sqlCategory = "SELECT Category_ID, Category_Name FROM category";
+$resultCategory = $conn->query($sqlCategory);
 
-  .post-header {
-    position: relative;
-    /* Added to position the dropdown menu */
-  }
+// Initialize form variables
+$category = $_POST['category'] ?? '';
+$complaint = $_POST['complaint'] ?? '';
+$region = $_POST['region'] ?? '';
+$visibility = $_POST['visibility'] ?? '';
+$isAnonymous = isset($_POST['anonymous']) ? 1 : 0;
+$description = $_POST['description'] ?? '';
+$latitude = $_POST['latitude'] ?? '';
+$longitude = $_POST['longitude'] ?? '';
 
-  /* Modal Styles */
-  .modal {
-    display: none;
-    /* Initially hidden */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
+// Fetch complaints and regions based on the selected category
+if (!empty($category)) {
+    $sqlComplaint = "SELECT ComplaintID, Complaint FROM complainttype WHERE CID = ?";
+    $stmtComplaint = $conn->prepare($sqlComplaint);
+    $stmtComplaint->bind_param("i", $category);
+    $stmtComplaint->execute();
+    $resultComplaint = $stmtComplaint->get_result();
 
-  .modal-content {
-    background-color: #fff;
-    width: 90%;
-    max-width: 400px;
-    border-radius: 8px;
-    padding: 20px;
-  }
+    $sqlRegion = "SELECT RegionID, Region FROM region WHERE CID = ?";
+    $stmtRegion = $conn->prepare($sqlRegion);
+    $stmtRegion->bind_param("i", $category);
+    $stmtRegion->execute();
+    $resultRegion = $stmtRegion->get_result();
+} else {
+    $resultComplaint = false;
+    $resultRegion = false;
+}
 
-  .close-button {
-    float: right;
-    cursor: pointer;
-  }
-
-  .modal-content h2 {
-    margin: 0 0 15px;
-  }
-
-  .modal-content textarea {
-    width: 100%;
-    height: 80px;
-    resize: none;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    padding: 10px;
-    margin-bottom: 10px;
-  }
-
-  .modal-content button {
-    padding: 10px 20px;
-    background-color: #007BFF;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
-  .modal-content button:hover {
-    background-color: #0056b3;
-  }
-</style>
-
-<div class="post-card" data-pid="<?php echo $PID; ?>">
-  <div class="post-header">
-    <?php if (!empty($postProfileIcon)) { ?>
-      <img src="data:image/jpeg;base64,<?php echo base64_encode($postProfileIcon); ?>" alt="Post Image" class="profile-img">
-    <?php } else { ?>
-      <img src="pics/defaultProfile.png" alt="Profile" class="profile-img">
-    <?php } ?>
-    <div class="user-info">
-      <span class="user-name"><?php echo $postUsername; ?></span>
-
-      <span class="user-name"></span>
-      <span class="post-options" onclick="togglePostOptions(event)">•••</span>
-      <div class="dropdown-menu" id="postOptionsMenu_<?php echo $PID; ?>">
-        <?php
-        if ($IsAnonymouse == 0) {
-        ?>
-          <a href="#" onclick="goToUserProfile(<?php echo $PostUID; ?>)">View User Profile</a>
-        <?php
-        }
-        ?>
-        <a href="#" onclick="showAdminReviewModal(<?php echo $PID; ?>)">Admin Review</a>
-      </div>
-    </div>
-  </div>
-  <div class="post-incontent">
-    <p class="post-text"><?php echo $postDescription; ?></p>
-    <?php
-    if (!empty($postRegion)) {
-      echo '<span class="post-text">Area: ' . $postRegion . '</span> <br>';
-    }
-    if (!empty($postStatus)) {
-      echo '<span class="post-text">Status: ' . $postStatus . '</span> <br>';
-    }
-    if (!empty($postStatusMsg)) {
-      echo '<span class="post-text">Status Message: ' . $postStatusMsg . '</span>';
-    }
-
-    ?>
-
-    <?php
-    // Display image if it exists
-    if (!empty($postImage)) {
-      // Convert the Blob to a Base64 encoded string
-      $imageData = base64_encode($postImage);
-      echo '<div class="image-container">';
-      echo '<img src="data:image/jpeg;base64,' . $imageData . '" alt="Post Image" style="max-width: 100%; height: auto;">';
-      echo '</div>';
-    }
-    ?>
-  </div>
-  <div class="post-footer">
-    <button class="footer-btn upvote-button" onclick="updateVotes(1, <?php echo $PID ?>)">
-      <img src="pics/like.jpg" alt="Like" class="btn-icon">
-      <span class="btn-text upvote-count"><?php echo $totalUpVotes; ?></span>
-    </button>
-    <button class="footer-btn downvote-button" onclick="updateVotes(0, <?php echo $PID ?>)">
-      <img src="pics/dislike.jpg" alt="Dislike" class="btn-icon">
-      <span class="btn-text downvote-count"><?php echo $totalDownVotes; ?></span>
-    </button>
-    <button class="footer-btn" onclick="popUpCommentPanel(<?php echo $PID ?>)">
-      <img src="pics/comment.jpg" alt="Comment" class="btn-icon">
-      <span class="btn-text"><?php echo $totalComments; ?></span>
-    </button>
-    <button class="footer-btn" onclick="sharePost(<?php echo $PID; ?>)">
-      <img src="pics/share.jpg" alt="Share" class="btn-icon">
-      <span class="btn-text">Share</span>
-    </button>
-  </div>
-</div>
-
-<!-- Modal for Admin Review -->
-<div id="adminReviewModal" class="modal">
-  <div class="modal-content">
-    <span class="close-button" onclick="closeAdminReviewModal()">&times;</span>
-    <h2>Admin Review</h2>
-    <textarea id="reportMessage" placeholder="Enter your report message..."></textarea>
-    <button id="submitReport" onclick="submitAdminReview()">Submit Review</button>
-  </div>
-</div>
-
-<script>
-  function togglePostOptions(event) {
-    event.stopPropagation(); // Prevent event from bubbling up to the document
-    const dropdownMenu = document.getElementById('postOptionsMenu_' + event.target.closest('.post-card').dataset.pid);
-    dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block'; // Toggle dropdown visibility
-  }
-
-  function goToUserProfile(uid) {
-    window.location.href = 'Profile.php?otherUID=' + uid; // Redirect to the user profile page
-  }
-
-  function showAdminReviewModal(pid) {
-    document.getElementById('adminReviewModal').style.display = 'flex'; // Show the admin review modal
-    document.getElementById('submitReport').setAttribute('data-pid', pid); // Store the PID
-  }
-
-  function closeAdminReviewModal() {
-    document.getElementById('adminReviewModal').style.display = 'none'; // Hide the admin review modal
-  }
-
-  function submitAdminReview() {
-    const reportMessage = document.getElementById('reportMessage').value.trim();
-    const PID = document.getElementById('submitReport').getAttribute('data-pid'); // Get PID from the button data attribute
-
-    if (reportMessage === '') {
-      alert('Please enter a report message.');
-      return;
-    }
-
-    const data = {
-      UID: <?php echo $_SESSION["UserData"][0]; ?>, // Use session UID
-      PID: PID,
-      Report_Message: reportMessage,
-    };
-
-    fetch('submit_admin_report.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      })
-      .then((response) => response.json())
-      .then((result) => {
-        if (result.success) {
-          alert('Report submitted successfully!');
-          closeAdminReviewModal(); // Close the modal after successful submission
-          document.getElementById('reportMessage').value = ''; // Clear the textarea
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Check if the form is submitted to create a post
+    if (isset($_POST['createPost'])) {
+        // Check if user is logged in
+        if (isset($_SESSION["UserData"])) {
+            $uid = $_SESSION["UserData"][0];
         } else {
-          alert('Error submitting report: ' + result.message);
+            $error = "User is not logged in.";
         }
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
-  }
 
-  // Close the dropdown menu if the user clicks outside of it
-  window.onclick = function(event) {
-    const dropdowns = document.querySelectorAll('.dropdown-menu');
-    dropdowns.forEach(dropdown => {
-      if (event.target !== dropdown && event.target !== dropdown.previousElementSibling) {
-        dropdown.style.display = 'none';
-      }
-    });
-  };
-
-  function updateVotes(value, PID) {
-    const UID = <?php echo $_SESSION["UserData"][0]; ?>; // Use session UID
-    if (!PID || !UID) {
-      alert('You must be logged in to vote.');
-      return;
-    }
-
-    const data = {
-      UID: UID,
-      PID: PID,
-      Vote_direction: value,
-    };
-
-    fetch('update_vote.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      })
-      .then((response) => response.json())
-      .then((result) => {
-        if (result.success) {
-          const postCard = document.querySelector(`.post-card[data-pid="${PID}"]`);
-          postCard.querySelector('.upvote-count').textContent = result.totalUpVotes;
-          postCard.querySelector('.downvote-count').textContent = result.totalDownVotes;
-
-          currentVote[PID] = result.userVote;
-          updateVoteButtons(PID);
+        // Check for required fields
+        if (empty($region) || empty($category) || empty($complaint) || empty($visibility) || empty($description) || empty($latitude) || empty($longitude)) {
+            $error = "All fields are required!";
         } else {
-          alert('Error updating vote: ' + result.message);
+            // Define maximum file size (e.g., 10MB)
+            $maxFileSize = 10 * 1024 * 1024; // 10MB in bytes
+
+            // Initialize $imageBlob as NULL
+            $imageBlob = NULL;
+
+            // Check if an image is uploaded
+            if (isset($_FILES['post_image']) && $_FILES['post_image']['error'] != UPLOAD_ERR_NO_FILE) {
+                // Handle different upload errors
+                if ($_FILES['post_image']['error'] !== UPLOAD_ERR_OK) {
+                    switch ($_FILES['post_image']['error']) {
+                        case UPLOAD_ERR_INI_SIZE:
+                        case UPLOAD_ERR_FORM_SIZE:
+                            $error = "The uploaded file exceeds the maximum allowed size of 10MB.";
+                            break;
+                        case UPLOAD_ERR_PARTIAL:
+                            $error = "The file was only partially uploaded.";
+                            break;
+                        case UPLOAD_ERR_NO_FILE:
+                            $error = "No file was uploaded.";
+                            break;
+                        case UPLOAD_ERR_NO_TMP_DIR:
+                            $error = "Missing a temporary folder.";
+                            break;
+                        case UPLOAD_ERR_CANT_WRITE:
+                            $error = "Failed to write file to disk.";
+                            break;
+                        case UPLOAD_ERR_EXTENSION:
+                            $error = "A PHP extension stopped the file upload.";
+                            break;
+                        default:
+                            $error = "An unknown error occurred during file upload.";
+                            break;
+                    }
+                } else {
+                    // Validate file size
+                    if ($_FILES['post_image']['size'] > $maxFileSize) {
+                        $error = "The uploaded file exceeds the maximum allowed size of 10MB.";
+                    } else {
+                        // Validate file type
+                        $allowedMimeTypes = [
+                            'image/jpeg',
+                            'image/png',
+                            'image/gif',
+                            'image/heic',
+                            'image/heif',
+                            'image/webp'
+                        ];
+                        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                        $mimeType = finfo_file($finfo, $_FILES['post_image']['tmp_name']);
+                        finfo_close($finfo);
+
+                        if (!in_array($mimeType, $allowedMimeTypes)) {
+                            $error = "Only JPG, PNG, GIF, HEIC, HEIF, and WEBP files are allowed.";
+                        } else {
+                            // Optional: Resize image to reduce size (requires GD or Imagick)
+                            // Uncomment the following lines if you want to resize images
+                            /*
+                            $imageResource = null;
+                            switch ($mimeType) {
+                                case 'image/jpeg':
+                                    $imageResource = imagecreatefromjpeg($_FILES['post_image']['tmp_name']);
+                                    break;
+                                case 'image/png':
+                                    $imageResource = imagecreatefrompng($_FILES['post_image']['tmp_name']);
+                                    break;
+                                case 'image/gif':
+                                    $imageResource = imagecreatefromgif($_FILES['post_image']['tmp_name']);
+                                    break;
+                                case 'image/webp':
+                                    $imageResource = imagecreatefromwebp($_FILES['post_image']['tmp_name']);
+                                    break;
+                                // HEIC/HEIF support may require additional libraries
+                                default:
+                                    $imageResource = null;
+                            }
+
+                            if ($imageResource) {
+                                // Define desired width and height
+                                $desiredWidth = 800;
+                                $desiredHeight = 600;
+
+                                // Get current dimensions
+                                $width = imagesx($imageResource);
+                                $height = imagesy($imageResource);
+
+                                // Calculate new dimensions while maintaining aspect ratio
+                                $aspectRatio = $width / $height;
+                                if ($desiredWidth / $desiredHeight > $aspectRatio) {
+                                    $desiredWidth = $desiredHeight * $aspectRatio;
+                                } else {
+                                    $desiredHeight = $desiredWidth / $aspectRatio;
+                                }
+
+                                // Create a new resized image
+                                $resizedImage = imagecreatetruecolor($desiredWidth, $desiredHeight);
+                                imagecopyresampled($resizedImage, $imageResource, 0, 0, 0, 0, $desiredWidth, $desiredHeight, $width, $height);
+
+                                // Save the resized image to a temporary location
+                                $tempPath = tempnam(sys_get_temp_dir(), 'upload_');
+                                imagejpeg($resizedImage, $tempPath, 85); // Adjust quality as needed
+
+                                // Update the file path and size
+                                $_FILES['post_image']['tmp_name'] = $tempPath;
+                                $_FILES['post_image']['size'] = filesize($tempPath);
+
+                                // Clean up
+                                imagedestroy($imageResource);
+                                imagedestroy($resizedImage);
+                            }
+                            */
+
+                            // Read the image content
+                            $fileTmpPath = $_FILES['post_image']['tmp_name'];
+                            $imageBlob = file_get_contents($fileTmpPath);
+                        }
+                    }
+                }
+            }
+
+            // Proceed if there are no errors
+            if (empty($error)) {
+                // Prepare and execute the database insert statement using prepared statements
+                $sql = "INSERT INTO post (UID, RegionID, CategoryID, ComplaintID, Description, Visibility, Is_Anonymouse, Latitude, Longitude, Image, Created_at, Status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), 'Pending')";
+
+                if ($stmt = $conn->prepare($sql)) {
+                    // Bind parameters
+                    // 'i' - integer, 's' - string, 'd' - double, 'b' - blob
+                    $stmt->bind_param(
+                        "iiisssddbs",
+                        $uid,
+                        $region,
+                        $category,
+                        $complaint,
+                        $description,
+                        $visibility,
+                        $isAnonymous,
+                        $latitude,
+                        $longitude,
+                        $imageBlob // Note: For large blobs, you may need to use send_long_data
+                    );
+
+                    // Handle BLOB data
+                    if ($imageBlob !== NULL) {
+                        $stmt->send_long_data(9, $imageBlob); // 0-based index
+                    }
+
+                    // Execute the statement
+                    if ($stmt->execute()) {
+                        $success = "Post created successfully!";
+                        // Reset form variables after successful submission
+                        $category = $complaint = $region = $visibility = $description = '';
+                        $isAnonymous = 0;
+                    } else {
+                        // Log the error and set a user-friendly message
+                        error_log("Database Insert Error: " . $stmt->error);
+                        $error = "There was an error creating your post. Please try again.";
+                    }
+
+                    // Close the statement
+                    $stmt->close();
+                } else {
+                    // Log the error and set a user-friendly message
+                    error_log("Database Prepare Error: " . $conn->error);
+                    $error = "There was an error preparing your request. Please try again.";
+                }
+            }
         }
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
-  }
-
-  let currentVote = {};
-
-  function updateVoteButtons(PID) {
-    const postCard = document.querySelector(`.post-card[data-pid="${PID}"]`);
-    const upvoteButton = postCard.querySelector('.upvote-button');
-    const downvoteButton = postCard.querySelector('.downvote-button');
-
-    upvoteButton.classList.remove('voted');
-    downvoteButton.classList.remove('voted');
-
-    if (currentVote[PID] === 1) {
-      upvoteButton.classList.add('voted');
-    } else if (currentVote[PID] === -1) {
-      downvoteButton.classList.add('voted');
     }
-  }
+}
+?>
 
-  function popUpCommentPanel(PostID) {
-    console.log('Pop-up triggered for Post ID:', PostID); // Debug log
+<!DOCTYPE html>
+<html lang="en">
 
-    // Check if the PostID is provided
-    if (!PostID) {
-      alert('Post ID must be provided.');
-      return;
-    }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Post Page</title>
+    <link rel="stylesheet" href="css/CreatePost.css">
+    <style>
+        /* Additional CSS styling if needed */
+    </style>
+</head>
 
-    // Create the modal
-    const modal = document.createElement('div');
-    modal.classList.add('modal');
+<body>
+    <div class="home-page-container">
+        <div class="main-content">
+            <div class="create-post-container">
+                <h1>Create Post Page</h1>
 
-    modal.innerHTML = `
-      <div class="modal-content">
-        <span class="close-button">&times;</span>
-        <h2>Comments</h2>
-        <div class="comments-section" id="commentsSection"></div>
-        <div class="new-comment-container">
-          <textarea id="newComment" placeholder="Write your comment..."></textarea>
-          <button id="submitComment">Submit</button>
+                <!-- Error / Success Messages -->
+                <?php if (!empty($error)) {
+                    echo '<p class="error">' . htmlspecialchars($error) . '</p>';
+                } ?>
+                <?php if (!empty($success)) {
+                    echo '<p class="success">' . htmlspecialchars($success) . '</p>';
+                } ?>
+
+                <!-- Post Form -->
+                <form action="CreatePost.php" method="post" enctype="multipart/form-data" id="createPostForm">
+                    <!-- Optional: Specify maximum file size to the browser -->
+                    <input type="hidden" name="MAX_FILE_SIZE" value="10485760" /> <!-- 10MB in bytes -->
+
+                    <div class="create-post-content">
+                        <div class="image-section">
+                            <label for="post_image">Post Image (Optional)</label>
+                            <label for="post_image" id="cameraButton" class="submit-button">Open Camera</label>
+                            <input type="file" name="post_image" id="post_image" accept="image/*" style="display:none;">
+                            <div id="imagePreviews"></div>
+                        </div>
+                        <div class="right-panel">
+                            <div class="dropdown">
+                                <label for="category">Category</label>
+                                <select name="category" id="category" onchange="this.form.submit()" required>
+                                    <option value="">Select Category</option>
+                                    <?php
+                                    if ($resultCategory->num_rows > 0) {
+                                        $resultCategory->data_seek(0);
+                                        while ($rowCategory = $resultCategory->fetch_assoc()) {
+                                            $selected = ($rowCategory["Category_ID"] == $category) ? 'selected' : '';
+                                            echo '<option value="' . htmlspecialchars($rowCategory['Category_ID']) . '" ' . $selected . '>' . htmlspecialchars($rowCategory['Category_Name']) . '</option>';
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+
+                            <div class="dropdown">
+                                <label for="complaint">Complaint Issue</label>
+                                <select name="complaint" id="complaint" required>
+                                    <option value="">Select Complaint</option>
+                                    <?php
+                                    if ($resultComplaint && $resultComplaint->num_rows > 0) {
+                                        $resultComplaint->data_seek(0);
+                                        while ($rowComplaint = $resultComplaint->fetch_assoc()) {
+                                            $selected = ($rowComplaint["ComplaintID"] == $complaint) ? 'selected' : '';
+                                            echo '<option value="' . htmlspecialchars($rowComplaint['ComplaintID']) . '" ' . $selected . '>' . htmlspecialchars($rowComplaint['Complaint']) . '</option>';
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+
+                            <div class="dropdown">
+                                <label for="region">Region</label>
+                                <select name="region" id="region" required>
+                                    <option value="">Select Region</option>
+                                    <?php
+                                    if ($resultRegion && $resultRegion->num_rows > 0) {
+                                        $resultRegion->data_seek(0);
+                                        while ($rowRegion = $resultRegion->fetch_assoc()) {
+                                            $selected = ($rowRegion["RegionID"] == $region) ? 'selected' : '';
+                                            echo '<option value="' . htmlspecialchars($rowRegion['RegionID']) . '" ' . $selected . '>' . htmlspecialchars($rowRegion['Region']) . '</option>';
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+
+                            <div class="dropdown">
+                                <label for="visibility">Visibility</label>
+                                <select name="visibility" id="visibility" required>
+                                    <option value="">Select Visibility</option>
+                                    <option value="Public" <?php if ($visibility == "Public") echo "selected"; ?>>Public</option>
+                                    <option value="Private" <?php if ($visibility == "Private") echo "selected"; ?>>Private</option>
+                                </select>
+                            </div>
+
+                            <div class="toggle">
+                                <label for="anonymous">Anonymous</label>
+                                <input type="checkbox" name="anonymous" id="anonymous" <?php if ($isAnonymous) echo 'checked'; ?>>
+                            </div>
+
+                            <label for="description">Description</label>
+                            <div class="editor-container">
+                                <textarea name="description" id="description" placeholder="Enter your post description" required><?php echo htmlspecialchars($description); ?></textarea>
+                            </div>
+
+                            <input type="hidden" id="latitude" name="latitude" value="<?php echo htmlspecialchars($latitude); ?>">
+                            <input type="hidden" id="longitude" name="longitude" value="<?php echo htmlspecialchars($longitude); ?>">
+                            <input type="hidden" id="isMobile" name="isMobile" value="false">
+
+                            <button type="submit" class="submit-button" name="createPost">Create Post</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
-      </div>
-    `;
+    </div>
 
-    // Append the modal to the body
-    document.body.appendChild(modal);
+    <script>
+        function isMobileDevice() {
+            return /Mobi|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(navigator.userAgent);
+        }
 
-    // Load existing comments for the specified PostID
-    loadComments(PostID);
+        document.addEventListener("DOMContentLoaded", function() {
+            const cameraButton = document.getElementById('cameraButton');
+            const postImageInput = document.getElementById('post_image');
+            const isMobileInput = document.getElementById('isMobile');
 
-    // Add event listener to the close button
-    modal.querySelector('.close-button').addEventListener('click', function() {
-      document.body.removeChild(modal); // Close the modal
-    });
-
-    // Add event listener to the submit comment button
-    modal.querySelector('#submitComment').addEventListener('click', function() {
-      const commentText = document.getElementById('newComment').value.trim();
-      if (commentText !== '') {
-        const UID = <?php echo $_SESSION["UserData"][0]; ?>; // Get UID from session
-        submitComment(PostID, UID, commentText); // Call the function to submit the comment
-      }
-    });
-
-    // Display the modal
-    modal.style.display = 'flex'; // Ensure the modal is displayed
-  }
-
-  function loadComments(PID) {
-    fetch('fetch_comments.php?PID=' + encodeURIComponent(PID))
-      .then((response) => response.json())
-      .then((comments) => {
-        const commentsSection = document.getElementById('commentsSection');
-        commentsSection.innerHTML = '';
-        comments.forEach((comment) => {
-          const commentDiv = document.createElement('div');
-          commentDiv.classList.add('comment');
-          commentDiv.innerHTML = `
-          <div style="display:flex;">
-            <a href="#"><strong>${comment.username}</strong></a>
-            <p style="padding-left: 20px;">${comment.text}</p>
-          </div>
-          `;
-          commentsSection.appendChild(commentDiv);
+            if (isMobileDevice()) {
+                cameraButton.style.display = 'inline-block';
+                postImageInput.disabled = false; // Enable the file input
+                postImageInput.setAttribute('capture', 'environment');
+                isMobileInput.value = 'true';
+            } else {
+                cameraButton.style.display = 'none';
+                postImageInput.disabled = true; // Disable the file input
+                postImageInput.removeAttribute('capture');
+                isMobileInput.value = 'false';
+            }
         });
-      })
-      .catch((error) => {
-        console.error('Error loading comments:', error);
-      });
-  }
 
-  function submitComment(PID, UID, commentText) {
-    const data = {
-      UID: UID,
-      PID: PID,
-      Comment_text: commentText,
-    };
+        document.getElementById('cameraButton').addEventListener('click', function(event) {
+            event.preventDefault();
+            if (isMobileDevice()) {
+                document.getElementById('post_image').click();
+            }
+        });
 
-    fetch('submit_comment.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      })
-      .then((response) => response.json())
-      .then((result) => {
-        if (result.success) {
-          loadComments(PID);
-          document.getElementById('newComment').value = '';
-        } else {
-          alert('Error submitting comment: ' + result.message);
-        }
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
-  }
+        document.getElementById('post_image').addEventListener('change', function(event) {
+            if (isMobileDevice()) {
+                const imagePreviews = document.getElementById('imagePreviews');
+                imagePreviews.innerHTML = ''; // Clear previous images
+                const file = event.target.files[0];
 
-  function sharePost(PID) {
-    const data = {
-      UID: <?php echo $_SESSION["UserData"][0]; ?>, // Use session UID
-      PID: PID,
-    };
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.style.width = '100px'; // Set image preview size
+                        img.style.margin = '10px';
+                        imagePreviews.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
 
-    // Check if the user has already shared the post
-    fetch('check_shared_post.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      })
-      .then(response => response.json())
-      .then(result => {
-        if (result.shared) {
-          alert('You have already shared this post.');
-        } else {
-          // If not shared, proceed to share
-          fetch('insert_shared_post.php', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(data),
-            })
-            .then(response => response.json())
-            .then(result => {
-              if (result.success) {
-                alert('Post shared successfully!');
-              } else {
-                alert('Error sharing post: ' + result.message);
-              }
-            })
-            .catch(error => {
-              console.error('Error:', error);
-            });
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-      });
-  }
-</script>
+        window.onload = function() {
+            if (!document.getElementById('latitude').value || !document.getElementById('longitude').value) {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        document.getElementById('latitude').value = position.coords.latitude;
+                        document.getElementById('longitude').value = position.coords.longitude;
+                    }, function(error) {
+                        alert('Error fetching GPS location: ' + error.message);
+                    });
+                } else {
+                    alert('Geolocation is not supported by your browser.');
+                }
+            }
+        };
+    </script>
+</body>
+
+</html>
