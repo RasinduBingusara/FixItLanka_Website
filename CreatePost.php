@@ -1,7 +1,6 @@
 <?php
 include('NavigationBar.php');
 include("Database.php");
-session_start(); // Ensure session is started
 
 // Initialize variables
 $error = '';
@@ -90,7 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 } else {
                     // Validate file size
                     if ($_FILES['post_image']['size'] > $maxFileSize) {
-                        $error = "The uploaded file exceeds the maximum allowed size of 10MB.";
+                        $error = "The uploaded file exceeds the maximum allowed size of 100MB.";
                     } else {
                         // Validate file type
                         $allowedMimeTypes = [
