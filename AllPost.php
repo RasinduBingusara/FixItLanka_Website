@@ -47,8 +47,9 @@ if (!empty($categoryFilter)) {
 }
 
 // Build the SQL query with filters
-$sqlPosts = "SELECT `PID`, `UID`, `Description`, `Longitude`, `Latitude`, `Status`, `Status_Message`, `Is_Anonymouse`, `Visibility`, `Created_at`, `Image`, `CategoryID`, `RegionID`, `ComplaintID` 
-             FROM `post` 
+$sqlPosts = "SELECT p.PID, p.UID, p.Description, p.Longitude, p.Latitude, p.Status, p.Status_Message, p.Is_Anonymouse, p.Visibility, p.Created_at, p.Image, p.CategoryID, p.RegionID, p.ComplaintID, u.ProfilePicture, r.Region 
+             FROM post p JOIN useraccount u ON p.UID = u.UID 
+             JOIN region r ON p.RegionID = r.RegionID
              WHERE Visibility = 'Public'";
 
 $params = array();
@@ -121,7 +122,9 @@ if ($stmtPosts) {
                 'Image' => $rowPost['Image'],
                 'CategoryID' => $rowPost['CategoryID'],
                 'RegionID' => $rowPost['RegionID'],
-                'ComplaintID' => $rowPost['ComplaintID']
+                'Region' => $rowPost['Region'],
+                'ComplaintID' => $rowPost['ComplaintID'],
+                'ProfilePicture' => $rowPost['ProfilePicture']
             );
         }
     }
@@ -267,9 +270,14 @@ if ($stmtPosts) {
                         $postUsername = $userName;
                         $postDescription = htmlspecialchars($post['Description']);
                         $postImage = $post['Image'];
+                        $postProfileIcon = $post['ProfilePicture'];
+                        $postStatus = $post['Status'];
+                        $postStatusMsg = $post['Status_Message'];
+                        $postRegion = $post["Region"];
                         $PID = $post["PID"];
                         $UID = $_SESSION["UserData"][0]; // Assuming user is logged in and UID is stored in session
                         $PostUID = $post["UID"];
+                        $IsAnonymouse = $post["Is_Anonymouse"];
                 ?>
                         <!-- Post and Map Layout -->
                         <div class="post-content">

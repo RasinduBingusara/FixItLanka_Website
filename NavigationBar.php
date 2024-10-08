@@ -151,7 +151,14 @@ $Username = $_SESSION["UserData"][2];
         <button class="hamburger" id="hamburger">&#9776;</button>
     </div>
     <div class="profile">
-        <img src="pics/defaultProfile.png" alt="Profile Icon" class="profile-icon">
+        <?php 
+            if(!empty($_SESSION["ProfilePicture"])){
+                echo'<img src="data:image/jpeg;base64,'.$_SESSION["ProfilePicture"].' " alt="Post Image" class="profile-icon">';
+            }
+            else{
+                echo'<img src="pics/defaultProfile.png" alt="Profile Icon" class="profile-icon">';
+            }
+        ?>
         <span class="profile-name" onclick="window.location.href='Profile.php';"><?php echo$Username ?></span>
     </div>
 </nav>

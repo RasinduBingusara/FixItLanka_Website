@@ -33,9 +33,6 @@
             <button type="submit" class="btn primary-btn">SIGN IN</button>
         </form>
 
-        <div class="forgot-password">
-            <a href="#">Forgot password?</a>
-        </div>
 
         <div class="sign-up">
             <a href="Signup.php"> Don't have an account? Sign up</a>

@@ -29,6 +29,7 @@ if (isset($_GET["otherUID"])) {
         $Username = htmlspecialchars($row["Username"]);
         $Email = htmlspecialchars($row["Email"]);
         $ContactNumber = htmlspecialchars($row["ContactNumber"]);
+        // ProfilePicture will be handled separately
     }
     $stmt->close();
 } else {
@@ -43,13 +44,51 @@ if (isset($_GET["otherUID"])) {
             $uid = $_SESSION['UserData'][0];
 
             if (!empty($username) && !empty($contactNumber) && !empty($uid)) {
-                $stmt = $conn->prepare("UPDATE useraccount SET Username = ?, ContactNumber = ? WHERE UID = ?");
-                if ($stmt) {
+                // Check if a file was uploaded for ProfilePicture
+                if (isset($_FILES['profilePicture']) && $_FILES['profilePicture']['error'] === UPLOAD_ERR_OK) {
+                    $fileTmpPath = $_FILES['profilePicture']['tmp_name'];
+                    $fileName = $_FILES['profilePicture']['name'];
+                    $fileSize = $_FILES['profilePicture']['size'];
+                    $fileType = $_FILES['profilePicture']['type'];
+                    $fileNameCmps = explode(".", $fileName);
+                    $fileExtension = strtolower(end($fileNameCmps));
+
+                    // Allowed file extensions
+                    $allowedfileExtensions = array('jpg', 'png', 'jpeg', 'gif');
+
+                    if (in_array($fileExtension, $allowedfileExtensions)) {
+                        // Read the file content
+                        $profilePictureData = file_get_contents($fileTmpPath);
+                    } else {
+                        echo "<script>alert('Invalid file type for profile picture. Allowed types: jpg, jpeg, png, gif.');</script>";
+                        exit();
+                    }
+                } else {
+                    $profilePictureData = null; // No new profile picture uploaded
+                }
+
+                // Prepare the SQL statement
+                if ($profilePictureData) {
+                    $stmt = $conn->prepare("UPDATE useraccount SET Username = ?, ContactNumber = ?, ProfilePicture = ? WHERE UID = ?");
+                    $stmt->bind_param("ssbi", $username, $contactNumber, $profilePictureData, $uid);
+                    $_SESSION["ProfilePicture"] = base64_encode($profilePictureData);
+
+                } else {
+                    $stmt = $conn->prepare("UPDATE useraccount SET Username = ?, ContactNumber = ? WHERE UID = ?");
                     $stmt->bind_param("ssi", $username, $contactNumber, $uid);
+                }
+
+                if ($stmt) {
+                    if ($profilePictureData) {
+                        // Specify the type for blob
+                        $stmt->send_long_data(2, $profilePictureData);
+                    }
+
                     if ($stmt->execute()) {
                         $editDetailsAccess = false;
                         $_SESSION['UserData'][2] = $username;
                         $_SESSION['UserData'][4] = $contactNumber;
+
                         echo "<script>alert('Profile updated successfully.');</script>";
                     } else {
                         error_log("Error executing query: " . $stmt->error);
@@ -85,9 +124,9 @@ $posts = array();
 
 if ($view === 'my_posts') {
     // Fetch created posts
-    $sqlPosts = "SELECT PID, UID, Description, Longitude, Latitude, Status, Status_Message, Is_Anonymouse, Visibility, Created_at, Image, CategoryID, RegionID, ComplaintID 
-                 FROM post 
-                 WHERE Visibility = 'Public' AND UID = ?";
+    $sqlPosts = "SELECT p.PID, p.UID, p.Description, p.Longitude, p.Latitude, p.Status, p.Status_Message, p.Is_Anonymouse, p.Visibility, p.Created_at, p.Image, p.CategoryID, p.RegionID, p.ComplaintID, u.ProfilePicture 
+             FROM post p JOIN useraccount u ON p.UID = u.UID 
+             WHERE Visibility = 'Public' AND p.UID = ?";
     $stmtPosts = $conn->prepare($sqlPosts);
     if ($stmtPosts) {
         $stmtPosts->bind_param("i", $CurrentProfileUserID);
@@ -110,7 +149,8 @@ if ($view === 'my_posts') {
                     'Image' => $rowPost['Image'],
                     'CategoryID' => $rowPost['CategoryID'],
                     'RegionID' => $rowPost['RegionID'],
-                    'ComplaintID' => $rowPost['ComplaintID']
+                    'ComplaintID' => $rowPost['ComplaintID'],
+                    'ProfilePicture' => $rowPost['ProfilePicture']
                 );
             }
         }
@@ -120,10 +160,11 @@ if ($view === 'my_posts') {
     }
 } elseif ($view === 'shared_posts') {
     // Fetch shared posts
-    // Assuming there's a 'shared_posts' table with fields: UID (user who shared), PID (post ID)
-    $sqlSharedPosts = "SELECT p.PID, p.UID, p.Description, p.Longitude, p.Latitude, p.Status, p.Status_Message, p.Is_Anonymouse, p.Visibility, p.Created_at, p.Image, p.CategoryID, p.RegionID, p.ComplaintID 
+    // Assuming there's a 'shared_post' table with fields: UID (user who shared), PID (post ID)
+    $sqlSharedPosts = "SELECT p.PID, p.UID, p.Description, p.Longitude, p.Latitude, p.Status, p.Status_Message, p.Is_Anonymouse, p.Visibility, p.Created_at, p.Image, p.CategoryID, p.RegionID, p.ComplaintID, u.ProfilePicture
                       FROM shared_post sp
                       INNER JOIN post p ON sp.PID = p.PID
+                      JOIN useraccount u ON p.UID = u.UID
                       WHERE sp.UID = ? AND p.Visibility = 'Public'";
     $stmtSharedPosts = $conn->prepare($sqlSharedPosts);
     if ($stmtSharedPosts) {
@@ -147,7 +188,8 @@ if ($view === 'my_posts') {
                     'Image' => $rowSharedPost['Image'],
                     'CategoryID' => $rowSharedPost['CategoryID'],
                     'RegionID' => $rowSharedPost['RegionID'],
-                    'ComplaintID' => $rowSharedPost['ComplaintID']
+                    'ComplaintID' => $rowSharedPost['ComplaintID'],
+                    'ProfilePicture' => $rowSharedPost['ProfilePicture']
                 );
             }
         }
@@ -157,18 +199,14 @@ if ($view === 'my_posts') {
     }
 }
 
-$linkCode
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/profile.css">
     <title>Profile Page</title>
+    <link rel="stylesheet" href="css/profile.css">
 </head>
 
 <body>
@@ -186,7 +224,7 @@ $linkCode
             </header>
 
             <?php if ($editDetailsAccess): ?>
-                <form action="" method="post">
+                <form action="" method="post" enctype="multipart/form-data">
                     <div class="profile-info">
                         <div class="form-group">
                             <label for="username">Name:</label>
@@ -199,6 +237,10 @@ $linkCode
                         <div class="form-group">
                             <label for="contact">Contact No.:</label>
                             <input type="text" id="ContactNumber" name="ContactNumber" value="<?php echo $ContactNumber; ?>" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profilePicture">Profile Picture:</label>
+                            <input type="file" id="profilePicture" name="profilePicture" accept="image/*">
                         </div>
                         <input type="submit" id="updateProfileBtn" name="updateProfileBtn" value="Update">
                     </div>
@@ -221,23 +263,20 @@ $linkCode
 
                 <!-- Toggle Buttons for Posts -->
                 <?php
-                // Determine if viewing another user's profile
-                if (isset($_GET["otherUID"])) {
-                    $linkCode = '?otherUID=' . urlencode($CurrentProfileUserID);
+                // Determine the base link code based on whether viewing own or another user's profile
+                if ($IsCurrentUser) {
+                    $baseLink = '?view=';
                 } else {
-                    $linkCode = ''; // No otherUID parameter for current user
+                    $baseLink = '?otherUID=' . urlencode($CurrentProfileUserID) . '&view=';
                 }
-
-                // Retrieve the 'view' parameter from the URL, default to 'my_posts'
-                $view = isset($_GET['view']) ? $_GET['view'] : 'my_posts';
                 ?>
                 <div class="posts-toggle">
-                    <a href="<?php echo $linkCode ? $linkCode . '&view=my_posts' : '?view=my_posts'; ?>"
-                        class="toggle-btn <?php echo ($view === 'my_posts') ? 'active' : ''; ?>">
+                    <a href="<?php echo $baseLink . 'my_posts'; ?>" 
+                       class="toggle-btn <?php echo ($view === 'my_posts') ? 'active' : ''; ?>">
                         My Posts
                     </a>
-                    <a href="<?php echo $linkCode ? $linkCode . '&view=shared_posts' : '?view=shared_posts'; ?>"
-                        class="toggle-btn <?php echo ($view === 'shared_posts') ? 'active' : ''; ?>">
+                    <a href="<?php echo $baseLink . 'shared_posts'; ?>" 
+                       class="toggle-btn <?php echo ($view === 'shared_posts') ? 'active' : ''; ?>">
                         Shared Posts
                     </a>
                 </div>
@@ -299,9 +338,11 @@ $linkCode
                             $postUsername = $userName;
                             $postDescription = htmlspecialchars($post['Description']);
                             $postImage = $post['Image'];
+                            $postProfileIcon = $post['ProfilePicture'];
                             $PID = $post["PID"];
                             $UID = $_SESSION["UserData"][0];
                             $PostUID = $post["UID"];
+                            $IsAnonymouse = $post["Is_Anonymouse"];
                     ?>
                             <div class="post">
                                 <?php

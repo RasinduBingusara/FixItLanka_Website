@@ -10,7 +10,8 @@
     z-index: 1000;
     border-radius: 5px;
     min-width: 150px;
-    margin-top: 5px; /* Added space between icon and dropdown */
+    margin-top: 5px;
+    /* Added space between icon and dropdown */
   }
 
   .dropdown-menu a {
@@ -25,12 +26,14 @@
   }
 
   .post-header {
-    position: relative; /* Added to position the dropdown menu */
+    position: relative;
+    /* Added to position the dropdown menu */
   }
 
   /* Modal Styles */
   .modal {
-    display: none; /* Initially hidden */
+    display: none;
+    /* Initially hidden */
     position: fixed;
     top: 0;
     left: 0;
@@ -85,18 +88,42 @@
 
 <div class="post-card" data-pid="<?php echo $PID; ?>">
   <div class="post-header">
-    <img src="pics/defaultProfile.png" alt="Profile" class="profile-img">
+    <?php if (!empty($postProfileIcon)) { ?>
+      <img src="data:image/jpeg;base64,<?php echo base64_encode($postProfileIcon); ?>" alt="Post Image" class="profile-img">
+    <?php } else { ?>
+      <img src="pics/defaultProfile.png" alt="Profile" class="profile-img">
+    <?php } ?>
     <div class="user-info">
       <span class="user-name"><?php echo $postUsername; ?></span>
+
+      <span class="user-name"></span>
       <span class="post-options" onclick="togglePostOptions(event)">•••</span>
       <div class="dropdown-menu" id="postOptionsMenu_<?php echo $PID; ?>">
-        <a href="#" onclick="goToUserProfile(<?php echo $PostUID; ?>)">View User Profile</a>
+        <?php
+        if ($IsAnonymouse == 0) {
+        ?>
+          <a href="#" onclick="goToUserProfile(<?php echo $PostUID; ?>)">View User Profile</a>
+        <?php
+        }
+        ?>
         <a href="#" onclick="showAdminReviewModal(<?php echo $PID; ?>)">Admin Review</a>
       </div>
     </div>
   </div>
   <div class="post-incontent">
     <p class="post-text"><?php echo $postDescription; ?></p>
+    <?php
+    if (!empty($postRegion)) {
+      echo '<span class="post-text">Area: ' . $postRegion . '</span> <br>';
+    }
+    if (!empty($postStatus)) {
+      echo '<span class="post-text">Status: ' . $postStatus . '</span> <br>';
+    }
+    if (!empty($postStatusMsg)) {
+      echo '<span class="post-text">Status Message: ' . $postStatusMsg . '</span>';
+    }
+
+    ?>
 
     <?php
     // Display image if it exists
@@ -104,7 +131,7 @@
       // Convert the Blob to a Base64 encoded string
       $imageData = base64_encode($postImage);
       echo '<div class="image-container">';
-      echo '<img src="data:image/jpeg;base64,' . $imageData . '" alt="Post Image" style="max-width: 100%; height: auto;">'; 
+      echo '<img src="data:image/jpeg;base64,' . $imageData . '" alt="Post Image" style="max-width: 100%; height: auto;">';
       echo '</div>';
     }
     ?>
@@ -266,8 +293,8 @@
 
     // Check if the PostID is provided
     if (!PostID) {
-        alert('Post ID must be provided.');
-        return;
+      alert('Post ID must be provided.');
+      return;
     }
 
     // Create the modal
@@ -294,21 +321,21 @@
 
     // Add event listener to the close button
     modal.querySelector('.close-button').addEventListener('click', function() {
-        document.body.removeChild(modal); // Close the modal
+      document.body.removeChild(modal); // Close the modal
     });
 
     // Add event listener to the submit comment button
     modal.querySelector('#submitComment').addEventListener('click', function() {
-        const commentText = document.getElementById('newComment').value.trim();
-        if (commentText !== '') {
-            const UID = <?php echo $_SESSION["UserData"][0]; ?>; // Get UID from session
-            submitComment(PostID, UID, commentText); // Call the function to submit the comment
-        }
+      const commentText = document.getElementById('newComment').value.trim();
+      if (commentText !== '') {
+        const UID = <?php echo $_SESSION["UserData"][0]; ?>; // Get UID from session
+        submitComment(PostID, UID, commentText); // Call the function to submit the comment
+      }
     });
 
     // Display the modal
     modal.style.display = 'flex'; // Ensure the modal is displayed
-}
+  }
 
   function loadComments(PID) {
     fetch('fetch_comments.php?PID=' + encodeURIComponent(PID))
@@ -369,40 +396,40 @@
 
     // Check if the user has already shared the post
     fetch('check_shared_post.php', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    })
-    .then(response => response.json())
-    .then(result => {
-      if (result.shared) {
-        alert('You have already shared this post.');
-      } else {
-        // If not shared, proceed to share
-        fetch('insert_shared_post.php', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
-        })
-        .then(response => response.json())
-        .then(result => {
-          if (result.success) {
-            alert('Post shared successfully!');
-          } else {
-            alert('Error sharing post: ' + result.message);
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-        });
-      }
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    });
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+      .then(response => response.json())
+      .then(result => {
+        if (result.shared) {
+          alert('You have already shared this post.');
+        } else {
+          // If not shared, proceed to share
+          fetch('insert_shared_post.php', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(result => {
+              if (result.success) {
+                alert('Post shared successfully!');
+              } else {
+                alert('Error sharing post: ' + result.message);
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+            });
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
   }
 </script>

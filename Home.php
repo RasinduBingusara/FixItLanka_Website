@@ -9,7 +9,7 @@ $locationArr = array();
 $sqlPosts = "
 SELECT p.`PID`, p.`UID`, p.`Description`, p.`Longitude`, p.`Latitude`, p.`Status`, 
        p.`Status_Message`, p.`Is_Anonymouse`, p.`Visibility`, p.`Created_at`, 
-       p.`Image`, 
+       p.`Image`, u.ProfilePicture, 
        COALESCE(v.upVotes, 0) as totalUpVotes,
        COALESCE(v.downVotes, 0) as totalDownVotes
 FROM `post` p
@@ -21,6 +21,7 @@ LEFT JOIN (
     WHERE DATE(`Created_at`) = CURDATE() 
     GROUP BY `PID`
 ) v ON p.`PID` = v.`PID`
+ JOIN useraccount u ON p.UID = u.UID
 WHERE p.Visibility = 'Public'
 ORDER BY totalUpVotes DESC
 LIMIT 10";
@@ -44,7 +45,8 @@ if ($resultPosts->num_rows > 0) {
             'Created_at' => $rowPost['Created_at'],
             'Image' => $rowPost['Image'],
             'totalUpVotes' => $rowPost['totalUpVotes'],
-            'totalDownVotes' => $rowPost['totalDownVotes']
+            'totalDownVotes' => $rowPost['totalDownVotes'],
+            'ProfilePicture' => $rowPost['ProfilePicture']
         );
         $locationArr[] = array(
             'Description' => $rowPost['Description'],
@@ -365,9 +367,11 @@ if ($resultPosts->num_rows > 0) {
                         $postUsername = $userName;
                         $postDescription = $post["Description"];
                         $postImage = $post["Image"];
+                        $postProfileIcon = $post['ProfilePicture'];
                         $PID = $post["PID"];
                         $UID = $post["UID"];
                         $PostUID = $post["UID"];
+                        $IsAnonymouse = $post["Is_Anonymouse"];
                         include("Post.php");
                     }
                     ?>
