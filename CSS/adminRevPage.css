@@ -1,0 +1,326 @@
+/* adminRevPage.css */
+
+/* Reset and Base Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Main Content Area */
+.main-content {
+    flex: 1;
+    padding: 20px;
+    margin-left: 220px; /* Width of the sidebar */
+    transition: margin-left 0.3s ease;
+}
+
+/* Page Header */
+.page-header {
+    margin-bottom: 20px;
+}
+
+.page-header h1 {
+    font-size: 28px;
+    color: #1d3557;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 10px;
+}
+
+/* Alert Messages */
+.alert {
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    width: 90%;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.alert.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert ul {
+    list-style-type: disc;
+    margin-left: 20px;
+}
+
+/* Review Container */
+.review-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Review Item */
+.review-item {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    gap: 20px;
+    transition: box-shadow 0.3s ease;
+}
+
+.review-item:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Post Block */
+.post-block {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.post-block img {
+    width: 100%;
+    max-width: 150px;
+    height: auto;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.post-block .post-label {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 16px;
+    color: #555;
+}
+
+.post-block .post-details {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.post-block .post-creator {
+    display: block;
+    font-size: 14px;
+    color: #1d3557;
+    font-weight: bold;
+}
+
+.post-block .post-description {
+    margin-top: 5px;
+    font-size: 14px;
+    color: #666;
+}
+
+/* Information Sections */
+.info-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Reported User Information */
+.report-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    color: #333;
+}
+
+/* Report Description */
+.description {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #666;
+}
+
+/* Icons */
+.icon {
+    font-size: 18px;
+    color: #1d3557;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: #fff;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.btn i {
+    margin-right: 5px;
+}
+
+.hide-post {
+    background-color: #6c757d;
+}
+
+.hide-post:hover {
+    background-color: #5a6268;
+}
+
+.ban-user {
+    background-color: #dc3545;
+}
+
+.ban-user:hover {
+    background-color: #c82333;
+}
+
+/* No Data Message */
+.no-data {
+    text-align: center;
+    font-size: 18px;
+    color: #555;
+}
+
+/* Responsive Design */
+
+/* Adjustments for Tablets and Small Screens */
+@media (max-width: 992px) {
+    .main-content {
+        margin-left: 220px; /* Maintain sidebar width */
+    }
+
+    .page-header h1 {
+        font-size: 24px;
+    }
+
+    .review-item {
+        padding: 15px;
+        gap: 15px;
+    }
+
+    .post-block img {
+        max-width: 120px;
+    }
+
+    .report-info, .description {
+        font-size: 15px;
+    }
+
+    .btn {
+        font-size: 13px;
+        padding: 8px 16px;
+    }
+}
+
+/* Adjustments for Mobile Devices */
+@media (max-width: 768px) {
+    /* Show hamburger icon on small screens */
+    .hamburger {
+        display: block;
+    }
+
+    /* Hide sidebar by default on small screens */
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    /* Content will take full width when sidebar is hidden */
+    .main-content {
+        margin-left: 0;
+        padding-top: 80px; /* For spacing after hamburger */
+    }
+
+    .page-header h1 {
+        font-size: 22px;
+        text-align: center;
+    }
+
+    .review-container {
+        width: 95%;
+    }
+
+    .review-item {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 15px;
+        max-width: 100%;
+        gap: 15px;
+    }
+
+    .post-block img {
+        width: 100%;
+        height: auto;
+    }
+
+    .action-buttons {
+        flex-direction: row;
+        gap: 10px;
+    }
+
+    .btn {
+        width: 48%;
+        justify-content: center;
+    }
+}
+
+/* Further Adjustments for Extra Small Devices */
+@media (max-width: 480px) {
+    .page-header h1 {
+        font-size: 20px;
+    }
+
+    .review-container {
+        width: 100%;
+        padding: 0 10px;
+    }
+
+    .review-item {
+        padding: 10px 12px;
+    }
+
+    .report-info {
+        font-size: 14px;
+    }
+
+    .description {
+        font-size: 12px;
+    }
+
+    .btn {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+
+    .btn i {
+        margin-right: 3px;
+    }
+}

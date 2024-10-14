@@ -1,0 +1,341 @@
+/* supervisorDashboard.css */
+
+/* Reset and Base Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f5f5f5;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Sign-out button at the top-right */
+.signout-container {
+  position: fixed;
+  top: 10px;
+  right: 20px;
+}
+
+.signout-btn {
+  padding: 10px 15px;
+  background-color: #ff6b6b;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.signout-btn:hover {
+  background-color: #ff5252;
+}
+
+/* Main Content Area */
+.main-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Changed from center to flex-start */
+  flex: 1;
+  padding: 20px;
+  width: 100%;
+  max-width: 1200px; /* Increased max-width for consistency with Moderator page */
+  margin: 0 auto;
+  text-align: left;
+}
+
+.page-header h1 {
+  font-size: 28px;
+  color: #1d3557;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 10px;
+}
+
+/* Alert Messages */
+.alert {
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.alert.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.alert.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.alert ul {
+  list-style-type: disc;
+  margin-left: 20px;
+}
+
+/* Panel Container */
+.panel-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 1200px; /* Align with Moderator page */
+  margin: 0 auto;
+}
+
+/* Posts Section */
+.posts-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+/* Post Item */
+.post-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  background: #fff;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  gap: 20px;
+  transition: box-shadow 0.3s ease;
+}
+
+.post-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Post Image */
+.post-image {
+  flex-shrink: 0;
+  width: 150px; /* Set desired width */
+  height: 150px; /* Set desired height */
+  background-color: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  position: relative;
+}
+
+.post-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.post-label {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  background-color: rgba(29, 53, 87, 0.8);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+/* Information Sections */
+.info-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+/* User Information */
+.user-info, .category-info, .description, .region-info, .status-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  color: #333;
+}
+
+/* Icons */
+.icon {
+  font-size: 18px;
+  color: #1d3557;
+}
+
+/* Action Form */
+.action-form {
+  width: 100%;
+  max-width: 300px;
+}
+
+.status-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.status-form .form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.status-form label {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.status-form select, .status-form input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+
+.status-form select:focus, .status-form input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.submit-button {
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.submit-button:hover {
+  background-color: #0056b3;
+}
+
+/* No Data Message */
+.no-data {
+  text-align: center;
+  font-size: 18px;
+  color: #555;
+}
+
+/* Map Container */
+.map-container {
+  width: 100%;
+  height: 200px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-top: 15px;
+}
+
+/* Responsive Design */
+
+/* Adjustments for Tablets and Small Screens */
+@media (max-width: 992px) {
+  .main-content {
+      margin-left: 0; /* Removed sidebar margin */
+  }
+
+  .page-header h1 {
+      font-size: 24px;
+  }
+
+  .post-item {
+      padding: 15px;
+      gap: 15px;
+  }
+
+  .post-image {
+      width: 120px;
+      height: 120px;
+  }
+
+  .user-info, .category-info, .description, .region-info, .status-message {
+      font-size: 15px;
+  }
+
+  .submit-button {
+      font-size: 13px;
+      padding: 8px;
+  }
+}
+
+/* Adjustments for Mobile Devices */
+@media (max-width: 768px) {
+
+  /* Content will take full width */
+  .main-content {
+      padding: 10px;
+  }
+
+  .page-header h1 {
+      font-size: 22px;
+      text-align: center;
+  }
+
+  .panel-container {
+      padding: 0 10px;
+  }
+
+  .post-item {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+  }
+
+  .post-image {
+      width: 100%;
+      height: 200px;
+  }
+
+  .info-section {
+      align-items: center;
+  }
+
+  .action-form {
+      max-width: 100%;
+  }
+
+  .status-form {
+      width: 100%;
+  }
+
+  .submit-button {
+      width: 100%;
+  }
+}
+
+/* Further Adjustments for Extra Small Devices */
+@media (max-width: 480px) {
+  .page-header h1 {
+      font-size: 20px;
+  }
+
+  .post-item {
+      padding: 10px 12px;
+  }
+
+  .user-info, .category-info, .description, .region-info, .status-message {
+      font-size: 14px;
+  }
+
+  .submit-button {
+      font-size: 12px;
+      padding: 6px;
+  }
+}
+
