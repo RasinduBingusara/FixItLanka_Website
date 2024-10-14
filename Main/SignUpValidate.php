@@ -7,8 +7,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["email"]) && isset($_PO
   $result = $conn->query($sqlVal);
 
   if ($result->num_rows > 0) {
-    echo '<form id="errorForm" action="Signup.php" style="display:inline;">';
+    echo '<form id="errorForm" method="post" action="Signup.php" style="display:inline;">';
     echo '<input type="hidden" name="errorMsg" value="Email Address Already Exist">';
+    echo '<input type="hidden" name="password" value="'.$_POST["password"].'">';
+    echo '<input type="hidden" name="firstName" value="'.$_POST["firstName"].'">';
+    echo '<input type="hidden" name="lastName" value="'.$_POST["lastName"].'">';
+    echo '<input type="hidden" name="contactNumber" value="'.$_POST["contactNumber"].'">';
     echo '</form>';
 ?>
     <script>
@@ -33,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["email"]) && isset($_PO
         }, 1000);
       </script>";
     } else {
-      echo '<form id="errorForm" action="Signup.php" style="display:inline;">';
+      echo '<form id="errorForm" method="post" action="Signup.php" style="display:inline;">';
     echo '<input type="hidden" name="errorMsg" value=""Error Creating Account">';
     echo '</form>';
     ?>

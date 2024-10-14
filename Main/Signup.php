@@ -1,3 +1,17 @@
+<?php
+$password;
+$firstname;
+$lastname;
+$contactnumber;
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["password"]) && isset($_POST["firstName"]) && isset($_POST["lastName"]) && isset($_POST["contactNumber"])) {
+
+    $password = $_POST["password"];
+    $firstname = $_POST["firstName"];
+    $lastname = $_POST["lastName"];
+    $contactnumber = $_POST["contactNumber"];
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -19,11 +33,11 @@
 
         <form method="post" action="SignUpValidate.php" onsubmit="return validateForm()">
             <div class="form-group">
-                <input type="text" id="firstName" name="firstName" placeholder="First Name" required>
+                <input type="text" id="firstName" name="firstName" placeholder="First Name" value="<?php echo isset($firstname)? $firstname:'';?>" required>
                 <label for="firstName" class="label">First Name</label>
             </div>
             <div class="form-group">
-                <input type="text" id="lastName" name="lastName" placeholder="Last Name" required>
+                <input type="text" id="lastName" name="lastName" placeholder="Last Name" value="<?php echo isset($lastname)? $lastname:'';?>" required>
                 <label for="lastName" class="label">Last Name</label>
             </div>
             <div class="form-group"> 
@@ -31,21 +45,21 @@
                 <label for="email" class="label">Email</label>
             </div>
             <div class="form-group">
-                <input type="password" id="password" name="password" placeholder="Password" required>
+                <input type="password" id="password" name="password" placeholder="Password" value="<?php echo isset($password)? $password:'';?>" required>
                 <label for="password" class="label">Password</label>
             </div>
             <div class="form-group">
-                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required>
+                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" value="<?php echo isset($password)? $password:'';?>" required>
                 <label for="confirmPassword" class="label">Confirm Password</label>
             </div>
             <div class="form-group">
-                <input type="tel" id="contactNumber" name="contactNumber" placeholder="Contact Number" required>
+                <input type="tel" id="contactNumber" name="contactNumber" placeholder="Contact Number" value="<?php echo isset($contactnumber)? $contactnumber:'';?>" required>
                 <label for="contactNumber" class="label">Contact Number</label>
             </div>
             <div class="error-message" id="error-container">
                 <label for="error" id="error-message">
                     <?php 
-                    echo isset($_GET["errorMsg"]) ? htmlspecialchars($_GET["errorMsg"]) : ''; 
+                    echo isset($_POST["errorMsg"]) ? htmlspecialchars($_POST["errorMsg"]) : ''; 
                     ?>
                 </label>
             </div>
