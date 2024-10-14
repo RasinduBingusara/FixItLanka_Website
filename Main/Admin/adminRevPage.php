@@ -111,7 +111,7 @@ $conn->close();
                         <!-- Post Block -->
                         <div class="post-block">
                             <?php if (!empty($report['Image'])): ?>
-                                <img src="data:image/jpeg;base64,<?php echo htmlspecialchars($report['Image']); ?>" alt="Post Image">
+                                <img src="data:image/jpeg;base64,<?php echo base64_encode($report['Image']); ?>" alt="Post Image">
                             <?php else: ?>
                                 <img src="../../IMG/FIXITLANKALOGO.jpg" alt="Default Post Image">
                             <?php endif; ?>
